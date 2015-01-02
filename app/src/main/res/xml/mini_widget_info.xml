@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
+	android:minWidth="@dimen/mini_widget_min_width" android:updatePeriodMillis="7200000"
+	android:minHeight="@dimen/mini_widget_min_height" android:initialLayout="@layout/mini_msg_widget_layout"
+	android:configure="ch.prokopovi.ui.MiniWidgetConfigure"
+	android:previewImage="@drawable/mini_widget_preview">
+
+</appwidget-provider>

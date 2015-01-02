@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    
+    <dimen name="widget_padding">6dp</dimen>
+    
+    <item name="widget_currency_ratio" format="float" type="dimen">26</item>
+    <item name="widget_values_ratio" format="float" type="dimen">74</item>
+    
+    <!-- size = (74 x n) - 2 -->
+    <dimen name="mini_widget_min_width">78dp</dimen>
+    <dimen name="mini_widget_min_height">78dp</dimen>
+    
+    <dimen name="widget_min_width">146dp</dimen>
+    <dimen name="widget_min_height">72dp</dimen>
+    
+    <dimen name="multi_widget_min_width">146dp</dimen>
+    <dimen name="multi_widget_min_height">158dp</dimen>
+    
+    <dimen name="wide_widget_min_width">294dp</dimen>
+    <dimen name="wide_widget_min_height">78dp</dimen>    
+    
+    <dimen name="text_size">15dp</dimen>
+    <dimen name="padding">66dp</dimen>    
+
+</resources>

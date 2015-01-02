@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent">
+        
+    <com.adsdk.sdk.banner.AdView
+        android:id="@+id/mobFoxView"
+		android:layout_width="wrap_content"
+		android:layout_height="50dp"
+		request_url="http://my.mobfox.com/request.php"
+		publisherId="89807f624b9574c0915fc8e5da688c1d"
+		location="true"
+		animation="true"
+		android:layout_gravity="center"
+		/>    
+    
+</FrameLayout>

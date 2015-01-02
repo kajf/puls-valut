@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+    
+    <CheckBoxPreference
+     	android:key="@string/pref_ask_location"
+     	android:title="@string/pref_ask_location_title"
+     	android:summary="@string/pref_ask_location_descr"
+     	android:defaultValue="true" />
+    
+    <ListPreference
+        android:key="@string/pref_app_skin"
+        android:title="@string/pref_app_skin_title"
+        android:summary="@string/pref_app_skin_descr" 
+        android:entryValues="@array/skinListValues" 
+        android:entries="@array/skinListOptions"
+        android:defaultValue="@string/pref_app_skin_value_light"/>
+
+    <CheckBoxPreference
+     	android:key="@string/pref_ads_on"
+     	android:title="@string/pref_ads_on_title"
+     	android:summary="@string/pref_ads_on_descr"
+     	android:defaultValue="true" />
+    
+    <CheckBoxPreference
+     	android:key="@string/pref_fullscreen_on"
+     	android:title="@string/pref_fullscreen_on_title"
+     	android:summary="@string/pref_fullscreen_on_descr"
+     	android:defaultValue="true" />
+</PreferenceScreen>

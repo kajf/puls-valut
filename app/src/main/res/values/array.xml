@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string-array name="skinListOptions">
+        <item>Светлый</item>
+        <item>Тёмный</item>
+    </string-array>
+    <string-array name="skinListValues">
+        <item>@string/pref_app_skin_value_light</item>
+        <item>@string/pref_app_skin_value_dark</item>
+    </string-array>
+
+</resources>

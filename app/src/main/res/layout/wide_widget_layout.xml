@@ -1,0 +1,226 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="@dimen/widget_padding" >
+
+    <LinearLayout
+        android:id="@+id/layWideMain"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/selector"
+        android:gravity="center"
+        android:orientation="vertical" >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="2"
+            android:gravity="center"
+            android:orientation="horizontal" 
+            android:baselineAligned="false">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center" >
+
+                <TextView
+                    android:id="@+id/tvWideCurrency_1"
+                    android:textSize="19sp"
+                    style="@style/CurrencyTextArea"
+                    android:layout_width="0dp"
+                    android:layout_weight="@dimen/widget_currency_ratio" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="@dimen/widget_values_ratio"
+                    android:orientation="vertical" >
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:orientation="horizontal" >
+
+                        <TextView
+                            android:id="@+id/tvWideBuy_1"
+                            style="@style/RateValueTextArea" >
+                        </TextView>
+
+                        <ImageView
+                            android:id="@+id/iv_wide_buy_arrow_1"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" >
+                        </ImageView>
+
+                        <TextView
+                            android:id="@+id/tvWideBuyDynamic_1"
+                            style="@style/RateDynTextArea" >
+                        </TextView>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:orientation="horizontal" >
+
+                        <TextView
+                            android:id="@+id/tvWideSell_1"
+                            style="@style/RateValueTextArea"
+                            android:textStyle="bold">
+                        </TextView>
+
+                        <ImageView
+                            android:id="@+id/iv_wide_sell_arrow_1"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" >
+                        </ImageView>
+
+                        <TextView
+                            android:id="@+id/tvWideSellDynamic_1"
+                            style="@style/RateDynTextArea" >
+                        </TextView>
+                    </LinearLayout>
+                </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center" >
+
+                <TextView
+                    android:id="@+id/tvWideCurrency_2"
+                    android:textSize="19sp"
+                    style="@style/CurrencyTextArea"
+                    android:layout_width="0dp"
+                    android:layout_weight="@dimen/widget_currency_ratio" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="@dimen/widget_values_ratio"
+                    android:orientation="vertical" >
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:orientation="horizontal" >
+
+                        <TextView
+                            android:id="@+id/tvWideBuy_2"
+                            style="@style/RateValueTextArea" >
+                        </TextView>
+
+                        <ImageView
+                            android:id="@+id/iv_wide_buy_arrow_2"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" >
+                        </ImageView>
+
+                        <TextView
+                            android:id="@+id/tvWideBuyDynamic_2"
+                            style="@style/RateDynTextArea" >
+                        </TextView>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:orientation="horizontal" >
+
+                        <TextView
+                            android:id="@+id/tvWideSell_2"
+                            style="@style/RateValueTextArea"
+                            android:textStyle="bold">
+                        </TextView>
+
+                        <ImageView
+                            android:id="@+id/iv_wide_sell_arrow_2"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" >
+                        </ImageView>
+
+                        <TextView
+                            android:id="@+id/tvWideSellDynamic_2"
+                            style="@style/RateDynTextArea" >
+                        </TextView>
+                    </LinearLayout>
+                </LinearLayout>
+            </LinearLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:gravity="center" >
+
+            <ImageView
+                android:id="@+id/iv_wide_upd"
+                style="@style/ThumbImage"
+                android:src="@drawable/refresh" >
+            </ImageView>
+
+            <TextView
+                android:id="@+id/tv_wide_date"
+                android:textSize="11sp"
+                style="@style/FooterTextArea"
+                android:layout_width="0dp"
+                android:layout_weight="0.9" >
+            </TextView>
+
+            <TextView
+                android:id="@+id/tv_wide_type"
+                android:textSize="14sp"
+                style="@style/FooterTypeArea" >
+            </TextView>
+
+            <ImageView
+                android:id="@+id/iv_wide_src_thumb"
+                style="@style/ThumbImage" >
+            </ImageView>
+
+            <ImageView
+                android:id="@+id/iv_wide_cfg"
+                style="@style/ThumbImage"
+                android:src="@drawable/config" >
+            </ImageView>
+        </LinearLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal" >
+
+        <Button
+            android:id="@+id/b_wide_upd"
+            android:layout_width="0dip"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@drawable/invisible_btn" />
+
+        <Button
+            android:id="@+id/b_wide_launch_app"
+            android:layout_width="0dip"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@drawable/invisible_btn" />
+
+        <Button
+            android:id="@+id/b_wide_cfg"
+            android:layout_width="0dip"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@drawable/invisible_btn" />
+    </LinearLayout>
+
+</FrameLayout>

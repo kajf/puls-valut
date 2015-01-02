@@ -1,0 +1,90 @@
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        // replace with the current version of the Android plugin
+        classpath 'com.android.tools.build:gradle:1.0.0'
+        // replace with the current version of the android-apt plugin
+        classpath 'com.neenbedankt.gradle.plugins:android-apt:1.4'
+    }
+}
+
+repositories {
+    mavenCentral()
+    mavenLocal()
+}
+
+apply plugin: 'com.android.application'
+apply plugin: 'android-apt'
+def AAVersion = '3.2'
+
+apt {
+    arguments {
+        androidManifestFile variant.outputs[0].processResources.manifestFile
+        // if you have multiple outputs (when using splits), you may want to have other index than 0
+
+        resourcePackageName 'ch.prokopovi'
+
+        // If you're using Android NBS flavors you should use the following line instead of hard-coded packageName
+        // resourcePackageName android.defaultConfig.packageName
+
+        // You can set optional annotation processing options here, like these commented options:
+        // logLevel 'INFO'
+        // logFile '/var/log/aa.log'
+    }
+}
+
+android {
+    compileSdkVersion 21
+    buildToolsVersion "21.1.2"
+
+    defaultConfig {
+        applicationId "ch.prokopovi"
+        minSdkVersion 9
+        targetSdkVersion 21
+        versionCode 1
+        versionName "1.0"
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    // This is only needed if you project structure doesn't fit the one found here
+    // http://tools.android.com/tech-docs/new-build-system/user-guide#TOC-Project-Structure
+    sourceSets {
+        main {
+            // manifest.srcFile 'src/main/AndroidManifest.xml'
+            // java.srcDirs = ['src/main/java', 'build/generated/source/apt/${variant.dirName}']
+            // resources.srcDirs = ['src/main/resources']
+            // res.srcDirs = ['src/main/res']
+            // assets.srcDirs = ['src/main/assets']
+        }
+    }
+}
+
+dependencies {
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile 'com.android.support:appcompat-v7:21.0.3'
+
+    // http://developer.android.com/google/play-services/setup.html
+    //compile 'com.google.android.gms:play-services:6.5.+'
+    compile 'com.google.android.gms:play-services-location:6.5.+'
+    compile 'com.google.android.gms:play-services-maps:6.5.+'
+    compile 'com.google.android.gms:play-services-base:6.5.+'
+
+    // maps extensions
+    compile 'com.androidmapsextensions:android-maps-extensions:2.2.0'
+    //compile 'com.google.android.gms:play-services-maps:6.5.87'
+    //
+
+    // analytics
+    //compile 'com.google.apis:google-api-services-analytics:v3-rev108-1.19.0'
+    //
+
+    apt "org.androidannotations:androidannotations:$AAVersion"
+    compile "org.androidannotations:androidannotations-api:$AAVersion"
+}

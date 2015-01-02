@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:puls ="http://schemas.android.com/apk/res-auto">
+      
+        <item puls:showAsAction="ifRoom"
+                android:id="@+id/menu_refresh" 
+                android:title="@string/btn_refresh"
+                android:icon="?attr/actionUpdateIcon"/>
+		<item puls:showAsAction="ifRoom"
+		     	android:id="@+id/menu_settings"        		
+        		android:title="@string/btn_settings"
+        		android:icon="?attr/actionConfigIcon" />            
+		<item puls:showAsAction="ifRoom"
+		     	android:id="@+id/menu_share_app"        		
+        		android:title="@string/btn_share_app"
+        		puls:actionProviderClass="android.support.v7.widget.ShareActionProvider" />
+                		
+        <item puls:showAsAction="never"
+                android:id="@+id/menu_rate_app" 
+                android:title="@string/btn_rate_app"/>        
+        <item puls:showAsAction="never"
+                android:id="@+id/menu_help" 
+                android:title="@string/btn_info"/>
+</menu>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:id="@+id/layMultiMainMessage"
+	android:layout_width="@dimen/multi_widget_min_width"
+	android:layout_height="@dimen/multi_widget_min_height"
+	android:background="@drawable/selector"
+	android:orientation="horizontal" 
+	android:baselineAligned="true" 
+	android:gravity="center">
+
+	<TextView android:text="@string/msg_updating"
+		android:id="@+id/tvMultiMessageText"
+		style="@style/RateValueTextArea"></TextView>
+
+</LinearLayout>

@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
+
+	<style name="HelpTextMessage" parent="@android:style/TextAppearance.Medium">		
+		<item name="android:layout_width">fill_parent</item>
+		<item name="android:layout_height">fill_parent</item>
+		<item name="android:layout_margin">4dp</item>
+		<item name="android:paddingLeft">14dp</item>
+		<item name="android:paddingRight">14dp</item>
+		<item name="android:paddingTop">8dp</item>
+		<item name="android:paddingBottom">8dp</item>		
+	</style>
+
+    <style name="CurrencySelectorArea" parent="@android:style/Widget.CompoundButton.RadioButton">        
+		<item name="android:layout_width">fill_parent</item>
+		<item name="android:layout_height">wrap_content</item> 
+		<item name="android:layout_marginBottom">15dp</item>
+		<item name="android:textSize">15sp</item>
+    </style>
+    
+    <style name="ShadowTextArea" parent="@android:style/TextAppearance.Widget.TextView">
+	    <item name="android:shadowColor">#000000</item>
+	    <item name="android:shadowDx">1</item>
+	    <item name="android:shadowDy">1</item>
+	    <item name="android:shadowRadius">1</item>        
+    </style>     
+
+    <style name="CurrencyTextArea" parent="@android:style/TextAppearance.Widget.TextView">
+    	<item name="android:textSize">18sp</item>    	
+    	<item name="android:textStyle">normal</item>
+		<item name="android:layout_height">wrap_content</item>
+		<item name="android:layout_width">wrap_content</item>
+		<item name="android:gravity">center</item>
+    </style>   
+    
+    <style name="RateValueTextArea" parent="@android:style/TextAppearance.Widget.TextView">
+    	<item name="android:textSize">14sp</item>
+		<item name="android:layout_height">wrap_content</item>
+		<item name="android:layout_width">wrap_content</item>
+		<item name="android:gravity">center</item>
+    </style>    
+    
+    <style name="RateDynTextArea" parent="@android:style/TextAppearance.Widget.TextView">
+    	<item name="android:textSize">10sp</item>
+		<item name="android:layout_height">wrap_content</item>
+		<item name="android:layout_width">wrap_content</item>
+		<item name="android:gravity">center</item>			
+    </style>       
+    
+    <style name="FooterTextArea" parent="@android:style/TextAppearance.Widget.TextView">
+    	<item name="android:textSize">10sp</item>
+		<item name="android:layout_height">wrap_content</item>
+		<item name="android:layout_width">fill_parent</item>
+		<item name="android:gravity">center</item>					        
+    </style>
+    
+    <style name="FooterTypeArea" parent="@android:style/TextAppearance.Widget.TextView">
+    	<item name="android:textSize">13sp</item> 
+		<item name="android:layout_height">wrap_content</item>
+		<item name="android:layout_width">wrap_content</item>
+		<item name="android:gravity">center</item>
+		<item name="android:background">@drawable/chbody</item>			        
+    </style>        
+    
+    <style name="ThumbImage">		   
+		<item name="android:layout_height">wrap_content</item>
+		<item name="android:layout_width">wrap_content</item>
+		<item name="android:gravity">center</item>		        
+    </style>
+    
+    <style name="MapCurrencyTitle">		   
+		<item name="android:layout_height">wrap_content</item>
+		<item name="android:layout_width">wrap_content</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:singleLine">true</item>
+        <item name="android:textColor">#ff7f7f7f</item>
+        <item name="android:textSize">14sp</item>   
+        <item name="android:width">60dp</item>
+    </style>
+    
+    <style name="MapCurrencyValue">		   
+		<item name="android:layout_height">wrap_content</item>
+		<item name="android:layout_width">wrap_content</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:singleLine">true</item>
+        <item name="android:textColor">#ff0000ff</item>
+        <item name="android:textSize">14sp</item>   
+        <item name="android:paddingLeft">2dp</item>
+        <item name="android:width">55dp</item>
+    </style>
+    
+    <style name="MapCurrencyDiff">		   
+		<item name="android:layout_height">wrap_content</item>
+		<item name="android:layout_width">wrap_content</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:singleLine">true</item>
+        <item name="android:textColor">#ffFF0000</item>
+        <item name="android:textSize">12sp</item>   
+        <item name="android:paddingLeft">2dp</item>
+        <item name="android:width">50dp</item>
+    </style>    
+        		
+</resources>

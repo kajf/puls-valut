@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"    
+    android:padding="@dimen/widget_padding">
+
+    <LinearLayout
+        android:id="@+id/lay_mini_main"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:background="@drawable/selector">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+			android:layout_height="0dp"
+			android:layout_weight="2"            
+            android:gravity="center" >
+
+            <TextView
+                android:id="@+id/tv_mini_buy"
+                style="@style/RateValueTextArea" >
+            </TextView>
+
+            <ImageView
+                android:id="@+id/iv_mini_buy_arrow"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" >
+            </ImageView>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+			android:layout_height="0dp"
+			android:layout_weight="1"
+            android:gravity="center">
+
+            <TextView
+                android:id="@+id/tv_mini_sell"
+                style="@style/RateValueTextArea"
+                android:textStyle="bold">
+            </TextView>
+
+            <ImageView
+                android:id="@+id/iv_mini_sell_arrow"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" >
+            </ImageView>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center" >
+
+            <TextView
+                android:id="@+id/tv_mini_currency"
+                style="@style/CurrencyTextArea"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:textSize="16sp" >
+            </TextView>
+
+            <TextView
+                android:id="@+id/tv_mini_type"
+                style="@style/FooterTypeArea"
+                android:padding="1dp" >
+            </TextView>
+
+            <ImageView
+                android:id="@+id/iv_mini_src_thumb"
+                style="@style/ThumbImage" >
+            </ImageView>
+        </LinearLayout>
+    </LinearLayout>
+
+</FrameLayout>

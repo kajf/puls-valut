@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+package="ch.prokopovi" android:versionCode="116" android:versionName="9.0"
+android:installLocation="auto">
+
+<uses-sdk android:minSdkVersion="9" android:targetSdkVersion="19"/>
+
+<uses-permission android:name="android.permission.INTERNET" />
+<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
+<permission
+    android:name="ch.prokopovi.permission.MAPS_RECEIVE"
+    android:protectionLevel="signature"/>
+<uses-permission android:name="ch.prokopovi.permission.MAPS_RECEIVE"/>
+
+<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+<uses-permission android:name="com.google.android.providers.gsf.permission.READ_GSERVICES" />
+<uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+
+<uses-feature android:name="android.hardware.location" android:required="false"/>
+<uses-feature android:name="android.hardware.location.network" android:required="false"/>
+<uses-feature android:name="android.hardware.location.gps" android:required="false"/>
+
+<supports-screens
+    android:xlargeScreens="true"
+    android:largeScreens="true"
+    android:normalScreens="true"
+    android:smallScreens="true"
+    android:anyDensity="true"/>
+
+<application
+    android:icon="@drawable/ic_launcher"
+    android:label="@string/app_name"
+    android:allowBackup="true">
+
+    <!-- ads -->
+    <activity android:name="com.adsdk.sdk.banner.InAppWebView" android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize" />
+    <activity android:name="com.adsdk.sdk.video.RichMediaActivity" android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize"	android:hardwareAccelerated="false" />
+    <activity android:name="com.adsdk.sdk.mraid.MraidBrowser" android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize" />
+    <!--  -->
+
+    <activity android:name=".ui.main.TabsActivity_"
+        android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize">
+
+        <intent-filter>
+            <action android:name="android.intent.action.MAIN" />
+            <category android:name="android.intent.category.LAUNCHER" />
+        </intent-filter>
+    </activity>
+
+    <activity android:name=".ui.main.HelpActivity_">
+    </activity>
+
+    <activity android:name=".ui.main.PrefsActivity_"
+        android:label="@string/btn_settings">
+        <intent-filter>
+            <category android:name="android.intent.category.PREFERENCE" />
+        </intent-filter>
+    </activity>
+
+    <activity android:name=".ui.MiniWidgetConfigure"
+        android:taskAffinity=""
+        android:excludeFromRecents="true"
+        android:theme="@android:style/Theme.NoTitleBar">
+        <intent-filter>
+            <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE" />
+        </intent-filter>
+    </activity>
+
+    <activity android:name=".ui.WidgetConfigure"
+        android:taskAffinity=""
+        android:excludeFromRecents="true"
+        android:theme="@android:style/Theme.NoTitleBar">
+        <intent-filter>
+            <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE" />
+        </intent-filter>
+    </activity>
+
+    <activity android:name=".ui.MultiWidgetConfigure"
+        android:taskAffinity=""
+        android:excludeFromRecents="true"
+        android:theme="@android:style/Theme.NoTitleBar">
+        <intent-filter>
+            <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE" />
+        </intent-filter>
+    </activity>
+
+    <activity android:name=".ui.WideWidgetConfigure"
+        android:taskAffinity=""
+        android:excludeFromRecents="true"
+        android:theme="@android:style/Theme.NoTitleBar">
+        <intent-filter>
+            <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE" />
+        </intent-filter>
+    </activity>
+
+    <receiver android:name=".ui.MiniWidgetProvider" android:label="@string/mini_widget_name">
+        <intent-filter>
+            <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            <action android:name="ch.prokopovi.UpdateService.ACTION_DATA" />
+            <action android:name="ch.prokopovi.UpdateService.ACTION_MESSAGE" />
+            <action android:name="ch.prokopovi.UpdateService.ACTION_UPDATING" />
+            <action android:name="ch.prokopovi.UpdateService.ACTION_TIME" />
+        </intent-filter>
+        <meta-data android:name="android.appwidget.provider"
+            android:resource="@xml/mini_widget_info" />
+    </receiver>
+
+    <receiver android:name=".ui.WidgetProvider" android:label="@string/widget_name">
+        <intent-filter>
+            <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            <action android:name="ch.prokopovi.UpdateService.ACTION_DATA" />
+            <action android:name="ch.prokopovi.UpdateService.ACTION_MESSAGE" />
+            <action android:name="ch.prokopovi.UpdateService.ACTION_UPDATING" />
+            <action android:name="ch.prokopovi.UpdateService.ACTION_TIME" />
+        </intent-filter>
+        <meta-data android:name="android.appwidget.provider"
+            android:resource="@xml/widget_info" />
+    </receiver>
+
+    <receiver android:name=".ui.MultiWidgetProvider" android:label="@string/multi_widget_name">
+        <intent-filter>
+            <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            <action android:name="ch.prokopovi.UpdateService.ACTION_DATA" />
+            <action android:name="ch.prokopovi.UpdateService.ACTION_MESSAGE" />
+            <action android:name="ch.prokopovi.UpdateService.ACTION_UPDATING" />
+            <action android:name="ch.prokopovi.UpdateService.ACTION_TIME" />
+        </intent-filter>
+        <meta-data android:name="android.appwidget.provider"
+            android:resource="@xml/multi_widget_info" />
+    </receiver>
+
+    <receiver android:name=".ui.WideWidgetProvider" android:label="@string/wide_widget_name">
+        <intent-filter>
+            <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            <action android:name="ch.prokopovi.UpdateService.ACTION_DATA" />
+            <action android:name="ch.prokopovi.UpdateService.ACTION_MESSAGE" />
+            <action android:name="ch.prokopovi.UpdateService.ACTION_UPDATING" />
+            <action android:name="ch.prokopovi.UpdateService.ACTION_TIME" />
+        </intent-filter>
+        <meta-data android:name="android.appwidget.provider"
+            android:resource="@xml/wide_widget_info" />
+    </receiver>
+
+    <receiver android:name=".ConnectionBroadcastReceiver">
+        <intent-filter>
+            <action android:name="android.net.conn.CONNECTIVITY_CHANGE"/>
+        </intent-filter>
+    </receiver>
+
+    <service android:name=".UpdateService_"></service>
+
+    <meta-data
+        android:name="com.google.android.gms.version"
+        android:value="@integer/google_play_services_version" />
+
+    <!-- prod -->
+<!--    <meta-data
+        android:name="com.google.android.maps.v2.API_KEY"
+        android:value="AIzaSyAODM_MEtEayFWTzqjfNqizw4u9fu4_w6Q"/>-->
+
+    <!-- epam-desc -->
+    <!-- <meta-data
+        android:name="com.google.android.maps.v2.API_KEY"
+        android:value="AIzaSyCBlkfH_kHw2URL74RnJYYu4NT5UT7IyRY"/> -->
+
+    <!-- public-desc -->
+     <meta-data
+        android:name="com.google.android.maps.v2.API_KEY"
+        android:value="AIzaSyCFsfyjK0E2_hi6fIJQjJaKb3prVCD6jws"/>
+
+</application>
+</manifest>

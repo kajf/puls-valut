@@ -1,0 +1,241 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="@dimen/widget_padding">
+    
+	<LinearLayout
+	    android:id="@+id/layMultiMain"
+	    android:layout_width="match_parent"
+	    android:layout_height="match_parent"
+	    android:gravity="center"
+	    android:orientation="vertical"
+		android:background="@drawable/selector">
+	
+		<LinearLayout 
+		    android:layout_width="match_parent"
+			android:layout_height="0dp"
+			android:layout_weight="2"	
+			android:gravity="center">
+				
+			<TextView android:id="@+id/tvMultiCurrency_1" 
+			    style="@style/CurrencyTextArea"
+			    android:layout_width="0dp"
+				android:layout_weight="@dimen/widget_currency_ratio"/>
+				
+			<LinearLayout 
+				android:layout_height="wrap_content"
+				android:orientation="vertical"
+				android:layout_width="0dp"
+				android:layout_weight="@dimen/widget_values_ratio">
+	
+				<LinearLayout android:layout_width="match_parent"
+					android:layout_height="wrap_content" android:gravity="center"
+					android:orientation="horizontal">
+	
+					<TextView android:id="@+id/tvMultiBuy_1" style="@style/RateValueTextArea">
+					</TextView>
+	
+					<ImageView android:id="@+id/iv_multi_buy_arrow_1"
+						android:layout_width="wrap_content" android:layout_height="wrap_content">
+					</ImageView>
+	
+					<TextView android:id="@+id/tvMultiBuyDynamic_1" style="@style/RateDynTextArea">
+					</TextView>
+				</LinearLayout>
+	
+				<LinearLayout android:layout_width="match_parent"
+					android:layout_height="wrap_content" android:gravity="center"
+					android:orientation="horizontal">
+	
+					<TextView 
+					    android:id="@+id/tvMultiSell_1" 
+					    style="@style/RateValueTextArea"
+					    android:textStyle="bold">
+					</TextView>
+	
+					<ImageView android:id="@+id/iv_multi_sell_arrow_1"
+						android:layout_width="wrap_content" android:layout_height="wrap_content">
+					</ImageView>
+	
+					<TextView android:id="@+id/tvMultiSellDynamic_1" style="@style/RateDynTextArea">
+					</TextView>
+				</LinearLayout>
+	
+			</LinearLayout>
+		</LinearLayout>
+	
+		<ImageView android:layout_width="80dp" android:layout_height="1dp"
+			android:layout_marginRight="10dp" android:layout_gravity="right" 
+			android:scaleType="fitXY"
+			android:src="@android:drawable/divider_horizontal_dim_dark" />
+		
+		<LinearLayout 
+		    android:layout_width="match_parent"
+			android:layout_height="0dp"
+			android:layout_weight="2" 
+			android:gravity="center">
+				
+			<TextView android:id="@+id/tvMultiCurrency_2" 
+			    style="@style/CurrencyTextArea"
+			    android:layout_width="0dp"
+				android:layout_weight="@dimen/widget_currency_ratio"/>
+	
+			<LinearLayout 
+				android:layout_height="wrap_content" 
+				android:orientation="vertical"
+				android:layout_width="0dp"
+				android:layout_weight="@dimen/widget_values_ratio">
+			    
+				<LinearLayout android:layout_width="match_parent"
+					android:layout_height="wrap_content" android:gravity="center"
+					android:orientation="horizontal">
+	
+					<TextView android:id="@+id/tvMultiBuy_2" style="@style/RateValueTextArea">
+					</TextView>
+	
+					<ImageView android:id="@+id/iv_multi_buy_arrow_2"
+						android:layout_width="wrap_content" android:layout_height="wrap_content">
+					</ImageView>
+	
+					<TextView android:id="@+id/tvMultiBuyDynamic_2" style="@style/RateDynTextArea">
+					</TextView>
+				</LinearLayout>
+	
+				<LinearLayout android:layout_width="match_parent"
+					android:layout_height="wrap_content" android:gravity="center"
+					android:orientation="horizontal">
+	
+					<TextView 
+					    android:id="@+id/tvMultiSell_2" 
+					    style="@style/RateValueTextArea"
+					    android:textStyle="bold">
+					</TextView>
+	
+					<ImageView android:id="@+id/iv_multi_sell_arrow_2"
+						android:layout_width="wrap_content" android:layout_height="wrap_content">
+					</ImageView>
+	
+					<TextView android:id="@+id/tvMultiSellDynamic_2" style="@style/RateDynTextArea">
+					</TextView>
+				</LinearLayout>
+							
+			</LinearLayout>
+		</LinearLayout>
+		
+	    <ImageView android:layout_width="80dp" android:layout_height="1dp"
+			android:layout_marginRight="10dp" android:layout_gravity="right" 
+			android:scaleType="fitXY"
+			android:src="@android:drawable/divider_horizontal_dim_dark" />	
+		
+		<LinearLayout 
+		    android:layout_width="match_parent"
+			android:layout_height="0dp"
+			android:layout_weight="2" 
+			android:gravity="center">
+		    			
+			<TextView android:id="@+id/tvMultiCurrency_3" 
+			    style="@style/CurrencyTextArea"
+			    android:layout_width="0dp"
+				android:layout_weight="@dimen/widget_currency_ratio"/>
+	
+			<LinearLayout 
+				android:layout_height="wrap_content" 
+				android:orientation="vertical"
+				android:layout_width="0dp"
+				android:layout_weight="@dimen/widget_values_ratio">
+			    
+				<LinearLayout android:layout_width="match_parent"
+					android:layout_height="wrap_content" android:gravity="center"
+					android:orientation="horizontal">
+	
+					<TextView android:id="@+id/tvMultiBuy_3" style="@style/RateValueTextArea">
+					</TextView>
+	
+					<ImageView android:id="@+id/iv_multi_buy_arrow_3"
+						android:layout_width="wrap_content" android:layout_height="wrap_content">
+					</ImageView>
+	
+					<TextView android:id="@+id/tvMultiBuyDynamic_3" style="@style/RateDynTextArea">
+					</TextView>
+				</LinearLayout>
+	
+				<LinearLayout android:layout_width="match_parent"
+					android:layout_height="wrap_content" android:gravity="center"
+					android:orientation="horizontal">
+	
+					<TextView 
+					    android:id="@+id/tvMultiSell_3" 
+					    style="@style/RateValueTextArea"
+						android:textStyle="bold">
+					</TextView>
+	
+					<ImageView android:id="@+id/iv_multi_sell_arrow_3"
+						android:layout_width="wrap_content" android:layout_height="wrap_content">
+					</ImageView>
+	
+					<TextView android:id="@+id/tvMultiSellDynamic_3" style="@style/RateDynTextArea">
+					</TextView>
+				</LinearLayout>
+			</LinearLayout>
+		</LinearLayout>
+	
+		<LinearLayout 
+		    android:layout_width="match_parent"
+			android:layout_height="0dp"
+			android:layout_weight="1" 
+			android:gravity="center">
+			
+		    <ImageView android:id="@+id/iv_multi_upd" style="@style/ThumbImage"
+				android:src="@drawable/refresh">			
+			</ImageView>
+		    
+			<TextView android:id="@+id/tvMultiDate" style="@style/FooterTextArea"
+			    android:layout_width="0dp"
+				android:layout_weight="0.9">
+			</TextView>
+	
+			<TextView android:id="@+id/tv_multi_type" style="@style/FooterTypeArea">
+			</TextView>
+	
+			<ImageView android:id="@+id/iv_multi_src_thumb" style="@style/ThumbImage">
+			</ImageView>
+	
+			<ImageView android:id="@+id/iv_multi_cfg" style="@style/ThumbImage"
+				android:src="@drawable/config">			
+			</ImageView>				
+		</LinearLayout>
+	
+	</LinearLayout>
+
+	<LinearLayout 
+	    android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		android:orientation="vertical">
+		
+	    <Button android:id="@+id/b_multi_launch_app"
+				android:background="@drawable/invisible_btn"
+	        	android:layout_width="match_parent"
+	        	android:layout_height="0dip" 
+	        	android:layout_weight="0.5"/>
+	    
+		<LinearLayout android:layout_width="match_parent"
+				android:layout_height="0dip"
+				android:layout_weight="0.5">
+	
+	    	<Button android:id="@+id/b_multi_upd"
+				android:background="@drawable/invisible_btn"
+	        	android:layout_width="0dip"
+	        	android:layout_height="match_parent" 
+	        	android:layout_weight="0.5"/>
+	    	
+	    	<Button android:id="@+id/b_multi_cfg"
+	    	    android:background="@drawable/invisible_btn"
+	        	android:layout_width="0dip"
+	        	android:layout_height="match_parent" 
+	        	android:layout_weight="0.5"/>    	
+		</LinearLayout>	    
+	</LinearLayout>
+	
+
+</FrameLayout>

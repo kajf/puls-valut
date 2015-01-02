@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <declare-styleable name="PulsActionIcons">
+        <attr name="actionPrevIcon" format="reference" />
+        <attr name="actionNextIcon" format="reference" />
+        <attr name="actionUpdateIcon" format="reference" />
+        <attr name="actionConfigIcon" format="reference" />
+        <attr name="bgTextured" format="reference" />
+        <attr name="buttonClose" format="reference" />
+    </declare-styleable>
+
+</resources>

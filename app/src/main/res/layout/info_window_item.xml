@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal" >
+
+    <TextView
+        android:id="@+id/curr_title"
+        style="@style/MapCurrencyTitle" />
+
+    <TextView
+        android:id="@+id/curr_buy"
+        style="@style/MapCurrencyValue" />
+
+    <TextView
+        android:id="@+id/curr_buy_diff"
+        style="@style/MapCurrencyDiff" />
+
+    <TextView
+        android:id="@+id/curr_sell"
+        style="@style/MapCurrencyValue" />
+
+    <TextView
+        android:id="@+id/curr_sell_diff"
+        style="@style/MapCurrencyDiff" />
+
+</LinearLayout>

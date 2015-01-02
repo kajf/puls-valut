@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Пульс Валют</string>
+    
+    <string name="mini_widget_name">Пульс Валют (1x1)</string>
+    <string name="widget_name">Пульс Валют (2x1)</string>
+    <string name="multi_widget_name">Пульс Валют (2x2)</string>
+    <string name="wide_widget_name">Пульс Валют (4x1)</string>
+    
+    <string name="lbl_choose_currency">Выберите валюту</string>
+    <string name="lbl_choose_provider">Выберите источник</string>
+    <string name="lbl_choose_rate_type">Выберите тип</string>
+    
+    <string name="lbl_choose_region">Выберите регион</string>
+
+    <string name="lbl_usd">$</string>
+    <string name="lbl_eur">€</string>
+    <string name="lbl_rur">RUR</string>
+    <string name="lbl_uah">₴</string>
+    <string name="lbl_pln">PLN</string>
+    <string name="lbl_gbp">£</string>
+    <string name="lbl_jpy">¥</string>
+    <string name="lbl_eurusd">€/$</string>
+    <string name="lbl_chf">CHF</string>
+    <string name="lbl_ron">RON</string>
+    <string name="lbl_byr">10т.\nBYR</string>
+    <string name="lbl_ltl">LTL</string>
+    
+    <string name="lbl_minsk">Минск</string>
+    <string name="lbl_grodno">Гродно</string>
+    <string name="lbl_brest">Брест</string>
+    <string name="lbl_vitebsk">Витебск</string>
+    <string name="lbl_gomel">Гомель</string>
+    <string name="lbl_mogilev">Могилев</string>
+    
+	<string name="lbl_baranovichi">Барановичи</string>
+    <string name="lbl_bobruisk">Бобруйск</string>
+	<string name="lbl_borisov">Борисов</string>
+    <string name="lbl_lida">Лида</string>
+    <string name="lbl_mozir">Мозырь</string>
+    <string name="lbl_novopolock">Новополоцк</string>
+    <string name="lbl_orsha">Орша</string>
+    <string name="lbl_pinsk">Пинск</string>
+    <string name="lbl_polock">Полоцк</string>
+    <string name="lbl_soligorsk">Солигорск</string>
+    <string name="lbl_molodze4no">Молодечно</string>
+    <string name="lbl_svetlogorsk">Светлогорск</string>
+    <string name="lbl_zlobin">Жлобин</string>
+    <string name="lbl_re4ica">Речица</string>
+    <string name="lbl_sluck">Слуцк</string>
+    <string name="lbl_zodino">Жодино</string>
+        
+    <string name="lbl_kiev">Киев</string>
+    <string name="lbl_odessa">Одесса</string>
+    <string name="lbl_doneck">Донецк</string>
+    <string name="lbl_lvov">Львов</string>
+    <string name="lbl_dnepropetrovsk">Днепропетровск</string>
+   
+    
+    <string name="lbl_nbrb_provider">НБРБ</string>
+    <string name="lbl_prior_provider">Приорбанк</string>
+    <string name="lbl_mtb_provider">МТБанк</string>
+    <string name="lbl_mm_provider">Банк Москва-Минск</string>
+    <string name="lbl_by_alfa_provider">Альфа-Банк</string>
+    <string name="lbl_cbr_provider">ЦБРФ</string>
+    <string name="lbl_sbr_provider">Сбербанк (МСК)</string>
+    <string name="lbl_alfa_provider">Альфа-Банк</string>    
+    <string name="lbl_nbu_provider">НБУ</string>
+    <string name="lbl_sb_ua_privat_provider">ПриватБанк</string>
+    <string name="lbl_sb_ua_oschad_provider">Ощадбанк</string>
+    <string name="lbl_sb_ua_unicredit_provider">UniCredit Bank</string>
+    <string name="lbl_sb_ua_delta_provider">Дельта Банк</string>
+    
+    <string name="lbl_cash_type">Наличные</string>
+    <string name="lbl_card_type">Карточка</string>
+    
+    <string name="lbl_cash_type_short">Н</string>
+    <string name="lbl_card_type_short">К</string>
+    
+    <string name="lbl_best_rates">список</string>
+    <string name="lbl_near_rates">карта</string>
+    
+    <string name="lbl_bank_buy">продать</string>
+    <string name="lbl_bank_sell">купить</string>
+    
+    <string name="lbl_short_year">г</string>
+    <string name="lbl_short_week">нед</string>
+    <string name="lbl_short_day">д</string>
+    <string name="lbl_short_hour">ч</string>
+    <string name="lbl_short_minute">мин</string>
+    
+    <string name="lbl_conv_i_have">у меня есть</string>
+    <string name="lbl_conv_rate">по курсу</string>
+    <string name="lbl_conv_i_will_get">я получу</string>
+    <string name="lbl_conv_profit">выигрыш</string>
+    
+    <string name="lbl_conv_open">посчитать</string>
+    
+    <string name="lbl_rate_please">Если вам понравилось приложение, оставьте, пожалуйста, отзыв. Спасибо!</string>
+    
+    <string name="btn_not_now">не сейчас</string>
+    <string name="btn_do_not_ask">больше не спрашивать</string>
+    
+    <string name="btn_search">поиск</string>
+    <string name="btn_refresh">обновить</string>
+    <string name="btn_next">следующий</string>
+    <string name="btn_prev">предыдущий</string>
+    
+    <string name="btn_share_app">поделиться</string>
+    <string name="btn_rate_app">оценить</string>
+    <string name="btn_info">инфо</string>
+    <string name="btn_legal_notice">уведомление</string>
+    <string name="btn_settings">настройки</string>
+    
+    <string name="no_location_svc_title">местоположение недоступно</string>
+    <string name="no_location_svc_msg">Для поиска ближайших обменных пунктов необходимо знать местоположение.\n\nРазрешить определять местоположение?</string>
+    <string name="yes">да</string>
+    <string name="no">нет</string>
+    
+    <string name="lbl_best">лучший</string>
+    
+    <string name="msg_updating">обновляю …</string>
+        
+    <string name="msg_help_title">инфо</string>
+    <string name="msg_help">
+        С помощью приложения можно не только находить самые выгодные курсы обмена валют поблизости, но и отображать курсы выбранного банка прямо на рабочем столе (виджет).\n\n
+        Значение отображаемых виджетом курсов зависит от источника информации (Обычные банки: покупка/продажа; Нац. банки: сегодня/завтра).\n\n        
+        Курсы валют предоставлены:\n\n
+        <a href="http://myfin.by">myfin.by</a>\n\n
+        <a href="http://sravnibank.com.ua">sravnibank.com.ua</a>\n\n        
+        <a href="http://finance.ua/ru/currency">finance.ua</a>\n\n\n
+        <a href="mailto:sergei.rumas@gmail.com">sergei.rumas@gmail.com</a>       
+    </string>
+                    
+    <string name="err_offline">нет соединения с интернетом :(</string>
+    <string name="err_nodata">Извините. Нет информации о курсах :(</string>
+    <string name="err_short_nodata">нет данных :(</string>
+    <string name="err_update">Не удалось обновить курсы. Попробуйте позже :(</string>
+        
+    <!-- pref keys  -->
+    <string name="pref_best_ex_type">BEST_EX_TYPE</string>
+    <string name="pref_best_curr">BEST_CURR</string> 
+    <string name="pref_best_region">BEST_REGION</string> 
+    <string name="pref_last_app_stats_collect">LAST_APP_STATS_COLLECT</string>
+    <string name="pref_rate_app_launches">RATE_APP_LAUNCHES</string>
+    <string name="pref_ask_location">ASK_LOCATION</string>
+    <string name="pref_app_skin">APP_SKIN</string>
+    <string name="pref_ads_on">ADS_ON</string>
+    <string name="pref_fullscreen_on">FULLSCREEN_ON</string>
+
+    <!-- pref values  -->
+    <string name="pref_app_skin_value_light">light</string>
+    <string name="pref_app_skin_value_dark">dark</string>    
+    
+    <!-- pref titles -->
+    <string name="pref_ask_location_title">проверять местоположение</string>
+    <string name="pref_ask_location_descr">проверять включено ли определение местоположения при старте.</string>
+    
+    <string name="pref_app_skin_title">тема (скин)</string>
+    <string name="pref_app_skin_descr">Визуальный стиль оформления приложения.</string>
+    
+    <string name="pref_ads_on_title">разрешить рекламу</string>
+    <string name="pref_ads_on_descr">Вкл./выкл. рекламу в приложении.</string>
+    <string name="pref_ads_msg">Отключая рекламу вы лишаете разработчиков стимула и возможности развивать приложение.</string>
+    <string name="pref_ads_msg_leave">оставить рекламу</string>
+    <string name="pref_ads_msg_off">отключить</string>
+    
+    <string name="pref_fullscreen_on_title">на весь экран</string>
+    <string name="pref_fullscreen_on_descr">Разворачивать окно приложения на весь экран (строка состояния не видна).</string>
+    
+</resources>

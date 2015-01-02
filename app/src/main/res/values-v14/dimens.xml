@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <dimen name="widget_padding">0dp</dimen>
+    
+    <!-- size = (70 x n) - 30 -->
+    <dimen name="mini_widget_min_width">63dp</dimen>
+    <dimen name="mini_widget_min_height">63dp</dimen>
+    
+    <dimen name="widget_min_width">138dp</dimen>
+    <dimen name="widget_min_height">64dp</dimen>
+    
+    <dimen name="multi_widget_min_width">138dp</dimen>
+    <dimen name="multi_widget_min_height">144dp</dimen>    
+
+    <dimen name="wide_widget_min_width">274dp</dimen>
+    <dimen name="wide_widget_min_height">64dp</dimen> 
+</resources>
