@@ -153,19 +153,19 @@
     <string name="pref_app_skin_value_dark">dark</string>    
     
     <!-- pref titles -->
-    <string name="pref_ask_location_title">проверять местоположение</string>
-    <string name="pref_ask_location_descr">проверять включено ли определение местоположения при старте.</string>
+    <string name="pref_ask_location_title">Проверять местоположение</string>
+    <string name="pref_ask_location_descr">Проверять включено ли определение местоположения при старте.</string>
     
-    <string name="pref_app_skin_title">тема (скин)</string>
+    <string name="pref_app_skin_title">Тема (скин)</string>
     <string name="pref_app_skin_descr">Визуальный стиль оформления приложения.</string>
     
-    <string name="pref_ads_on_title">разрешить рекламу</string>
+    <string name="pref_ads_on_title">Разрешить рекламу</string>
     <string name="pref_ads_on_descr">Вкл./выкл. рекламу в приложении.</string>
     <string name="pref_ads_msg">Отключая рекламу вы лишаете разработчиков стимула и возможности развивать приложение.</string>
     <string name="pref_ads_msg_leave">оставить рекламу</string>
     <string name="pref_ads_msg_off">отключить</string>
     
-    <string name="pref_fullscreen_on_title">на весь экран</string>
+    <string name="pref_fullscreen_on_title">На весь экран</string>
     <string name="pref_fullscreen_on_descr">Разворачивать окно приложения на весь экран (строка состояния не видна).</string>
     
 </resources>

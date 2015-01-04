@@ -123,7 +123,7 @@ public class BestRatesFragment extends ListFragment implements UpdateListener,
 		public View getView(int i, View convertView, ViewGroup vg) {
 			Log.d(LOG_TAG, "getView " + i);
 
-			View rowView = super.getView(i, convertView, vg);
+			final View rowView = super.getView(i, convertView, vg);
 
 			UiHelper.applyFont(getActivity(), rowView, null);
 
@@ -184,6 +184,18 @@ public class BestRatesFragment extends ListFragment implements UpdateListener,
 			int rateIndex = cursor.getColumnIndex(ColumnBestRates.VALUE.name());
 			final double rate = cursor.getDouble(rateIndex);
 
+            LinearLayout expand = (LinearLayout)rowView.findViewById(R.id.item_best_expand);
+            expand.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Log.d(LOG_TAG, "on descr click");
+
+                    //shiftVisibility(rowView.findViewById(R.id.tv_item_best_addr));
+                    shiftVisibility(rowView.findViewById(R.id.tv_item_best_wh));
+                    shiftVisibility(rowView.findViewById(R.id.tv_item_best_phones));
+                }
+            });
+
 			Button bConverter = (Button) rowView.findViewById(R.id.b_converter);
 			bConverter
 					.setOnClickListener(new android.view.View.OnClickListener() {
@@ -215,7 +227,16 @@ public class BestRatesFragment extends ListFragment implements UpdateListener,
 		}
 	}
 
-	/**
+    private void shiftVisibility(View v) {
+
+        if (v.getVisibility() == View.VISIBLE) {
+            v.setVisibility(View.GONE);
+        } else {
+            v.setVisibility(View.VISIBLE);
+        }
+    }
+
+    /**
 	 * container for place distance info
 	 * 
 	 * @author Pavel_Letsiaha
