@@ -191,7 +191,8 @@ class Place {
 		
 		String res = commonCleanUp(phone);
 
-		String [] replaceArr = new String [] {"(круглосуточно)", "(МТС, Life:), Velcom)", "(velcom, МТС и life)"};
+		String [] replaceArr = new String [] {"(круглосуточно)", "(МТС, Life:), Velcom)", "(velcom, МТС и life)",
+				"(факс)", "факс:", "тел/факс", "Факс:"};
 		for (String s : replaceArr) {
 			res = res.replace(s, "");
 		}
