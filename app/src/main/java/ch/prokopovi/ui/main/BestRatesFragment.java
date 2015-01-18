@@ -39,10 +39,13 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.RotateAnimation;
 import android.widget.AbsListView;
 import android.widget.AbsListView.OnScrollListener;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
 import android.widget.ListAdapter;
@@ -184,17 +187,36 @@ public class BestRatesFragment extends ListFragment implements UpdateListener,
 			int rateIndex = cursor.getColumnIndex(ColumnBestRates.VALUE.name());
 			final double rate = cursor.getDouble(rateIndex);
 
-            LinearLayout expand = (LinearLayout)rowView.findViewById(R.id.item_best_expand);
-            expand.setOnClickListener(new View.OnClickListener() {
+            final ImageView ivExpandCollapse =
+                    (ImageView)rowView.findViewById(R.id.iv_expand_collapse);
+
+            View.OnClickListener expandCollapseListener = new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Log.d(LOG_TAG, "on descr click");
+                    //Log.d(LOG_TAG, "on descr click");
 
-                    //shiftVisibility(rowView.findViewById(R.id.tv_item_best_addr));
-                    shiftVisibility(rowView.findViewById(R.id.tv_item_best_wh));
+                    View whView = rowView.findViewById(R.id.tv_item_best_wh);
+                    boolean expanded = whView.getVisibility() == View.VISIBLE;
+
+                    RotateAnimation rotate = new RotateAnimation(
+                            expanded ? 90 : 0,
+                            expanded ? 0 : 90,
+                            Animation.RELATIVE_TO_SELF, 0.5f,
+                            Animation.RELATIVE_TO_SELF, 0.5f);
+                    rotate.setDuration(500);
+                    rotate.setFillEnabled(true);
+                    rotate.setFillAfter(true);
+                    ivExpandCollapse.startAnimation(rotate);
+
+                    shiftVisibility(whView);
                     shiftVisibility(rowView.findViewById(R.id.tv_item_best_phones));
                 }
-            });
+            };
+
+            ivExpandCollapse.setOnClickListener(expandCollapseListener);
+
+            LinearLayout itemExpandCollapse = (LinearLayout)rowView.findViewById(R.id.item_best_expand);
+            itemExpandCollapse.setOnClickListener(expandCollapseListener);
 
 			Button bConverter = (Button) rowView.findViewById(R.id.b_converter);
 			bConverter

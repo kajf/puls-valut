@@ -8,6 +8,7 @@
         <attr name="actionConfigIcon" format="reference" />
         <attr name="bgTextured" format="reference" />
         <attr name="buttonClose" format="reference" />
+        <attr name="buttonRight" format="reference" />
     </declare-styleable>
 
 </resources>

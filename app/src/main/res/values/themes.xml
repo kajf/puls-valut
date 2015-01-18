@@ -6,7 +6,8 @@
         <item name="actionUpdateIcon">@drawable/ic_action_update</item>
         <item name="actionConfigIcon">@drawable/ic_action_cfg</item>
         <item name="bgTextured">@drawable/bg_textured</item>
-        <item name="buttonClose">@drawable/ic_close</item>        
+        <item name="buttonClose">@drawable/ic_close</item>
+        <item name="buttonRight">@drawable/ic_arrow_right</item>
     </style>
 
     <style name="Theme.Puls.Dark" parent="@style/Theme.AppCompat">
@@ -16,6 +17,7 @@
         <item name="actionConfigIcon">@drawable/ic_action_cfg_dark</item>
         <item name="bgTextured">@drawable/bg_textured_dark</item>
         <item name="buttonClose">@drawable/ic_close_dark</item>
+        <item name="buttonRight">@drawable/ic_arrow_right_dark</item>
     </style>
     
 </resources>
