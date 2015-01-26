@@ -155,20 +155,15 @@ android:installLocation="auto">
         android:name="com.google.android.gms.version"
         android:value="@integer/google_play_services_version" />
 
-    <!-- prod -->
-<!--    <meta-data
+    <!-- prod [need to regenerate] -->
+    <!-- <meta-data
         android:name="com.google.android.maps.v2.API_KEY"
         android:value="AIzaSyAODM_MEtEayFWTzqjfNqizw4u9fu4_w6Q"/>-->
 
-    <!-- epam-desc -->
-    <!-- <meta-data
+    <!-- debug  epam-laptop -->
+    <meta-data
         android:name="com.google.android.maps.v2.API_KEY"
-        android:value="AIzaSyCBlkfH_kHw2URL74RnJYYu4NT5UT7IyRY"/> -->
-
-    <!-- public-desc -->
-     <meta-data
-        android:name="com.google.android.maps.v2.API_KEY"
-        android:value="AIzaSyCFsfyjK0E2_hi6fIJQjJaKb3prVCD6jws"/>
+        android:value="AIzaSyAI6zCEpYCAQix_nwBpf_eQIb7DJ1u4pKo"/>
 
 </application>
 </manifest>
