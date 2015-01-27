@@ -78,8 +78,7 @@
             android:layout_width="0dip"
             android:layout_height="wrap_content"
             android:layout_weight="0.9"
-            android:orientation="vertical"
-            android:animateLayoutChanges="true">
+            android:orientation="vertical">
 
             <TextView
                 android:id="@+id/tv_item_best_description"

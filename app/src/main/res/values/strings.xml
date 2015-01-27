@@ -101,16 +101,16 @@
     <string name="btn_not_now">не сейчас</string>
     <string name="btn_do_not_ask">больше не спрашивать</string>
     
-    <string name="btn_search">поиск</string>
-    <string name="btn_refresh">обновить</string>
+    <string name="btn_search">Поиск</string>
+    <string name="btn_refresh">Обновить</string>
     <string name="btn_next">следующий</string>
     <string name="btn_prev">предыдущий</string>
     
-    <string name="btn_share_app">поделиться</string>
-    <string name="btn_rate_app">оценить</string>
-    <string name="btn_info">инфо</string>
-    <string name="btn_legal_notice">уведомление</string>
-    <string name="btn_settings">настройки</string>
+    <string name="btn_share_app">Поделиться</string>
+    <string name="btn_rate_app">Оценить</string>
+    <string name="btn_info">Инфо</string>
+    <string name="btn_legal_notice">Уведомление</string>
+    <string name="btn_settings">Настройки</string>
     
     <string name="no_location_svc_title">местоположение недоступно</string>
     <string name="no_location_svc_msg">Для поиска ближайших обменных пунктов необходимо знать местоположение.\n\nРазрешить определять местоположение?</string>
@@ -119,9 +119,9 @@
     
     <string name="lbl_best">лучший</string>
     
-    <string name="msg_updating">обновляю …</string>
+    <string name="msg_updating">Обновляю …</string>
         
-    <string name="msg_help_title">инфо</string>
+    <string name="msg_help_title">Инфо</string>
     <string name="msg_help">
         С помощью приложения можно не только находить самые выгодные курсы обмена валют поблизости, но и отображать курсы выбранного банка прямо на рабочем столе (виджет).\n\n
         Значение отображаемых виджетом курсов зависит от источника информации (Обычные банки: покупка/продажа; Нац. банки: сегодня/завтра).\n\n        
@@ -167,5 +167,8 @@
     
     <string name="pref_fullscreen_on_title">На весь экран</string>
     <string name="pref_fullscreen_on_descr">Разворачивать окно приложения на весь экран (строка состояния не видна).</string>
-    
+
+    <string name="drawer_open">Открыть боковую панель</string>
+    <string name="drawer_close">Закрыть боковую панель</string>
+
 </resources>

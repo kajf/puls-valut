@@ -128,6 +128,17 @@ public class BestRatesFragment extends ListFragment implements UpdateListener,
 
 			final View rowView = super.getView(i, convertView, vg);
 
+            final ImageView ivExpandCollapse =
+                    (ImageView)rowView.findViewById(R.id.iv_expand_collapse);
+            final View whView = rowView.findViewById(R.id.tv_item_best_wh);
+            final View phonesView = rowView.findViewById(R.id.tv_item_best_phones);
+
+            // reset expand/collapse visibility
+            ivExpandCollapse.clearAnimation();
+            whView.setVisibility(View.GONE);
+            phonesView.setVisibility(View.GONE);
+            // ---
+
 			UiHelper.applyFont(getActivity(), rowView, null);
 
 			// distance text
@@ -187,15 +198,11 @@ public class BestRatesFragment extends ListFragment implements UpdateListener,
 			int rateIndex = cursor.getColumnIndex(ColumnBestRates.VALUE.name());
 			final double rate = cursor.getDouble(rateIndex);
 
-            final ImageView ivExpandCollapse =
-                    (ImageView)rowView.findViewById(R.id.iv_expand_collapse);
-
             View.OnClickListener expandCollapseListener = new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     //Log.d(LOG_TAG, "on descr click");
 
-                    View whView = rowView.findViewById(R.id.tv_item_best_wh);
                     boolean expanded = whView.getVisibility() == View.VISIBLE;
 
                     RotateAnimation rotate = new RotateAnimation(
@@ -209,7 +216,7 @@ public class BestRatesFragment extends ListFragment implements UpdateListener,
                     ivExpandCollapse.startAnimation(rotate);
 
                     shiftVisibility(whView);
-                    shiftVisibility(rowView.findViewById(R.id.tv_item_best_phones));
+                    shiftVisibility(phonesView);
                 }
             };
 

@@ -1,19 +1,5 @@
 package ch.prokopovi.ui.main;
 
-import java.text.DecimalFormat;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.androidannotations.annotations.Bean;
-import org.androidannotations.annotations.EActivity;
-import org.androidannotations.annotations.NonConfigurationInstance;
-import org.androidannotations.annotations.OptionsItem;
-import org.androidannotations.annotations.OptionsMenu;
-import org.androidannotations.annotations.res.StringRes;
-
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.ComponentName;
@@ -22,6 +8,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.location.Criteria;
@@ -33,10 +20,11 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v4.view.MenuItemCompat;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
-import android.support.v7.widget.ShareActionProvider;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.text.format.DateUtils;
 import android.util.Log;
 import android.util.SparseArray;
@@ -44,6 +32,34 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
+
+import com.adsdk.sdk.Ad;
+import com.adsdk.sdk.AdListener;
+import com.google.android.apps.analytics.GoogleAnalyticsTracker;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesUtil;
+import com.google.android.gms.maps.model.LatLng;
+
+import org.androidannotations.annotations.AfterViews;
+import org.androidannotations.annotations.Bean;
+import org.androidannotations.annotations.EActivity;
+import org.androidannotations.annotations.NonConfigurationInstance;
+import org.androidannotations.annotations.OptionsItem;
+import org.androidannotations.annotations.OptionsMenu;
+import org.androidannotations.annotations.ViewById;
+import org.androidannotations.annotations.res.StringRes;
+
+import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import ch.prokopovi.PrefsUtil;
 import ch.prokopovi.R;
 import ch.prokopovi.StatsHelper;
@@ -63,13 +79,6 @@ import ch.prokopovi.ui.main.api.Converter;
 import ch.prokopovi.ui.main.api.OpenListener;
 import ch.prokopovi.ui.main.api.UpdateListener;
 import ch.prokopovi.ui.main.api.Updater;
-
-import com.adsdk.sdk.Ad;
-import com.adsdk.sdk.AdListener;
-import com.google.android.apps.analytics.GoogleAnalyticsTracker;
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GooglePlayServicesUtil;
-import com.google.android.gms.maps.model.LatLng;
 
 @EActivity(R.layout.fragment_tabs)
 @OptionsMenu(R.menu.main_menu)
@@ -107,8 +116,6 @@ public class TabsActivity extends ActionBarActivity implements Updater,
 		}
 	}
 
-	private ShareActionProvider mShareActionProvider;
-
 	private ProgressDialog progressDialog;
 
 	private BestRatesDbAdapter dbAdapter;
@@ -131,8 +138,16 @@ public class TabsActivity extends ActionBarActivity implements Updater,
 	@StringRes(R.string.pref_ads_on)
 	String prefAdsOn;
 
-	/*
-	 * Using @NonConfigurationInstance on a @Bean will automatically update the
+    @ViewById(R.id.left_drawer)
+    ListView mDrawerList;
+
+    @ViewById(R.id.drawer_layout)
+    DrawerLayout mDrawerLayout;
+
+    ActionBarDrawerToggle mDrawerToggle;
+
+    /*
+     * Using @NonConfigurationInstance on a @Bean will automatically update the
 	 * context ref on configuration changes, if the bean is not a singleton
 	 */
 	@NonConfigurationInstance
@@ -291,12 +306,13 @@ public class TabsActivity extends ActionBarActivity implements Updater,
 
 		this.dualPane = isDualPane();
 
-		ActionBar actionBar = getSupportActionBar();
-		actionBar.setHomeButtonEnabled(true);
-		actionBar.setDisplayShowTitleEnabled(this.dualPane);
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setHomeButtonEnabled(true);
+        actionBar.setDisplayShowTitleEnabled(this.dualPane);
+        actionBar.setDisplayHomeAsUpEnabled(true);
 
-		if (this.dualPane) {
-			FragmentTransaction ft = getSupportFragmentManager()
+        if (this.dualPane) {
+            FragmentTransaction ft = getSupportFragmentManager()
 					.beginTransaction();
 
 			addOrAttachFragment(ft, this, FragmentTag.BEST);
@@ -341,10 +357,10 @@ public class TabsActivity extends ActionBarActivity implements Updater,
 
 				if (launches > 0) {
 					prefs.edit().putInt(this.prefRateAppLaunches, launches - 1)
-							.commit();
-				} // update count
+                            .apply();
+                } // update count
 
-				// ads if allowed
+                // ads if allowed
 				if (prefs.getBoolean(this.prefAdsOn, true)) {
 					FragmentManager fm = getSupportFragmentManager();
 
@@ -367,23 +383,136 @@ public class TabsActivity extends ActionBarActivity implements Updater,
 		}
 	}
 
-	/**
-	 * ask user to switch location service on if needed
-	 * 
-	 * @param context
-	 */
-	private boolean askLocationIsOn() {
+    @AfterViews
+    void initDrawer() {
+
+        // set a custom shadow that overlays the main content when the drawer opens
+        mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
+
+        Resources rs = getResources();
+
+        List<String> pages = new ArrayList<>();
+        pages.add(rs.getString(R.string.btn_settings));
+        pages.add(rs.getString(R.string.btn_share_app));
+        pages.add(rs.getString(R.string.btn_info));
+
+        // rate-app action
+        int launches = getSharedPreferences(PrefsUtil.PREFS_NAME,
+                Context.MODE_PRIVATE).getInt(this.prefRateAppLaunches, 5);
+        if (launches >= 0) {
+            pages.add(rs.getString(R.string.btn_rate_app));
+        }
+
+        // Set the adapter for the list view
+        mDrawerList.setAdapter(new ArrayAdapter<>(this,
+                android.R.layout.simple_list_item_1, pages));
+        // Set the list's click listener
+        mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
+
+        // ActionBarDrawerToggle ties together the the proper interactions
+        // between the sliding drawer and the action bar app icon
+        mDrawerToggle = new ActionBarDrawerToggle(
+                this, mDrawerLayout, R.string.drawer_open, R.string.drawer_close) {
+            public void onDrawerClosed(View view) {
+                //getActionBar().setTitle(mTitle);
+                invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
+            }
+
+            public void onDrawerOpened(View drawerView) {
+                //getActionBar().setTitle(mDrawerTitle);
+                invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
+            }
+        };
+        mDrawerToggle.syncState();
+        mDrawerLayout.setDrawerListener(mDrawerToggle);
+    }
+
+    private class DrawerItemClickListener implements ListView.OnItemClickListener {
+        @Override
+        public void onItemClick(AdapterView parent, View view, int position, long id) {
+
+            TabsActivity ctx = TabsActivity.this;
+            switch (position) {
+                case 0: // settings
+                    ctx.tracker.trackPageView("/settings");
+
+                    PrefsActivity_.intent(ctx).start();
+
+                    break;
+                case 1: // share
+                    String appUri = "market://details?id=" + getPackageName();
+                    String appName = getResources().getString(R.string.app_name);
+
+                    Intent intentShare = new Intent(Intent.ACTION_SEND);
+                    intentShare.setType("text/plain");
+                    intentShare.putExtra(Intent.EXTRA_TEXT, appUri);
+                    intentShare.putExtra(android.content.Intent.EXTRA_SUBJECT, appName);
+
+                    startActivity(Intent.createChooser(intentShare,
+                            getResources().getString(R.string.btn_share_app)));
+                    break;
+                case 2: // rate
+                    ctx.tracker.trackPageView("/menuRateApp");
+
+                    rateApp(ctx);
+
+                    afterRating(-1);
+                    break;
+                case 3: // info
+                    ctx.tracker.trackPageView("/info");
+
+                    HelpActivity_.intent(ctx).start();
+                    break;
+            }
+
+            // Highlight the selected item, update the title, and close the drawer
+            mDrawerList.setItemChecked(position, true);
+            mDrawerLayout.closeDrawer(mDrawerList);
+
+        }
+    }
+
+    @Override
+    protected void onPostCreate(Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+        // Sync the toggle state after onRestoreInstanceState has occurred.
+        mDrawerToggle.syncState();
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        mDrawerToggle.onConfigurationChanged(newConfig);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Pass the event to ActionBarDrawerToggle, if it returns
+        // true, then it has handled the app icon touch event
+        if (mDrawerToggle.onOptionsItemSelected(item)) {
+            return true;
+        }
+        // Handle your other action bar items...
+
+        return super.onOptionsItemSelected(item);
+    }
+
+
+    /**
+     * ask user to switch location service on if needed
+     */
+    private boolean askLocationIsOn() {
 
 		final Context context = this;
 
 		LocationManager locationManager = getLocationManager();
 		String providerName = getProviderName();
 
-		boolean providerEnabled = (providerName != null) ? locationManager
-				.isProviderEnabled(providerName) : false;
+        boolean providerEnabled = (providerName != null) && locationManager
+                .isProviderEnabled(providerName);
 
-		Log.d(LOG_TAG, "best location provider enabled: " + providerEnabled);
-		if (!providerEnabled) {
+        Log.d(LOG_TAG, "best location provider enabled: " + providerEnabled);
+        if (!providerEnabled) {
 
 			final SharedPreferences prefs = getSharedPreferences(
 					PrefsUtil.PREFS_NAME, Context.MODE_PRIVATE);
@@ -525,10 +654,10 @@ public class TabsActivity extends ActionBarActivity implements Updater,
 	 * 
 	 * @param inLat
 	 *            latitude
-	 * @param inLong
-	 *            longitude
-	 * 
-	 * @return nearest region or null, if no regions in some radius
+     * @param inLng
+     *            longitude
+     *
+     * @return nearest region or null, if no regions in some radius
 	 */
 	static Region findRegion(double inLat, double inLng) {
 		Region myRegion = null;
@@ -632,12 +761,10 @@ public class TabsActivity extends ActionBarActivity implements Updater,
 
 	/**
 	 * lazy progress dialog creating
-	 * 
-	 * @param c
-	 * 
-	 * @return
-	 */
-	ProgressDialog getProgressDialog() {
+     *
+     * @return
+     */
+    ProgressDialog getProgressDialog() {
 		if (this.progressDialog == null) {
 			this.progressDialog = new ProgressDialog(this);
 			this.progressDialog.setMessage("Обновляем ...");
@@ -767,10 +894,10 @@ public class TabsActivity extends ActionBarActivity implements Updater,
 	public Cursor getData(Region region, OperationType operationType,
 			CurrencyCode currencyCode, String searchQuery, int limit) {
 		return this.dbAdapter.fetch(region, operationType, currencyCode,
-				searchQuery, limit);
-	}
+                searchQuery, limit);
+    }
 
-	@Override
+    @Override
 	public SparseArray<RatePoint> getPlaces(Region region) {
 		return this.dbAdapter.fetchPoints(region);
 	}
@@ -784,36 +911,10 @@ public class TabsActivity extends ActionBarActivity implements Updater,
 	@Override
 	public List<RateItem> getRates(int pointId) {
 		return this.dbAdapter.fetchRates(ColumnBestRates.RATES_PLACE_ID,
-				pointId);
-	}
+                pointId);
+    }
 
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-
-		// Locate MenuItem with ShareActionProvider
-		MenuItem item = menu.findItem(R.id.menu_share_app);
-
-		// Fetch and store ShareActionProvider
-		this.mShareActionProvider = (ShareActionProvider) MenuItemCompat
-				.getActionProvider(item);
-
-		if (this.mShareActionProvider != null) {
-
-			String appUri = "market://details?id=" + getPackageName();
-			String appName = getResources().getString(R.string.app_name);
-
-			Intent intentShare = new Intent(Intent.ACTION_SEND);
-			intentShare.setType("text/plain");
-			intentShare.putExtra(Intent.EXTRA_TEXT, appUri);
-			intentShare.putExtra(android.content.Intent.EXTRA_SUBJECT, appName);
-
-			this.mShareActionProvider.setShareIntent(intentShare);
-		}
-
-		return super.onCreateOptionsMenu(menu);
-	}
-
-	@Override
+    @Override
 	public boolean onPrepareOptionsMenu(Menu menu) {
 
 		// switch actions
@@ -824,14 +925,6 @@ public class TabsActivity extends ActionBarActivity implements Updater,
 		MenuItem nearItem = menu.findItem(R.id.menu_near);
 		if (nearItem != null)
 			nearItem.setVisible(!this.dualPane);
-
-		// rate-app action
-		int launches = getSharedPreferences(PrefsUtil.PREFS_NAME,
-				Context.MODE_PRIVATE).getInt(this.prefRateAppLaunches, 5);
-		MenuItem rateAppItem = menu.findItem(R.id.menu_rate_app);
-		if (rateAppItem != null) {
-			rateAppItem.setVisible(launches >= 0);
-		}
 
 		return super.onPrepareOptionsMenu(menu);
 	}
@@ -848,10 +941,10 @@ public class TabsActivity extends ActionBarActivity implements Updater,
 
 		boolean toBest = best == null || !best.isVisible();
 
-		getSupportActionBar().setDisplayHomeAsUpEnabled(!toBest);
+        //getSupportActionBar().setDisplayHomeAsUpEnabled(!toBest);
 
-		//
-		FragmentTransaction ft = fm.beginTransaction();
+        //
+        FragmentTransaction ft = fm.beginTransaction();
 
 		ft.setCustomAnimations(R.anim.abc_slide_in_top, 0);
 
@@ -935,39 +1028,30 @@ public class TabsActivity extends ActionBarActivity implements Updater,
 	@Override
 	public void onBackPressed() {
 
-		Fragment best = getSupportFragmentManager().findFragmentByTag(
-				FragmentTag.BEST.tag);
+        if (mDrawerLayout.isDrawerOpen(mDrawerList)) {
+            mDrawerLayout.closeDrawer(mDrawerList);
+            return;
+        }
+
+        Fragment best = getSupportFragmentManager().findFragmentByTag(
+                FragmentTag.BEST.tag);
 		if (best == null || !best.isVisible()) { // go main list
 			shiftFragments();
 		} else { // finish
 			super.onBackPressed();
-		}
-	}
+        }
+    }
 
-	@OptionsItem
-	void menuRateApp() {
-		this.tracker.trackPageView("/menuRateApp");
+    @OptionsItem(android.R.id.home)
+    void menuHome() {
+        if (mDrawerLayout.isDrawerOpen(mDrawerList)) {
+            mDrawerLayout.closeDrawer(mDrawerList);
+        } else {
+            mDrawerLayout.openDrawer(mDrawerList);
+        }
+    }
 
-		rateApp(this);
-
-		afterRating(-1);
-	}
-
-	@OptionsItem
-	void menuHelp() {
-		this.tracker.trackPageView("/info");
-
-		HelpActivity_.intent(this).start();
-	}
-
-	@OptionsItem
-	void menuSettings() {
-		this.tracker.trackPageView("/settings");
-
-		PrefsActivity_.intent(this).start();
-	}
-
-	private static void rateApp(Context context) {
+    private static void rateApp(Context context) {
 
 		String appUri = "market://details?id=" + context.getPackageName();
 
