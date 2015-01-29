@@ -230,7 +230,7 @@ public class NearFragment extends SupportMapFragment implements UpdateListener {
 	/**
 	 * update UI with new location
 	 * 
-	 * @param myLocation
+	 * @param position
 	 */
 	private void newPosition(LatLng position) {
 		Log.d(LOG_TAG, "--- new position: " + position);
@@ -654,12 +654,6 @@ public class NearFragment extends SupportMapFragment implements UpdateListener {
 
 			return true;
 		case android.R.id.home:
-		case R.id.menu_best:
-			Log.d(LOG_TAG, "open best rates list");
-
-			this.updater.shiftFragments();
-
-			return true;
 		case R.id.menu_legal_notice:
 			Log.d(LOG_TAG, "legal notice.");
 

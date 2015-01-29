@@ -2,10 +2,6 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:puls ="http://schemas.android.com/apk/res-auto">
 		<item puls:showAsAction="always"
-                android:id="@+id/menu_best" 
-                android:orderInCategory="1"
-                android:title="@string/lbl_best_rates"/>    
-		<item puls:showAsAction="always"
                 android:id="@+id/menu_near_prev" 
                 android:title="@string/btn_prev"
                 android:icon="?attr/actionPrevIcon"/>        

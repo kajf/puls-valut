@@ -77,8 +77,8 @@
     <string name="lbl_cash_type_short">Н</string>
     <string name="lbl_card_type_short">К</string>
     
-    <string name="lbl_best_rates">список</string>
-    <string name="lbl_near_rates">карта</string>
+    <string name="lbl_best_rates">Список</string>
+    <string name="lbl_near_rates">Карта</string>
     
     <string name="lbl_bank_buy">продать</string>
     <string name="lbl_bank_sell">купить</string>

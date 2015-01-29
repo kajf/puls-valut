@@ -635,21 +635,15 @@ public class BestRatesFragment extends ListFragment implements UpdateListener,
 				}).show();
 	}
 
-	@OptionsItem
-	void menuRefresh() {
-		Log.d(LOG_TAG, "updating...");
+    @OptionsItem
+    void menuRefresh() {
+        Log.d(LOG_TAG, "updating...");
 
-		this.tracker.trackPageView("/menuUpdate");
+        this.tracker.trackPageView("/menuUpdate");
 
-		this.updater.read(this.selectedRegion, true);
-	}
+        this.updater.read(this.selectedRegion, true);
+    }
 
-	@OptionsItem
-	void menuNear() {
-		Log.d(LOG_TAG, "open near rates");
-
-		BestRatesFragment.this.openListener.onOpen(null);
-	}
 
 	private void initFilters() {
 
@@ -657,7 +651,7 @@ public class BestRatesFragment extends ListFragment implements UpdateListener,
 		restoreSelections();
 
 		updateUiFilterValues();
-	}
+    }
 
 	private void updateUiFilterValues() {
 		if (getView() != null) {

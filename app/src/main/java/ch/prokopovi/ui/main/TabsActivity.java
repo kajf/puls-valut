@@ -28,7 +28,6 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.text.format.DateUtils;
 import android.util.Log;
 import android.util.SparseArray;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -149,6 +148,12 @@ public class TabsActivity extends ActionBarActivity implements Updater,
 
     @StringRes(R.string.btn_rate_app)
     String strResRateApp;
+
+    @StringRes(R.string.lbl_best_rates)
+    String strResBest;
+
+    @StringRes(R.string.lbl_near_rates)
+    String strResNear;
 
     @ViewById(R.id.left_drawer)
     ListView mDrawerList;
@@ -404,6 +409,10 @@ public class TabsActivity extends ActionBarActivity implements Updater,
         Resources rs = getResources();
 
         List<String> pages = new ArrayList<>();
+        if (!dualPane) {
+            pages.add(strResBest);
+            pages.add(strResNear);
+        }
         pages.add(strResSettins);
         pages.add(strResShareApp);
         pages.add(strResInfo);
@@ -471,6 +480,37 @@ public class TabsActivity extends ActionBarActivity implements Updater,
                 rateApp(ctx);
 
                 afterRating(-1);
+
+            } else if (strResBest.equals(selected)) {
+                Log.d(LOG_TAG, "open best rates list");
+
+                FragmentManager fm = getSupportFragmentManager();
+                FragmentTransaction ft = fm.beginTransaction();
+
+                ft.setCustomAnimations(R.anim.abc_slide_in_top, 0);
+
+                detachFragment(ft, FragmentTag.NEAR.tag);
+                addOrAttachFragment(ft, ctx, FragmentTag.BEST);
+
+                ft.commit();
+                fm.executePendingTransactions();
+
+            } else if (strResNear.equals(selected)) {
+                Log.d(LOG_TAG, "open near rates");
+
+                ctx.mapPosition = null;
+
+                FragmentManager fm = getSupportFragmentManager();
+                FragmentTransaction ft = fm.beginTransaction();
+
+                ft.setCustomAnimations(R.anim.abc_slide_in_top, 0);
+
+                detachFragment(ft, FragmentTag.CONVERTER.tag);
+                detachFragment(ft, FragmentTag.BEST.tag);
+                addOrAttachFragment(ft, ctx, FragmentTag.NEAR);
+
+                ft.commit();
+                fm.executePendingTransactions();
             }
 
             // Highlight the selected item, update the title, and close the drawer
@@ -921,21 +961,6 @@ public class TabsActivity extends ActionBarActivity implements Updater,
 		return this.dbAdapter.fetchRates(ColumnBestRates.RATES_PLACE_ID,
                 pointId);
     }
-
-    @Override
-	public boolean onPrepareOptionsMenu(Menu menu) {
-
-		// switch actions
-		MenuItem bestItem = menu.findItem(R.id.menu_best);
-		if (bestItem != null)
-			bestItem.setVisible(!this.dualPane);
-
-		MenuItem nearItem = menu.findItem(R.id.menu_near);
-		if (nearItem != null)
-			nearItem.setVisible(!this.dualPane);
-
-		return super.onPrepareOptionsMenu(menu);
-	}
 
 	@Override
 	public void shiftFragments() {

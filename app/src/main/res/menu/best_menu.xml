@@ -1,10 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:puls ="http://schemas.android.com/apk/res-auto">
-		<item puls:showAsAction="always"
-                android:id="@+id/menu_near" 
-                android:orderInCategory="1"
-                android:title="@string/lbl_near_rates"/>
 		
 		<item     
 		        android:id="@+id/menu_search"
