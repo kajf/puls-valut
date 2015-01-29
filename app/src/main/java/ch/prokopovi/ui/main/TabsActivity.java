@@ -138,6 +138,18 @@ public class TabsActivity extends ActionBarActivity implements Updater,
 	@StringRes(R.string.pref_ads_on)
 	String prefAdsOn;
 
+    @StringRes(R.string.btn_settings)
+    String strResSettins;
+
+    @StringRes(R.string.btn_share_app)
+    String strResShareApp;
+
+    @StringRes(R.string.btn_info)
+    String strResInfo;
+
+    @StringRes(R.string.btn_rate_app)
+    String strResRateApp;
+
     @ViewById(R.id.left_drawer)
     ListView mDrawerList;
 
@@ -392,15 +404,15 @@ public class TabsActivity extends ActionBarActivity implements Updater,
         Resources rs = getResources();
 
         List<String> pages = new ArrayList<>();
-        pages.add(rs.getString(R.string.btn_settings));
-        pages.add(rs.getString(R.string.btn_share_app));
-        pages.add(rs.getString(R.string.btn_info));
+        pages.add(strResSettins);
+        pages.add(strResShareApp);
+        pages.add(strResInfo);
 
         // rate-app action
         int launches = getSharedPreferences(PrefsUtil.PREFS_NAME,
                 Context.MODE_PRIVATE).getInt(this.prefRateAppLaunches, 5);
         if (launches >= 0) {
-            pages.add(rs.getString(R.string.btn_rate_app));
+            pages.add(strResRateApp);
         }
 
         // Set the adapter for the list view
@@ -432,37 +444,33 @@ public class TabsActivity extends ActionBarActivity implements Updater,
         public void onItemClick(AdapterView parent, View view, int position, long id) {
 
             TabsActivity ctx = TabsActivity.this;
-            switch (position) {
-                case 0: // settings
-                    ctx.tracker.trackPageView("/settings");
+            String selected = (String) parent.getItemAtPosition(position);
 
-                    PrefsActivity_.intent(ctx).start();
+            if (strResSettins.equals(selected)) {
+                ctx.tracker.trackPageView("/settings");
 
-                    break;
-                case 1: // share
-                    String appUri = "market://details?id=" + getPackageName();
-                    String appName = getResources().getString(R.string.app_name);
+                PrefsActivity_.intent(ctx).start();
+            } else if (strResShareApp.equals(selected)) {
+                String appUri = "market://details?id=" + getPackageName();
+                String appName = getResources().getString(R.string.app_name);
 
-                    Intent intentShare = new Intent(Intent.ACTION_SEND);
-                    intentShare.setType("text/plain");
-                    intentShare.putExtra(Intent.EXTRA_TEXT, appUri);
-                    intentShare.putExtra(android.content.Intent.EXTRA_SUBJECT, appName);
+                Intent intentShare = new Intent(Intent.ACTION_SEND);
+                intentShare.setType("text/plain");
+                intentShare.putExtra(Intent.EXTRA_TEXT, appUri);
+                intentShare.putExtra(android.content.Intent.EXTRA_SUBJECT, appName);
 
-                    startActivity(Intent.createChooser(intentShare,
-                            getResources().getString(R.string.btn_share_app)));
-                    break;
-                case 2: // rate
-                    ctx.tracker.trackPageView("/menuRateApp");
+                startActivity(Intent.createChooser(intentShare,
+                        getResources().getString(R.string.btn_share_app)));
+            } else if (strResInfo.equals(selected)) {
+                ctx.tracker.trackPageView("/info");
 
-                    rateApp(ctx);
+                HelpActivity_.intent(ctx).start();
+            } else if (strResRateApp.equals(selected)) {
+                ctx.tracker.trackPageView("/menuRateApp");
 
-                    afterRating(-1);
-                    break;
-                case 3: // info
-                    ctx.tracker.trackPageView("/info");
+                rateApp(ctx);
 
-                    HelpActivity_.intent(ctx).start();
-                    break;
+                afterRating(-1);
             }
 
             // Highlight the selected item, update the title, and close the drawer
