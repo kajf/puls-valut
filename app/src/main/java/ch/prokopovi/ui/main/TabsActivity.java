@@ -80,7 +80,6 @@ import ch.prokopovi.ui.main.api.UpdateListener;
 import ch.prokopovi.ui.main.api.Updater;
 
 @EActivity(R.layout.fragment_tabs)
-@OptionsMenu(R.menu.main_menu)
 public class TabsActivity extends ActionBarActivity implements Updater,
 		OpenListener, RateAppListener, AdListener, LocationListener, Converter,
 		Closable {
@@ -101,6 +100,7 @@ public class TabsActivity extends ActionBarActivity implements Updater,
 		CONVERTER(ConverterFragment_.class.getName(), R.id.top_container), //
 		BEST(BestRatesFragment_.class.getName(), R.id.main_container), //
 		NEAR(NearFragment.class.getName(), R.id.main_container), //
+        ABOUT(AboutFragment_.class.getName(), R.id.main_container), //
 		RATE(RateAppFragment_.class.getName(), R.id.bottom_container), //
 		BANNER(BannerFragment_.class.getName(), R.id.bottom_container);
 
@@ -138,22 +138,22 @@ public class TabsActivity extends ActionBarActivity implements Updater,
 	String prefAdsOn;
 
     @StringRes(R.string.btn_settings)
-    String strResSettins;
+    String mTitleSettings;
 
     @StringRes(R.string.btn_share_app)
-    String strResShareApp;
-
-    @StringRes(R.string.btn_info)
-    String strResInfo;
+    String mTitleShareApp;
 
     @StringRes(R.string.btn_rate_app)
-    String strResRateApp;
+    String mTitleRateApp;
 
     @StringRes(R.string.lbl_best_rates)
-    String strResBest;
+    String mTitleBest;
 
     @StringRes(R.string.lbl_near_rates)
-    String strResNear;
+    String mTitleNear;
+
+    @StringRes(R.string.about_title)
+    String mTitleAbout;
 
     @ViewById(R.id.left_drawer)
     ListView mDrawerList;
@@ -328,18 +328,16 @@ public class TabsActivity extends ActionBarActivity implements Updater,
         actionBar.setDisplayShowTitleEnabled(this.dualPane);
         actionBar.setDisplayHomeAsUpEnabled(true);
 
+        FragmentTransaction ft = getSupportFragmentManager()
+                .beginTransaction();
+
+        addOrAttachFragment(ft, this, FragmentTag.BEST);
+
         if (this.dualPane) {
-            FragmentTransaction ft = getSupportFragmentManager()
-					.beginTransaction();
-
-			addOrAttachFragment(ft, this, FragmentTag.BEST);
 			addOrAttachFragment(ft, this, FragmentTag.NEAR);
-
-			ft.commit();
-
-		} else {
-			shiftFragments();
 		}
+
+        ft.commit();
 
 		// DB ---
 		DbHelper dbHelper = DbHelper.getInstance(this);
@@ -364,12 +362,10 @@ public class TabsActivity extends ActionBarActivity implements Updater,
 
 			if (launches == 0) {
 
-				FragmentManager fm = getSupportFragmentManager();
+				FragmentTransaction ftRate = getSupportFragmentManager().beginTransaction();
+				addOrAttachFragment(ftRate, this, FragmentTag.RATE);
+				ftRate.commit();
 
-				FragmentTransaction ft = fm.beginTransaction();
-				addOrAttachFragment(ft, this, FragmentTag.RATE);
-
-				ft.commit();
 			} else {
 
 				if (launches > 0) {
@@ -379,12 +375,11 @@ public class TabsActivity extends ActionBarActivity implements Updater,
 
                 // ads if allowed
 				if (prefs.getBoolean(this.prefAdsOn, true)) {
-					FragmentManager fm = getSupportFragmentManager();
 
-					FragmentTransaction ft = fm.beginTransaction();
-					addOrAttachFragment(ft, this, FragmentTag.BANNER);
+					FragmentTransaction ftBanner = getSupportFragmentManager().beginTransaction();
+					addOrAttachFragment(ftBanner, this, FragmentTag.BANNER);
 
-					ft.commit();
+					ftBanner.commit();
 				} else {
 					this.tracker.trackPageView("/adsOff");
 				}
@@ -410,18 +405,18 @@ public class TabsActivity extends ActionBarActivity implements Updater,
 
         List<String> pages = new ArrayList<>();
         if (!dualPane) {
-            pages.add(strResBest);
-            pages.add(strResNear);
+            pages.add(mTitleBest);
+            pages.add(mTitleNear);
         }
-        pages.add(strResSettins);
-        pages.add(strResShareApp);
-        pages.add(strResInfo);
+        pages.add(mTitleSettings);
+        pages.add(mTitleShareApp);
+        pages.add(mTitleAbout);
 
         // rate-app action
         int launches = getSharedPreferences(PrefsUtil.PREFS_NAME,
                 Context.MODE_PRIVATE).getInt(this.prefRateAppLaunches, 5);
         if (launches >= 0) {
-            pages.add(strResRateApp);
+            pages.add(mTitleRateApp);
         }
 
         // Set the adapter for the list view
@@ -455,11 +450,12 @@ public class TabsActivity extends ActionBarActivity implements Updater,
             TabsActivity ctx = TabsActivity.this;
             String selected = (String) parent.getItemAtPosition(position);
 
-            if (strResSettins.equals(selected)) {
+            if (mTitleSettings.equals(selected)) {
                 ctx.tracker.trackPageView("/settings");
 
                 PrefsActivity_.intent(ctx).start();
-            } else if (strResShareApp.equals(selected)) {
+
+            } else if (mTitleShareApp.equals(selected)) {
                 String appUri = "market://details?id=" + getPackageName();
                 String appName = getResources().getString(R.string.app_name);
 
@@ -470,47 +466,29 @@ public class TabsActivity extends ActionBarActivity implements Updater,
 
                 startActivity(Intent.createChooser(intentShare,
                         getResources().getString(R.string.btn_share_app)));
-            } else if (strResInfo.equals(selected)) {
+            } else if (mTitleAbout.equals(selected)) {
                 ctx.tracker.trackPageView("/info");
 
-                HelpActivity_.intent(ctx).start();
-            } else if (strResRateApp.equals(selected)) {
+                showFragment(ctx, FragmentTag.ABOUT);
+
+            } else if (mTitleRateApp.equals(selected)) {
                 ctx.tracker.trackPageView("/menuRateApp");
 
                 rateApp(ctx);
 
                 afterRating(-1);
 
-            } else if (strResBest.equals(selected)) {
+            } else if (mTitleBest.equals(selected)) {
                 Log.d(LOG_TAG, "open best rates list");
 
-                FragmentManager fm = getSupportFragmentManager();
-                FragmentTransaction ft = fm.beginTransaction();
+                showFragment(ctx, FragmentTag.BEST);
 
-                ft.setCustomAnimations(R.anim.abc_slide_in_top, 0);
-
-                detachFragment(ft, FragmentTag.NEAR.tag);
-                addOrAttachFragment(ft, ctx, FragmentTag.BEST);
-
-                ft.commit();
-                fm.executePendingTransactions();
-
-            } else if (strResNear.equals(selected)) {
+            } else if (mTitleNear.equals(selected)) {
                 Log.d(LOG_TAG, "open near rates");
 
                 ctx.mapPosition = null;
 
-                FragmentManager fm = getSupportFragmentManager();
-                FragmentTransaction ft = fm.beginTransaction();
-
-                ft.setCustomAnimations(R.anim.abc_slide_in_top, 0);
-
-                detachFragment(ft, FragmentTag.CONVERTER.tag);
-                detachFragment(ft, FragmentTag.BEST.tag);
-                addOrAttachFragment(ft, ctx, FragmentTag.NEAR);
-
-                ft.commit();
-                fm.executePendingTransactions();
+                showFragment(ctx, FragmentTag.NEAR);
             }
 
             // Highlight the selected item, update the title, and close the drawer
@@ -827,7 +805,7 @@ public class TabsActivity extends ActionBarActivity implements Updater,
 
 		this.mapPosition = latLng;
 
-		shiftFragments();
+		showFragment(this, FragmentTag.NEAR);
 	}
 
 	@Override
@@ -962,39 +940,6 @@ public class TabsActivity extends ActionBarActivity implements Updater,
                 pointId);
     }
 
-	@Override
-	public void shiftFragments() {
-
-		if (this.dualPane)
-			return; // nothing to shift if dual-pane-layout
-
-		FragmentManager fm = getSupportFragmentManager();
-
-		Fragment best = fm.findFragmentByTag(FragmentTag.BEST.tag);
-
-		boolean toBest = best == null || !best.isVisible();
-
-        //getSupportActionBar().setDisplayHomeAsUpEnabled(!toBest);
-
-        //
-        FragmentTransaction ft = fm.beginTransaction();
-
-		ft.setCustomAnimations(R.anim.abc_slide_in_top, 0);
-
-		if (toBest) {
-			detachFragment(ft, FragmentTag.NEAR.tag);
-			addOrAttachFragment(ft, this, FragmentTag.BEST);
-		} else {
-			detachFragment(ft, FragmentTag.CONVERTER.tag);
-			detachFragment(ft, FragmentTag.BEST.tag);
-			addOrAttachFragment(ft, this, FragmentTag.NEAR);
-		}
-
-		ft.commit();
-
-		fm.executePendingTransactions();
-	}
-
 	/**
 	 * add-new or attach-existing fragment
 	 * 
@@ -1040,6 +985,33 @@ public class TabsActivity extends ActionBarActivity implements Updater,
 		}
 	}
 
+    private void clearFragments(FragmentTransaction ft, String skipTag) {
+        FragmentManager fm = getSupportFragmentManager();
+        List<Fragment> fs = fm.getFragments();
+        for (Fragment f : fs) {
+
+            if (f == null) continue;
+
+            if (skipTag != null && skipTag.equals(f.getTag())) continue;
+
+            ft.detach(f);
+        }
+    }
+
+    private void showFragment(Context ctx, FragmentTag ftag) {
+        FragmentManager fm = getSupportFragmentManager();
+
+        FragmentTransaction ft = fm.beginTransaction();
+
+        ft.setCustomAnimations(R.anim.abc_slide_in_top, 0);
+
+        clearFragments(ft, ftag.tag);
+
+        addOrAttachFragment(ft, ctx, ftag);
+
+        ft.commit();
+    }
+
 	/**
 	 * fragment remove-if-exists in separate transaction
 	 * 
@@ -1069,7 +1041,7 @@ public class TabsActivity extends ActionBarActivity implements Updater,
         Fragment best = getSupportFragmentManager().findFragmentByTag(
                 FragmentTag.BEST.tag);
 		if (best == null || !best.isVisible()) { // go main list
-			shiftFragments();
+			showFragment(this, FragmentTag.BEST);
 		} else { // finish
 			super.onBackPressed();
         }

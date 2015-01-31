@@ -1,15 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:puls ="http://schemas.android.com/apk/res-auto">
-		<item puls:showAsAction="always"
-                android:id="@+id/menu_near_prev" 
-                android:title="@string/btn_prev"
-                android:icon="?attr/actionPrevIcon"/>        
-		<item puls:showAsAction="always"
-                android:id="@+id/menu_near_next" 
-                android:title="@string/btn_next"
-                android:icon="?attr/actionNextIcon"/>  
-        <item puls:showAsAction="never"
-                android:id="@+id/menu_legal_notice" 
-                android:title="@string/btn_legal_notice"/>                      
+    <item
+        android:id="@+id/menu_near_prev"
+        android:icon="?attr/actionPrevIcon"
+        android:title="@string/btn_prev"
+        puls:showAsAction="always" />
+    <item
+        android:id="@+id/menu_near_next"
+        android:icon="?attr/actionNextIcon"
+        android:title="@string/btn_next"
+        puls:showAsAction="always" />
+    <item
+        android:id="@+id/menu_refresh"
+        android:icon="?attr/actionUpdateIcon"
+        android:title="@string/btn_refresh"
+        puls:showAsAction="ifRoom" />
 </menu>

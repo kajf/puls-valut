@@ -79,7 +79,8 @@
     
     <string name="lbl_best_rates">Список</string>
     <string name="lbl_near_rates">Карта</string>
-    
+    <string name="about_title">Инфо</string>
+
     <string name="lbl_bank_buy">продать</string>
     <string name="lbl_bank_sell">купить</string>
     
@@ -108,8 +109,7 @@
     
     <string name="btn_share_app">Поделиться</string>
     <string name="btn_rate_app">Оценить</string>
-    <string name="btn_info">Инфо</string>
-    <string name="btn_legal_notice">Уведомление</string>
+
     <string name="btn_settings">Настройки</string>
     
     <string name="no_location_svc_title">местоположение недоступно</string>
@@ -120,11 +120,13 @@
     <string name="lbl_best">лучший</string>
     
     <string name="msg_updating">Обновляю …</string>
-        
-    <string name="msg_help_title">Инфо</string>
-    <string name="msg_help">
+
+    <string name="btn_about_notice">Лицензия Google Play Services</string>
+    <string name="msg_about_widget">
         С помощью приложения можно не только находить самые выгодные курсы обмена валют поблизости, но и отображать курсы выбранного банка прямо на рабочем столе (виджет).\n\n
-        Значение отображаемых виджетом курсов зависит от источника информации (Обычные банки: покупка/продажа; Нац. банки: сегодня/завтра).\n\n        
+        Значение отображаемых виджетом курсов зависит от источника информации (Обычные банки: покупка/продажа; Нац. банки: сегодня/завтра).
+    </string>
+    <string name="msg_about_links">
         Курсы валют предоставлены:\n\n
         <a href="http://myfin.by">myfin.by</a>\n\n
         <a href="http://sravnibank.com.ua">sravnibank.com.ua</a>\n\n        

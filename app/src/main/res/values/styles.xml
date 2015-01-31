@@ -2,8 +2,8 @@
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
 
 	<style name="HelpTextMessage" parent="@android:style/TextAppearance.Medium">		
-		<item name="android:layout_width">fill_parent</item>
-		<item name="android:layout_height">fill_parent</item>
+		<item name="android:layout_width">wrap_content</item>
+		<item name="android:layout_height">wrap_content</item>
 		<item name="android:layout_margin">4dp</item>
 		<item name="android:paddingLeft">14dp</item>
 		<item name="android:paddingRight">14dp</item>
@@ -12,7 +12,7 @@
 	</style>
 
     <style name="CurrencySelectorArea" parent="@android:style/Widget.CompoundButton.RadioButton">        
-		<item name="android:layout_width">fill_parent</item>
+		<item name="android:layout_width">match_parent</item>
 		<item name="android:layout_height">wrap_content</item> 
 		<item name="android:layout_marginBottom">15dp</item>
 		<item name="android:textSize">15sp</item>

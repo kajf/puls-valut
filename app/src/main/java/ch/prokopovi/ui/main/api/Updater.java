@@ -40,6 +40,4 @@ public interface Updater {
 	List<RateItem> getRates(int pointId);
 
 	GoogleAnalyticsTracker getTracker();
-
-	void shiftFragments();
 }
