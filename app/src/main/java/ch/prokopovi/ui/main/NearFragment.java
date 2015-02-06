@@ -1,40 +1,45 @@
 package ch.prokopovi.ui.main;
 
 import android.app.Activity;
+import android.content.Context;
+import android.graphics.Bitmap;
 import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
 import android.widget.TextView;
 
-import com.androidmapsextensions.ClusterGroup;
-import com.androidmapsextensions.ClusteringSettings;
-import com.androidmapsextensions.GoogleMap;
-import com.androidmapsextensions.GoogleMap.InfoWindowAdapter;
-import com.androidmapsextensions.GoogleMap.OnCameraChangeListener;
-import com.androidmapsextensions.GoogleMap.OnMarkerClickListener;
-import com.androidmapsextensions.Marker;
-import com.androidmapsextensions.MarkerOptions;
-import com.androidmapsextensions.SupportMapFragment;
 import com.google.android.apps.analytics.GoogleAnalyticsTracker;
 import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.LatLngBounds.Builder;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.maps.android.clustering.Cluster;
+import com.google.maps.android.clustering.ClusterItem;
+import com.google.maps.android.clustering.ClusterManager;
+import com.google.maps.android.clustering.view.DefaultClusterRenderer;
+import com.google.maps.android.ui.IconGenerator;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.PriorityQueue;
 import java.util.Set;
 
 import ch.prokopovi.R;
@@ -55,9 +60,15 @@ import ch.prokopovi.ui.main.api.Updater;
  *
  * @author Pavel_Letsiaha
  */
-public class NearFragment extends SupportMapFragment implements UpdateListener {
+public class NearFragment extends SupportMapFragment
+        implements UpdateListener,
+        ClusterManager.OnClusterClickListener<NearFragment.NearPlace>,
+        ClusterManager.OnClusterInfoWindowClickListener<NearFragment.NearPlace>,
+        ClusterManager.OnClusterItemClickListener<NearFragment.NearPlace>,
+        ClusterManager.OnClusterItemInfoWindowClickListener<NearFragment.NearPlace>,
+        GoogleMap.OnCameraChangeListener {
 
-    private static final int DEFAULT_ZOOM = 12;
+    private static final int MAX_NON_CLUSTERED_SIZE = 6;
 
     private static final String LOG_TAG = "NearFragment";
 
@@ -65,21 +76,34 @@ public class NearFragment extends SupportMapFragment implements UpdateListener {
 
     private GoogleAnalyticsTracker tracker;
 
-    private GoogleMap map;
-
     private Updater updater;
-
-    private NearInfoWindowAdapter infoWindowAdapter;
-    private final NearCameraListener cameraListener = new NearCameraListener();
-    private final NearMarkerClickListener markerClickListener = new NearMarkerClickListener();
 
     private Region selectedRegion;
 
-    private final SparseArray<RatePoint> places = new SparseArray<RatePoint>();
+    private final SparseArray<NearPlace> places = new SparseArray<>();
 
     private Map<CurrencyCode, Map<OperationType, Double>> bestRates;
 
     private boolean firstTimeOpen = true;
+
+    private NearRenderer nearRenderer;
+    private ClusterManager<NearPlace> mClusterManager;
+
+    private NearPlace selectedClusterItem;
+
+    class NearPlace implements ClusterItem {
+
+        private RatePoint ratePoint;
+
+        public NearPlace(RatePoint p) {
+            ratePoint = p;
+        }
+
+        @Override
+        public LatLng getPosition() {
+            return new LatLng(ratePoint.x, ratePoint.y);
+        }
+    }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
@@ -93,16 +117,33 @@ public class NearFragment extends SupportMapFragment implements UpdateListener {
         this.tracker = this.updater.getTracker();
         this.tracker.trackPageView("/near");
 
-        this.map = getExtendedMap();
-
         if (!checkReady())
             return;
 
-        this.map.setClustering(buildClusteringSettings(true));
+        getMap().setMyLocationEnabled(true);
 
-        this.map.setMyLocationEnabled(true);
+        if (mClusterManager == null) {
 
-        this.infoWindowAdapter = new NearInfoWindowAdapter(savedInstanceState);
+            mClusterManager = new ClusterManager<>(getActivity(), getMap());
+            nearRenderer = new NearRenderer(getActivity(), getMap(), mClusterManager);
+            mClusterManager.setRenderer(nearRenderer);
+
+            mClusterManager.getMarkerCollection()
+                    .setOnInfoWindowAdapter(new NearInfoWindowAdapter(savedInstanceState));
+
+            getMap().setOnCameraChangeListener(this);
+            //getMap().setOnCameraChangeListener(mClusterManager);
+
+            getMap().setOnMarkerClickListener(mClusterManager);
+            getMap().setOnInfoWindowClickListener(mClusterManager.getMarkerManager());
+            getMap().setInfoWindowAdapter(mClusterManager.getMarkerManager());
+
+            mClusterManager.setOnClusterClickListener(this);
+            mClusterManager.setOnClusterInfoWindowClickListener(this);
+            mClusterManager.setOnClusterItemClickListener(this);
+            mClusterManager.setOnClusterItemInfoWindowClickListener(this);
+        }
+
     }
 
     @Override
@@ -122,47 +163,6 @@ public class NearFragment extends SupportMapFragment implements UpdateListener {
         return v;
     }
 
-    private ClusteringSettings buildClusteringSettings(boolean withClustering) {
-
-        ClusteringSettings settings = new ClusteringSettings().enabled(
-                withClustering).addMarkersDynamically(true);
-
-        if (withClustering) {
-            settings = settings //
-                    .clusterOptionsProvider(
-                            new ClusterDataProvider(getResources())) //
-                    .clusterSize(96);
-        }
-
-        return settings;
-    }
-
-    private void listenersOn() {
-        Log.d(LOG_TAG, "listenersOn");
-
-        if (!checkReady())
-            return;
-
-        this.map.setInfoWindowAdapter(this.infoWindowAdapter);
-
-        this.updater.addUpdateListener(this);
-        this.map.setOnCameraChangeListener(this.cameraListener);
-        this.map.setOnMarkerClickListener(this.markerClickListener);
-    }
-
-    private void listenersOff() {
-        Log.d(LOG_TAG, "listenersOff");
-
-        if (!checkReady())
-            return;
-
-        this.map.setInfoWindowAdapter(null);
-
-        this.map.setOnMarkerClickListener(null);
-        this.map.setOnCameraChangeListener(null);
-        this.updater.removeUpdateListener(this);
-    }
-
     @Override
     public void onResume() {
 
@@ -173,14 +173,14 @@ public class NearFragment extends SupportMapFragment implements UpdateListener {
         if (!checkReady())
             return;
 
-        listenersOn();
+        this.updater.addUpdateListener(this);
 
         this.firstTimeOpen = true;
 
         LatLng currentPosition = this.updater.getMapPosition();
         if (currentPosition != null)
-            this.map.moveCamera(CameraUpdateFactory.newLatLngZoom(
-                    currentPosition, DEFAULT_ZOOM));
+            getMap().moveCamera(CameraUpdateFactory.newLatLng(
+                    currentPosition));
     }
 
     @Override
@@ -190,7 +190,9 @@ public class NearFragment extends SupportMapFragment implements UpdateListener {
 
         super.onPause();
 
-        listenersOff();
+        if (checkReady()) {
+            this.updater.removeUpdateListener(this);
+        }
     }
 
     @Override
@@ -218,7 +220,7 @@ public class NearFragment extends SupportMapFragment implements UpdateListener {
      * methods on GoogleMap.
      */
     private boolean checkReady() {
-        if (this.map == null) {
+        if (getMap() == null) {
             Log.w(LOG_TAG, "map is not ready");
             return false;
         }
@@ -250,10 +252,10 @@ public class NearFragment extends SupportMapFragment implements UpdateListener {
 
         Region oldRegion = this.selectedRegion;
 
-        int markersSize = this.map.getMarkers().size();
+        int size = places.size();
 
         boolean sameRegion = positionRegion.equals(oldRegion);
-        if (!sameRegion || markersSize == 0) {
+        if (!sameRegion || size == 0) {
             Log.d(LOG_TAG, "full region position update");
             this.selectedRegion = positionRegion;
 
@@ -263,54 +265,110 @@ public class NearFragment extends SupportMapFragment implements UpdateListener {
                     .getBestRates(NearFragment.this.selectedRegion);
         }
 
-        showNearestWindow();
+        showNearestWindow(position);
     }
 
-    private class NearCameraListener implements OnCameraChangeListener {
 
-        @Override
-        public void onCameraChange(CameraPosition position) {
+    @Override
+    public void onCameraChange(CameraPosition position) {
 
             if (!checkReady())
                 return;
 
-            boolean withClustering = position.zoom < ZOOM_CLASTER_THRESHOLD;
-            NearFragment.this.map
-                    .setClustering(buildClusteringSettings(withClustering));
+        newPosition(position.target);
 
-            newPosition(position.target);
-        }
+        mClusterManager.onCameraChange(position);
     }
 
-    private class NearMarkerClickListener implements OnMarkerClickListener {
+    @Override
+    public boolean onClusterClick(Cluster<NearPlace> сluster) {
+        NearFragment.this.tracker.trackPageView("/clusterClick");
+
+        if (!checkReady())
+            return true;
+
+        goToBounds(сluster.getItems());
+
+        return true;
+    }
+
+    private void goToBounds(Collection<NearPlace> items) {
+        if (!checkReady())
+            return;
+
+        Builder builder = LatLngBounds.builder();
+        for (NearPlace item : items) {
+            builder.include(item.getPosition());
+        }
+        LatLngBounds bounds = builder.build();
+        getMap().animateCamera(CameraUpdateFactory
+                .newLatLngBounds(bounds, getResources()
+                        .getDimensionPixelSize(R.dimen.padding)));
+    }
+
+    @Override
+    public void onClusterInfoWindowClick(Cluster<NearPlace> cluster) {
+        // Does nothing, but you could go to a list of the users.
+    }
+
+    @Override
+    public boolean onClusterItemClick(NearPlace item) {
+        selectedClusterItem = item;
+        return false;
+    }
+
+    @Override
+    public void onClusterItemInfoWindowClick(NearPlace item) {
+        // Does nothing, but you could go into the user's profile page, for example.
+    }
+
+    /**
+     * Draws profile photos inside markers (using IconGenerator).
+     * When there are multiple people in the cluster, draw multiple photos (using MultiDrawable).
+     */
+    private class NearRenderer extends DefaultClusterRenderer<NearPlace> {
+        private final IconGenerator iconFactory;
+
+        public NearRenderer(Context context,
+                            GoogleMap map,
+                            ClusterManager<NearPlace> clusterManager) {
+            super(context, map, clusterManager);
+            iconFactory = new IconGenerator(context);
+        }
 
         @Override
-        public boolean onMarkerClick(Marker marker) {
+        protected void onClusterItemRendered(NearPlace clusterItem, Marker marker) {
+            super.onClusterItemRendered(clusterItem, marker);
+        }
 
-            NearFragment.this.tracker.trackPageView("/markerClick");
+        @Override
+        protected void onBeforeClusterItemRendered(NearPlace item, MarkerOptions markerOptions) {
 
-            if (!checkReady())
-                return true;
+            List<RateItem> list = NearFragment.this.updater.getRates(item.ratePoint.id);
 
-            boolean cluster = marker.isCluster();
+            if (!list.isEmpty()) {
+                RateItem rate = list.get(0);
 
-            if (cluster) {
-                List<Marker> markers = marker.getMarkers();
-                Builder builder = LatLngBounds.builder();
-                for (Marker m : markers) {
-                    builder.include(m.getPosition());
-                }
-                LatLngBounds bounds = builder.build();
-                NearFragment.this.map.animateCamera(CameraUpdateFactory
-                        .newLatLngBounds(bounds, getResources()
-                                .getDimensionPixelSize(R.dimen.padding)));
+                String title = getResources().getString(
+                        rate.currency.getTitleRes());
+
+                String text = title + " " + rate.value;
+
+                iconFactory.setStyle(IconGenerator.STYLE_BLUE);
+                Bitmap bitmap = iconFactory.makeIcon(text);
+
+                markerOptions
+                        .icon(BitmapDescriptorFactory.fromBitmap(bitmap));
             }
+        }
 
-            return cluster; // consume event or not
+        @Override
+        protected boolean shouldRenderAsCluster(Cluster<NearPlace> cluster) {
+            return cluster.getSize() > MAX_NON_CLUSTERED_SIZE;
         }
     }
 
-    private class NearInfoWindowAdapter implements InfoWindowAdapter {
+    private class NearInfoWindowAdapter implements GoogleMap.InfoWindowAdapter {
 
         private final LayoutInflater inflater;
         private final View mWindow;
@@ -331,74 +389,78 @@ public class NearFragment extends SupportMapFragment implements UpdateListener {
         public View getInfoWindow(Marker marker) {
 
             try {
-                Integer id = Integer.valueOf(marker.getSnippet());
 
-                RatePoint place = NearFragment.this.places.get(id);
-
-                List<RateItem> list = NearFragment.this.updater.getRates(id);
-
-                if (place != null) {
-
-                    LinearLayout table = (LinearLayout) this.mWindow
-                            .findViewById(R.id.rates_table);
-
-                    renderTextView(this.mWindow, R.id.title,
-                            place.placeDescription);
-                    renderTextView(this.mWindow, R.id.work_hours,
-                            place.workHours);
-
-                    // if have rates
-                    boolean hasValue = !list.isEmpty();
-
-                    table.removeAllViews(); // cleanup
-
-                    if (hasValue) {
-
-                        for (RateItem item : list) {
-
-                            CurrencyCode currency = item.currency;
-                            String title = getResources().getString(
-                                    currency.getTitleRes());
-
-                            OperationType operaton = item.operationType;
-
-                            Double rateVal = item.value;
-                            Double bestVal = NearFragment.this.bestRates.get(
-                                    currency).get(operaton);
-
-                            Double diffVal = bestVal - rateVal;
-
-                            String value = TabsActivity.FMT_RATE_VALUE
-                                    .format(rateVal);
-
-                            String diff = "";
-                            if (diffVal > -0.0001 && diffVal < 0.0001) {
-                                // zero diff
-                                diff = getResources().getString(
-                                        R.string.lbl_best);
-                            } else {
-                                diff = TabsActivity.FMT_RATE_VALUE
-                                        .format(diffVal);
-                            }
-
-                            View row = getRow(table, currency.getId());
-
-                            boolean buy = OperationType.BUY.equals(operaton);
-
-                            int valueId = buy ? R.id.curr_buy : R.id.curr_sell;
-                            int diffId = buy ? R.id.curr_buy_diff
-                                    : R.id.curr_sell_diff;
-
-                            renderTextView(row, R.id.curr_title, title);
-                            renderTextView(row, valueId, value);
-                            renderTextView(row, diffId, diff);
-                        }
-                    }
-
-                    UiHelper.applyFont(getActivity(), this.mWindow, null);
-                } else {
-                    Log.e(LOG_TAG, "can't find place with id: " + id);
+                if (selectedClusterItem == null) {
+                    return this.mWindow;
                 }
+
+                RatePoint place = selectedClusterItem.ratePoint;
+
+                List<RateItem> list = NearFragment.this.updater.getRates(place.id);
+
+                if (place == null) {
+                    Log.e(LOG_TAG, "can't find ratePoint with id: " + place.id);
+                    return this.mWindow;
+                }
+
+                LinearLayout table = (LinearLayout) this.mWindow
+                        .findViewById(R.id.rates_table);
+
+                renderTextView(this.mWindow, R.id.title,
+                        place.placeDescription);
+                renderTextView(this.mWindow, R.id.work_hours,
+                        place.workHours);
+
+                // if have rates
+                boolean hasValue = !list.isEmpty();
+
+                table.removeAllViews(); // cleanup
+
+                if (hasValue) {
+
+                    for (RateItem item : list) {
+
+                        CurrencyCode currency = item.currency;
+                        String title = getResources().getString(
+                                currency.getTitleRes());
+
+                        OperationType operaton = item.operationType;
+
+                        Double rateVal = item.value;
+                        Double bestVal = NearFragment.this.bestRates.get(
+                                currency).get(operaton);
+
+                        Double diffVal = bestVal - rateVal;
+
+                        String value = TabsActivity.FMT_RATE_VALUE
+                                .format(rateVal);
+
+                        String diff = "";
+                        if (diffVal > -0.0001 && diffVal < 0.0001) {
+                            // zero diff
+                            diff = getResources().getString(
+                                    R.string.lbl_best);
+                        } else {
+                            diff = TabsActivity.FMT_RATE_VALUE
+                                    .format(diffVal);
+                        }
+
+                        View row = getRow(table, currency.getId());
+
+                        boolean buy = OperationType.BUY.equals(operaton);
+
+                        int valueId = buy ? R.id.curr_buy : R.id.curr_sell;
+                        int diffId = buy ? R.id.curr_buy_diff
+                                : R.id.curr_sell_diff;
+
+                        renderTextView(row, R.id.curr_title, title);
+                        renderTextView(row, valueId, value);
+                        renderTextView(row, diffId, diff);
+                    }
+                }
+
+                UiHelper.applyFont(getActivity(), this.mWindow, null);
+
 
             } catch (Exception e) {
                 Log.e(LOG_TAG, "can't show marker " + marker, e);
@@ -441,124 +503,72 @@ public class NearFragment extends SupportMapFragment implements UpdateListener {
      *
      * @param places
      */
-    private synchronized void reloadMapItems(SparseArray<RatePoint> places) {
+    private synchronized void reloadMapItems(SparseArray<NearPlace> places) {
 
         if (!checkReady())
             return;
 
-        this.map.clear();
+        // TODO this.map.clear();
+        this.mClusterManager.clearItems();
 
         Set<Integer> added = new HashSet<Integer>();
 
         // Loop through all the items that are available to be placed on the
         // map
         for (int i = 0; i < places.size(); i++) {
-            RatePoint place = places.valueAt(i);
+            NearPlace place = places.valueAt(i);
 
-            int id = place.id;
+            int id = place.ratePoint.id;
 
             if (added.contains(id)) {
                 continue;
             }
 
-            this.map.addMarker(new MarkerOptions() //
-                    .snippet(String.valueOf(id)) //
-                    .position(new LatLng(place.x, place.y)) //
-            );
-
+            mClusterManager.addItem(place);
             added.add(id);
         }
     }
 
     // TODO handle case when same point have more then one marker (with and
     // without rates data)
-    private Marker getNearestMarker(LatLng toPos, SparseArray<RatePoint> places) {
-        Marker marker = null;
+    private Collection<NearPlace> getNearestPlaces(LatLng toPos, SparseArray<NearPlace> places) {
 
         if (toPos != null) {
 
-            RatePoint nearestPlace = null;
-            float nearestDistance = -1;
+            final double myLat = toPos.latitude;
+            final double myLng = toPos.longitude;
+
+            PriorityQueue<NearPlace> q = new PriorityQueue<>(MAX_NON_CLUSTERED_SIZE, new Comparator<NearPlace>() {
+                @Override
+                public int compare(NearPlace lhs, NearPlace rhs) {
+
+                    float[] result1 = new float[1];
+                    Location.distanceBetween(myLat, myLng, lhs.ratePoint.x, lhs.ratePoint.y, result1);
+
+                    float[] result2 = new float[1];
+                    Location.distanceBetween(myLat, myLng, rhs.ratePoint.x, rhs.ratePoint.y, result2);
+
+                    return result1[0] < result2[0] ? 1 : -1;
+                }
+            });
 
             for (int i = 0; i < places.size(); i++) {
-                RatePoint p = places.valueAt(i);
+                NearPlace p = places.valueAt(i);
 
-                double myLat = toPos.latitude;
-                double myLng = toPos.longitude;
-                float[] result = new float[1];
-                double lat = p.x;
-                double lng = p.y;
+                q.add(p);
 
-                Location.distanceBetween(myLat, myLng, lat, lng, result);
-
-                if (nearestDistance == -1 || nearestDistance > result[0]) {
-                    nearestDistance = result[0];
-                    nearestPlace = p;
+                if (q.size() > MAX_NON_CLUSTERED_SIZE) {
+                    q.poll();
                 }
             }
 
-            Log.d(LOG_TAG, "nearest place: " + nearestPlace);
-
-            marker = recursiveFind(String.valueOf(nearestPlace.id),
-                    this.map.getMarkers());
-
+            return Arrays.asList(q.toArray(new NearPlace[q.size()]));
         } else {
             Log.d(LOG_TAG,
-                    "since current position is undefined, nearest marker cant't be found.");
+                    "since current position is undefined, nearest markers cant't be found.");
         }
 
-        return marker;
-    }
-
-    /**
-     * find marker by snippet recursing by cluster
-     *
-     * @param snippet
-     * @param markers list to iterate
-     * @return first marker with provided snippet or null if nothing found
-     */
-    private static Marker recursiveFind(String snippet, List<Marker> markers) {
-
-        Marker res = null;
-
-        for (Marker marker : markers) {
-            if (marker.isCluster()) {
-                res = recursiveFind(snippet, marker.getMarkers());
-                break;
-            } else {
-                if (snippet.equals(marker.getSnippet())) {
-                    res = marker;
-                    break;
-                }
-            }
-        }
-
-        return res;
-    }
-
-    /**
-     * list non-cluster markers in user-viewable region of the map
-     *
-     * @return
-     */
-    private List<Marker> getViewportMarkers() {
-        List<Marker> markers = new ArrayList<Marker>();
-
-        if (!checkReady())
-            return markers;
-
-        // This is the current user-viewable region of the map
-        LatLngBounds bounds = this.map.getProjection().getVisibleRegion().latLngBounds;
-
-        List<Marker> displayedMarkers = this.map.getDisplayedMarkers();
-        for (Marker m : displayedMarkers) {
-            boolean inBounds = bounds.contains(m.getPosition());
-            if (inBounds && !m.isCluster() && m.isVisible()) {
-                markers.add(m);
-            }
-        }
-
-        return markers;
+        return Collections.emptyList();
     }
 
     @Override
@@ -569,17 +579,18 @@ public class NearFragment extends SupportMapFragment implements UpdateListener {
         if (!checkReady())
             return;
 
-        showNearestWindow();
+        showNearestWindow(this.updater.getMapPosition());
     }
 
-    private void showNearestWindow() {
-        LatLng currentPosition = this.updater.getMapPosition();
+    private void showNearestWindow(LatLng currentPosition) {
+
         if (currentPosition != null && this.firstTimeOpen) {
-            Marker nearestMarker = getNearestMarker(currentPosition,
+            Collection<NearPlace> nearestPlaces = getNearestPlaces(currentPosition,
                     this.places);
 
-            if (nearestMarker != null) {
-                showInfoWindow(nearestMarker);
+            if (!nearestPlaces.isEmpty()) {
+
+                goToBounds(nearestPlaces);
 
                 this.firstTimeOpen = false;
             }
@@ -594,141 +605,9 @@ public class NearFragment extends SupportMapFragment implements UpdateListener {
                 .getPlaces(this.selectedRegion);
         for (int i = 0; i < newPlaces.size(); i++) {
             RatePoint place = newPlaces.valueAt(i);
-            this.places.put(place.id, place);
+            this.places.put(place.id, new NearPlace(place));
         }
 
         reloadMapItems(this.places);
-    }
-
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.near_menu, menu);
-    }
-
-    private void showInfoWindow(final Marker marker) {
-
-        if (!checkReady())
-            return;
-
-        float zoomLevel = this.map.getMinZoomLevelNotClustered(marker);
-
-        zoomLevel = zoomLevel < 1.0 ? ZOOM_CLASTER_THRESHOLD : zoomLevel; // too
-        // big
-
-        float origZoom = this.map.getCameraPosition().zoom;
-
-        zoomLevel = origZoom > zoomLevel ? origZoom : zoomLevel; // do not zoom
-        // out
-
-        Log.d(LOG_TAG, "showing marker: " + marker + " at zoom:" + zoomLevel);
-
-        this.map.moveCamera(CameraUpdateFactory.newLatLngZoom(
-                marker.getPosition(), zoomLevel));
-
-        marker.setClusterGroup(ClusterGroup.NOT_CLUSTERED);
-
-        marker.showInfoWindow();
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-
-        Activity context = this.getActivity();
-
-        if (context == null)
-            return false;
-
-        // item don't need map
-        int menuItemId = item.getItemId();
-        switch (menuItemId) {
-            case R.id.menu_refresh:
-                Log.d(LOG_TAG, "updating...");
-
-                this.tracker.trackPageView("/menuUpdate");
-
-                this.updater.read(this.selectedRegion, true);
-
-                return true;
-        }
-
-        // ------
-
-        // map dependent items
-        if (!checkReady())
-            return false;
-
-        // filter not cluster markers
-        List<Marker> markers = getViewportMarkers();
-        int size = markers.size();
-
-        switch (menuItemId) {
-            case R.id.menu_near_prev:
-                Log.d(LOG_TAG, "prev marker");
-
-                this.tracker.trackPageView("/nearPrev");
-
-                if (size == 0) {
-                    return true;
-                }
-
-                for (int j = size - 1; j >= 0; j--) {
-                    Marker m = markers.get(j);
-
-                    if (m.isInfoWindowShown()) {
-                        m.hideInfoWindow();
-
-                        if (j > 0) {
-                            // show prev marker
-                            final Marker marker = markers.get(j - 1);
-                            showInfoWindow(marker);
-                            return true;
-                        }
-
-                        break;
-                    }
-                }
-
-                // if get there (no info windows shown or no prev marker) - show
-                // last marker
-                final Marker marker = markers.get(size - 1);
-                showInfoWindow(marker);
-
-                return true;
-            case R.id.menu_near_next:
-                Log.d(LOG_TAG, "next marker");
-
-                this.tracker.trackPageView("/nearNext");
-
-                if (size == 0) {
-                    return true;
-                }
-
-                for (int i = 0; i < size; i++) {
-                    Marker m = markers.get(i);
-
-                    if (m.isInfoWindowShown()) {
-                        m.hideInfoWindow();
-
-                        if (i < size - 1) {
-                            // show next marker
-                            final Marker nextMarker = markers.get(i + 1);
-                            showInfoWindow(nextMarker);
-
-                            return true;
-                        }
-
-                        break;
-                    }
-                }
-
-                // if get there (no info windows shown or no next marker) - show
-                // first marker
-                final Marker firstMarker = markers.get(0);
-                showInfoWindow(firstMarker);
-
-                return true;
-        }
-
-        return false; // should never happen
     }
 }
