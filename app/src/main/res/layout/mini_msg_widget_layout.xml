@@ -10,6 +10,6 @@
 
 	<TextView android:text="@string/msg_updating"
 		android:id="@+id/tv_mini_message_text"
-		style="@style/RateValueTextArea"></TextView>
+		style="@style/RateValueTextArea"/>
 
 </LinearLayout>

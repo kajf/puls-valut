@@ -401,8 +401,6 @@ public class TabsActivity extends ActionBarActivity implements Updater,
         // set a custom shadow that overlays the main content when the drawer opens
         mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
 
-        Resources rs = getResources();
-
         List<String> pages = new ArrayList<>();
         if (!dualPane) {
             pages.add(mTitleBest);

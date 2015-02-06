@@ -398,11 +398,6 @@ public class NearFragment extends SupportMapFragment
 
                 List<RateItem> list = NearFragment.this.updater.getRates(place.id);
 
-                if (place == null) {
-                    Log.e(LOG_TAG, "can't find ratePoint with id: " + place.id);
-                    return this.mWindow;
-                }
-
                 LinearLayout table = (LinearLayout) this.mWindow
                         .findViewById(R.id.rates_table);
 
@@ -435,7 +430,7 @@ public class NearFragment extends SupportMapFragment
                         String value = TabsActivity.FMT_RATE_VALUE
                                 .format(rateVal);
 
-                        String diff = "";
+                        String diff;
                         if (diffVal > -0.0001 && diffVal < 0.0001) {
                             // zero diff
                             diff = getResources().getString(

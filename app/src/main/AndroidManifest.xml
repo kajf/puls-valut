@@ -49,9 +49,6 @@ android:installLocation="auto">
         </intent-filter>
     </activity>
 
-    <activity android:name=".ui.main.HelpActivity_">
-    </activity>
-
     <activity android:name=".ui.main.PrefsActivity_"
         android:label="@string/btn_settings">
         <intent-filter>
@@ -149,7 +146,7 @@ android:installLocation="auto">
         </intent-filter>
     </receiver>
 
-    <service android:name=".UpdateService_"></service>
+    <service android:name=".UpdateService_"/>
 
     <meta-data
         android:name="com.google.android.gms.version"

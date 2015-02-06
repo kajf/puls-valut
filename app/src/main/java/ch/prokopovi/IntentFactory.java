@@ -150,7 +150,6 @@ public final class IntentFactory {
 	 * 
 	 * @param context
 	 * @param prefs
-	 * @param id
 	 * @return
 	 */
 	public static PendingIntent createWeakUpdateServiceIntent(Context context,

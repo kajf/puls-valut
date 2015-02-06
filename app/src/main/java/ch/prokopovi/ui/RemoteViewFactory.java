@@ -419,14 +419,8 @@ public final class RemoteViewFactory {
 	 * 
 	 * @param context
 	 * @param views
-	 * @param updClickId
-	 *            id of view to bind update click event to
-	 * @param cfgClickId
-	 *            id of view to bind config click event to
+	 * @param preferences
 	 * @param uiMap
-	 * @param provider
-	 * @param rateType
-	 * @param id
 	 */
 	private static void addServiceClickListener(Context context,
 			RemoteViews views, WidgetPreferences preferences, ClickUiMap uiMap) {

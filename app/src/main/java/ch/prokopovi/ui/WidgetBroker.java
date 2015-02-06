@@ -40,10 +40,10 @@ public class WidgetBroker {
 	/**
 	 * update widgets with particular bunch
 	 * 
-	 * @param bunch
-	 * @param updateType
+	 * @param context
 	 * @param provider
 	 * @param rateType
+     * @param updateType
 	 */
 	public static void update(final Context context, ProviderCode provider,
 			RateType rateType, final WidgetUpdateType updateType) {

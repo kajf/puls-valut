@@ -65,8 +65,6 @@ public class PriorProvider extends AbstractProvider {
 	 *            currency codes to request
 	 * @param date
 	 *            end of period
-	 * @param frame
-	 *            number of days to look back from date
 	 * 
 	 * 
 	 * @return service request line

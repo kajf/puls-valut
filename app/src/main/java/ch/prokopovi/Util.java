@@ -99,7 +99,7 @@ public final class Util {
 	 * checks double against zero threshold
 	 * 
 	 * @param dbl
-	 * @param threshhold
+	 * @param threshold
 	 *            optional zero-value threshold
 	 * @return
 	 */
