@@ -346,20 +346,23 @@ public class NearFragment extends SupportMapFragment
 
             List<RateItem> list = NearFragment.this.updater.getRates(item.ratePoint.id);
 
+            String text;
             if (!list.isEmpty()) {
                 RateItem rate = list.get(0);
 
                 String title = getResources().getString(
                         rate.currency.getTitleRes());
 
-                String text = title + " " + rate.value;
-
-                iconFactory.setStyle(IconGenerator.STYLE_BLUE);
-                Bitmap bitmap = iconFactory.makeIcon(text);
-
-                markerOptions
-                        .icon(BitmapDescriptorFactory.fromBitmap(bitmap));
+                text = title + " " + rate.value;
+            } else {
+                text = "?";
             }
+
+            iconFactory.setStyle(IconGenerator.STYLE_BLUE);
+            Bitmap bitmap = iconFactory.makeIcon(text);
+
+            markerOptions
+                    .icon(BitmapDescriptorFactory.fromBitmap(bitmap));
         }
 
         @Override
