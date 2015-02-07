@@ -1,10 +1,7 @@
 package ch.prokopovi.ui.main;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
-import android.content.DialogInterface.OnClickListener;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.location.Location;
@@ -33,18 +30,16 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
-import android.widget.ListAdapter;
 import android.widget.TextView;
 
 import com.google.android.apps.analytics.GoogleAnalyticsTracker;
 import com.google.android.gms.maps.model.LatLng;
 
 import org.androidannotations.annotations.AfterViews;
-import org.androidannotations.annotations.Click;
 import org.androidannotations.annotations.EFragment;
 import org.androidannotations.annotations.OptionsItem;
 import org.androidannotations.annotations.OptionsMenu;
-import org.androidannotations.annotations.ViewById;
+import org.androidannotations.annotations.OptionsMenuItem;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -65,7 +60,6 @@ import ch.prokopovi.provider.places.PlacesProviderFactory;
 import ch.prokopovi.struct.Master.CurrencyCode;
 import ch.prokopovi.struct.Master.OperationType;
 import ch.prokopovi.struct.Master.Region;
-import ch.prokopovi.ui.AbstractWidgetConfigure;
 import ch.prokopovi.ui.main.ChoiceDialog.ChoiceCallback;
 import ch.prokopovi.ui.main.ConverterFragment.ConverterParams;
 import ch.prokopovi.ui.main.api.Converter;
@@ -298,14 +292,11 @@ public class BestRatesFragment extends ListFragment implements UpdateListener,
 
     private SearchView searchView;
 
-    @ViewById(R.id.b_exchange_type)
-    Button bExchangeType;
+    @OptionsMenuItem(R.id.menu_exchange_type)
+    MenuItem menuExchangeType;
 
-    @ViewById(R.id.b_currency)
-    Button bCurrency;
-
-    @ViewById(R.id.b_region)
-    Button bRegion;
+    @OptionsMenuItem(R.id.menu_currency)
+    MenuItem menuCurrency;
 
     @Override
     public synchronized void onUpdate() {
@@ -505,7 +496,8 @@ public class BestRatesFragment extends ListFragment implements UpdateListener,
         this.tracker = this.updater.getTracker();
         this.tracker.trackPageView("/bestRates");
 
-        initFilters();
+        // restore previously selected values
+        restoreSelections();
 
         if (getListAdapter() == null) {
             Log.d(LOG_TAG, "new list adapter is created");
@@ -531,9 +523,6 @@ public class BestRatesFragment extends ListFragment implements UpdateListener,
 
         getListView().setOnScrollListener(this);
 
-        UiHelper.applyFont(getActivity(),
-                getActivity().findViewById(R.id.list_filter), null);
-
         this.updater.read(this.selectedRegion, false);
     }
 
@@ -557,8 +546,8 @@ public class BestRatesFragment extends ListFragment implements UpdateListener,
         return supported.toArray(new CurrencyCode[supported.size()]);
     }
 
-    @Click(R.id.b_exchange_type)
-    void exchangeTypeClick() {
+    @OptionsItem
+    void menuExchangeType() {
         this.tracker.trackPageView("/bestExchangeType");
 
         final BestRatesFragment parent = BestRatesFragment.this;
@@ -574,8 +563,8 @@ public class BestRatesFragment extends ListFragment implements UpdateListener,
         parent.updater.read(this.selectedRegion, false);
     }
 
-    @Click(R.id.b_currency)
-    void currencyClick() {
+    @OptionsItem
+    void menuCurrency() {
         this.tracker.trackPageView("/bestCurrency");
 
         final Context context = getActivity();
@@ -612,29 +601,6 @@ public class BestRatesFragment extends ListFragment implements UpdateListener,
                         }).create().show();
     }
 
-    @Click(R.id.b_region)
-    void regionClick() {
-
-        this.tracker.trackPageView("/bestRegion");
-
-        final Context context = getActivity();
-
-        ListAdapter adapter = AbstractWidgetConfigure.buildAdapter(context,
-                REGIONS);
-
-        AlertDialog.Builder builder = new AlertDialog.Builder(context);
-        builder.setTitle(R.string.lbl_choose_region)
-                .setAdapter(adapter, new OnClickListener() {
-
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        Log.d(LOG_TAG, "filter by: " + which);
-
-                        updateSelectedRegion(REGIONS[which]);
-                    }
-                }).show();
-    }
-
     @OptionsItem
     void menuRefresh() {
         Log.d(LOG_TAG, "updating...");
@@ -644,20 +610,10 @@ public class BestRatesFragment extends ListFragment implements UpdateListener,
         this.updater.read(this.selectedRegion, true);
     }
 
-
-    private void initFilters() {
-
-        // restore previously selected values
-        restoreSelections();
-
-        updateUiFilterValues();
-    }
-
     private void updateUiFilterValues() {
-        if (getView() != null) {
-            this.bExchangeType.setText(this.selectedExchangeType.getTitleRes());
-            this.bCurrency.setText(this.selectedCurrencyCode.getTitleRes());
-            this.bRegion.setText(this.selectedRegion.getTitleRes());
+        if (menuExchangeType != null) {
+            menuExchangeType.setTitle(this.selectedExchangeType.getTitleRes());
+            menuCurrency.setTitle(this.selectedCurrencyCode.getTitleRes());
         }
     }
 
@@ -723,7 +679,6 @@ public class BestRatesFragment extends ListFragment implements UpdateListener,
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-
         MenuItem searchItem = menu.findItem(R.id.menu_search);
 
         this.searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
@@ -778,6 +733,8 @@ public class BestRatesFragment extends ListFragment implements UpdateListener,
                     }
 
                 });
+
+        updateUiFilterValues();
     }
 
     @Override

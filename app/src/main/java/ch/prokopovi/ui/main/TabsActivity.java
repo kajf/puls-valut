@@ -8,7 +8,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
-import android.content.res.Resources;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.location.Criteria;
@@ -33,6 +32,7 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.ListAdapter;
 import android.widget.ListView;
 
 import com.adsdk.sdk.Ad;
@@ -47,7 +47,6 @@ import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.EActivity;
 import org.androidannotations.annotations.NonConfigurationInstance;
 import org.androidannotations.annotations.OptionsItem;
-import org.androidannotations.annotations.OptionsMenu;
 import org.androidannotations.annotations.ViewById;
 import org.androidannotations.annotations.res.StringRes;
 
@@ -63,6 +62,7 @@ import ch.prokopovi.PrefsUtil;
 import ch.prokopovi.R;
 import ch.prokopovi.StatsHelper;
 import ch.prokopovi.VersionHelper;
+import ch.prokopovi.api.struct.Titled;
 import ch.prokopovi.db.BestRatesDbAdapter;
 import ch.prokopovi.db.BestRatesTable.ColumnBestRates;
 import ch.prokopovi.db.DbHelper;
@@ -71,6 +71,7 @@ import ch.prokopovi.struct.Master.OperationType;
 import ch.prokopovi.struct.Master.Region;
 import ch.prokopovi.struct.best.RateItem;
 import ch.prokopovi.struct.best.RatePoint;
+import ch.prokopovi.ui.AbstractWidgetConfigure;
 import ch.prokopovi.ui.main.ConverterFragment.ConverterParams;
 import ch.prokopovi.ui.main.RateAppFragment.RateAppListener;
 import ch.prokopovi.ui.main.api.Closable;
@@ -92,7 +93,39 @@ public class TabsActivity extends ActionBarActivity implements Updater,
 	private static final long LOCATION_UPDATE_PERIOD = DateUtils.SECOND_IN_MILLIS * 5;
 	private static final long LOCATION_UPDATE_RANGE = 10; // meters
 
-	private static final String LOG_TAG = "TabsActivity";
+    private static final Region[] REGIONS = new Region[]{
+
+            Region.MINSK, //
+            Region.KIEV, //
+
+            Region.BREST, Region.GOMEL, Region.GRODNO, Region.MOGILEV,
+            Region.VITEBSK,
+
+            Region.BARANOVICHI, //
+            Region.BOBRUISK, //
+            Region.BORISOV, //
+            Region.LIDA, //
+            Region.MOZIR, //
+            Region.NOVOPOLOCK,//
+            Region.ORSHA, //
+            Region.PINSK, //
+            Region.POLOCK, //
+            Region.SOLIGORSK, //
+
+            Region.MOLODZE4NO, //
+            Region.SVETLOGORSK, //
+            Region.ZLOBIN, //
+            Region.RE4ICA, //
+            Region.SLUCK, //
+            Region.ZODINO, //
+
+            Region.ODESSA, //
+            Region.DONECK, //
+            Region.LVOV, //
+            Region.DNEPROPETROVSK, //
+    };
+
+    private static final String LOG_TAG = "TabsActivity";
 
 	static final DecimalFormat FMT_RATE_VALUE = new DecimalFormat("#.####");
 
@@ -137,6 +170,9 @@ public class TabsActivity extends ActionBarActivity implements Updater,
 	@StringRes(R.string.pref_ads_on)
 	String prefAdsOn;
 
+    @StringRes(R.string.btn_region)
+    String mTitleRegion;
+
     @StringRes(R.string.btn_settings)
     String mTitleSettings;
 
@@ -163,6 +199,8 @@ public class TabsActivity extends ActionBarActivity implements Updater,
 
     ActionBarDrawerToggle mDrawerToggle;
 
+    private final List<String> drawerItems = new ArrayList<>();
+
     /*
      * Using @NonConfigurationInstance on a @Bean will automatically update the
 	 * context ref on configuration changes, if the bean is not a singleton
@@ -187,34 +225,37 @@ public class TabsActivity extends ActionBarActivity implements Updater,
 	public void onLocationChanged(Location location) {
 		Log.d(LOG_TAG, "--- location update: " + location);
 
-		boolean newLocationIsBetter = isBetterLocation(location,
-				TabsActivity.this.myLastLocation);
+        TabsActivity ctx = TabsActivity.this;
+        boolean newLocationIsBetter = isBetterLocation(location,
+                ctx.myLastLocation);
 
-		if (!newLocationIsBetter) {
+        if (!newLocationIsBetter) {
 			Log.d(LOG_TAG, "new location is not better. skip");
 			return;
 		}
 
-		TabsActivity.this.myLastLocation = location;
+        ctx.myLastLocation = location;
 
-		Region region = findRegion(location.getLatitude(),
+        Region region = findRegion(location.getLatitude(),
 				location.getLongitude());
 
 		BestRatesFragment brf = (BestRatesFragment) getSupportFragmentManager()
 				.findFragmentByTag(FragmentTag.BEST.tag);
 
-		if (!TabsActivity.this.regionByLocationIsSet) {
+        if (!ctx.regionByLocationIsSet) {
 
-			if (region != null) {
+            if (region != null) {
 				Log.d(LOG_TAG, "setting region by location: " + region);
 
 				// set best tab's region
 
 				brf.updateSelectedRegion(region);
 
-				TabsActivity.this.regionByLocationIsSet = true;
+                updateRegionTitle(ctx, region);
 
-				read(region, false);
+                ctx.regionByLocationIsSet = true;
+
+                read(region, false);
 			}
 		} // set first time region (but do not update after first)
 
@@ -401,25 +442,25 @@ public class TabsActivity extends ActionBarActivity implements Updater,
         // set a custom shadow that overlays the main content when the drawer opens
         mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
 
-        List<String> pages = new ArrayList<>();
+        drawerItems.add(mTitleRegion);
         if (!dualPane) {
-            pages.add(mTitleBest);
-            pages.add(mTitleNear);
+            drawerItems.add(mTitleBest);
+            drawerItems.add(mTitleNear);
         }
-        pages.add(mTitleSettings);
-        pages.add(mTitleShareApp);
-        pages.add(mTitleAbout);
+        drawerItems.add(mTitleSettings);
+        drawerItems.add(mTitleShareApp);
+        drawerItems.add(mTitleAbout);
 
         // rate-app action
         int launches = getSharedPreferences(PrefsUtil.PREFS_NAME,
                 Context.MODE_PRIVATE).getInt(this.prefRateAppLaunches, 5);
         if (launches >= 0) {
-            pages.add(mTitleRateApp);
+            drawerItems.add(mTitleRateApp);
         }
 
         // Set the adapter for the list view
         mDrawerList.setAdapter(new ArrayAdapter<>(this,
-                android.R.layout.simple_list_item_1, pages));
+                android.R.layout.simple_list_item_1, drawerItems));
         // Set the list's click listener
         mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
 
@@ -443,7 +484,7 @@ public class TabsActivity extends ActionBarActivity implements Updater,
 
     private class DrawerItemClickListener implements ListView.OnItemClickListener {
         @Override
-        public void onItemClick(AdapterView parent, View view, int position, long id) {
+        public void onItemClick(AdapterView parent, View view, final int position, long id) {
 
             TabsActivity ctx = TabsActivity.this;
             String selected = (String) parent.getItemAtPosition(position);
@@ -487,12 +528,54 @@ public class TabsActivity extends ActionBarActivity implements Updater,
                 ctx.mapPosition = null;
 
                 showFragment(ctx, FragmentTag.NEAR);
+            } else if (selected.contains(mTitleRegion)) {
+
+                getTracker().trackPageView("/bestRegion");
+
+                final Context context = TabsActivity.this;
+
+                ListAdapter adapter = AbstractWidgetConfigure.buildAdapter(context,
+                        REGIONS);
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                builder.setTitle(R.string.lbl_choose_region)
+                        .setAdapter(adapter, new DialogInterface.OnClickListener() {
+
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                Log.d(LOG_TAG, "filter by: " + which);
+
+                                BestRatesFragment brf = (BestRatesFragment) getSupportFragmentManager()
+                                        .findFragmentByTag(FragmentTag.BEST.tag);
+
+                                Region region = REGIONS[which];
+
+                                brf.updateSelectedRegion(region);
+
+                                updateRegionTitle(context, region);
+                            }
+                        }).show();
             }
 
             // Highlight the selected item, update the title, and close the drawer
             mDrawerList.setItemChecked(position, true);
             mDrawerLayout.closeDrawer(mDrawerList);
 
+        }
+    }
+
+    private void updateRegionTitle(Context context, Titled region) {
+        String regionTitle =
+                context.getResources().getString(region.getTitleRes());
+        String text = mTitleRegion + ": " + regionTitle;
+
+        for (int i = 0; i < drawerItems.size(); i++) {
+            String drawerItem = drawerItems.get(i);
+
+            if (drawerItem.contains(mTitleRegion)) {
+                drawerItems.set(i, text);
+                ((ArrayAdapter) mDrawerList.getAdapter()).notifyDataSetChanged();
+            }
         }
     }
 

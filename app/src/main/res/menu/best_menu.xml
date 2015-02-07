@@ -9,6 +9,14 @@
         puls:actionViewClass="android.support.v7.widget.SearchView"
         puls:showAsAction="collapseActionView|always" />
     <item
+        android:id="@+id/menu_exchange_type"
+        android:title=""
+        puls:showAsAction="always" />
+    <item
+        android:id="@+id/menu_currency"
+        android:title=""
+        puls:showAsAction="always" />
+    <item
         android:id="@+id/menu_refresh"
         android:icon="?attr/actionUpdateIcon"
         android:title="@string/btn_refresh"

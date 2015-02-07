@@ -111,6 +111,7 @@
     <string name="btn_rate_app">Оценить</string>
 
     <string name="btn_settings">Настройки</string>
+    <string name="btn_region">Регион</string>
     
     <string name="no_location_svc_title">местоположение недоступно</string>
     <string name="no_location_svc_msg">Для поиска ближайших обменных пунктов необходимо знать местоположение.\n\nРазрешить определять местоположение?</string>
