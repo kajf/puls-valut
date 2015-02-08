@@ -154,7 +154,7 @@ public class TabsActivity extends ActionBarActivity implements Updater,
 
 	private GoogleAnalyticsTracker tracker;
 
-	private final Set<UpdateListener> updateListeners = new HashSet<UpdateListener>();
+	private final Set<UpdateListener> updateListeners = new HashSet<>();
 
 	private boolean dualPane = false;
 
@@ -442,7 +442,10 @@ public class TabsActivity extends ActionBarActivity implements Updater,
         // set a custom shadow that overlays the main content when the drawer opens
         mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
 
-        drawerItems.add(mTitleRegion);
+        Region region = loadSelectedRegion();
+        String regionTitle = formatRegionTitle(this, region);
+
+        drawerItems.add(regionTitle);
         if (!dualPane) {
             drawerItems.add(mTitleBest);
             drawerItems.add(mTitleNear);
@@ -480,6 +483,28 @@ public class TabsActivity extends ActionBarActivity implements Updater,
         };
         mDrawerToggle.syncState();
         mDrawerLayout.setDrawerListener(mDrawerToggle);
+    }
+
+    /**
+     * restore DDLs selections from prefs if nothing selected
+     */
+    private Region loadSelectedRegion() {
+
+        SharedPreferences prefs = getSharedPreferences(
+                PrefsUtil.PREFS_NAME, Context.MODE_PRIVATE);
+
+        int regionId = prefs.getInt(getString(R.string.pref_best_region),
+                Region.MINSK.getId());
+
+        Region region = Region.get(regionId);
+
+        updateRegionTitle(this, region);
+
+        Log.d(LOG_TAG, "restoring prev/initial selection: "
+                + region);
+
+        return region;
+
     }
 
     private class DrawerItemClickListener implements ListView.OnItemClickListener {
@@ -564,10 +589,17 @@ public class TabsActivity extends ActionBarActivity implements Updater,
         }
     }
 
-    private void updateRegionTitle(Context context, Titled region) {
+    private String formatRegionTitle(Context context, Titled region) {
         String regionTitle =
                 context.getResources().getString(region.getTitleRes());
-        String text = mTitleRegion + ": " + regionTitle;
+        String title = mTitleRegion + ": " + regionTitle;
+
+        return title;
+    }
+
+    private void updateRegionTitle(Context context, Titled region) {
+
+        String text = formatRegionTitle(context, region);
 
         for (int i = 0; i < drawerItems.size(); i++) {
             String drawerItem = drawerItems.get(i);
@@ -907,7 +939,7 @@ public class TabsActivity extends ActionBarActivity implements Updater,
 	}
 
 	@Override
-	public void сlose() {
+	public void close() {
 		// close keyboard
 		InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
 

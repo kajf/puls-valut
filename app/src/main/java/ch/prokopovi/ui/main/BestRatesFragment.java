@@ -482,7 +482,7 @@ public class BestRatesFragment extends ListFragment implements UpdateListener,
 
             this.itemsAllowedInList = PAGE_SIZE;
 
-            this.converter.сlose();
+            this.converter.close();
 
             this.selectedRegion = newRegion;
             this.updater.read(this.selectedRegion, false);
@@ -552,7 +552,7 @@ public class BestRatesFragment extends ListFragment implements UpdateListener,
 
         final BestRatesFragment parent = BestRatesFragment.this;
 
-        parent.converter.сlose();
+        parent.converter.close();
 
         parent.selectedExchangeType = OperationType.BUY
                 .equals(parent.selectedExchangeType) ? OperationType.SELL
@@ -587,7 +587,7 @@ public class BestRatesFragment extends ListFragment implements UpdateListener,
                                     return;
                                 }// real change
 
-                                parent.converter.сlose();
+                                parent.converter.close();
 
                                 parent.selectedCurrencyCode = newChoise;
 
@@ -758,7 +758,7 @@ public class BestRatesFragment extends ListFragment implements UpdateListener,
         // scrolling down
         if (newFirstVisiblePosition > this.firstVisiblePosition) {
 
-            this.converter.сlose();
+            this.converter.close();
         }
 
         this.firstVisiblePosition = newFirstVisiblePosition;

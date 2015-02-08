@@ -232,6 +232,6 @@ public class ConverterFragment extends Fragment {
 
 	@Click(R.id.ib_conv_close)
 	void closeClick() {
-		this.closable.сlose();
+		this.closable.close();
 	}
 }
