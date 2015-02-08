@@ -78,38 +78,6 @@ public class BestRatesFragment extends ListFragment implements UpdateListener,
 
     private static final int PAGE_SIZE = 40;
 
-    private static final Region[] REGIONS = new Region[]{
-
-            Region.MINSK, //
-            Region.KIEV, //
-
-            Region.BREST, Region.GOMEL, Region.GRODNO, Region.MOGILEV,
-            Region.VITEBSK,
-
-            Region.BARANOVICHI, //
-            Region.BOBRUISK, //
-            Region.BORISOV, //
-            Region.LIDA, //
-            Region.MOZIR, //
-            Region.NOVOPOLOCK,//
-            Region.ORSHA, //
-            Region.PINSK, //
-            Region.POLOCK, //
-            Region.SOLIGORSK, //
-
-            Region.MOLODZE4NO, //
-            Region.SVETLOGORSK, //
-            Region.ZLOBIN, //
-            Region.RE4ICA, //
-            Region.SLUCK, //
-            Region.ZODINO, //
-
-            Region.ODESSA, //
-            Region.DONECK, //
-            Region.LVOV, //
-            Region.DNEPROPETROVSK, //
-    };
-
     private class BestListAdapter extends SimpleCursorAdapter {
 
         private BestListAdapter(Context context, int layout, Cursor c,
@@ -196,7 +164,6 @@ public class BestRatesFragment extends ListFragment implements UpdateListener,
             View.OnClickListener expandCollapseListener = new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    //Log.d(LOG_TAG, "on descr click");
 
                     boolean expanded = whView.getVisibility() == View.VISIBLE;
 
@@ -344,7 +311,7 @@ public class BestRatesFragment extends ListFragment implements UpdateListener,
     private void updateDistanceMaps(Cursor cursor) {
 
         int size = cursor.getCount();
-        List<SortEntry> list = new ArrayList<SortEntry>(size);
+        List<SortEntry> list = new ArrayList<>(size);
 
         Location myLastLocation = this.updater.getLocation();
 
@@ -536,7 +503,7 @@ public class BestRatesFragment extends ListFragment implements UpdateListener,
 
         PlacesProvider provider = PlacesProviderFactory.find(region);
 
-        Set<CurrencyCode> supported = new LinkedHashSet<CurrencyCode>();
+        Set<CurrencyCode> supported = new LinkedHashSet<>();
         for (CurrencyCode curr : CurrencyCode.values()) {
             if (provider.isSupported(curr)) {
                 supported.add(curr);
@@ -674,7 +641,7 @@ public class BestRatesFragment extends ListFragment implements UpdateListener,
         prefs.putInt(getString(R.string.pref_best_region),
                 this.selectedRegion.getId());
 
-        prefs.commit();
+        prefs.apply();
     }
 
     @Override
