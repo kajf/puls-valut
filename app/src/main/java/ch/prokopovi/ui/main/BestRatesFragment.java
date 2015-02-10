@@ -11,10 +11,12 @@ import android.support.v4.view.MenuItemCompat;
 import android.support.v4.view.MenuItemCompat.OnActionExpandListener;
 import android.support.v4.widget.CursorAdapter;
 import android.support.v4.widget.SimpleCursorAdapter;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.SearchView.OnQueryTextListener;
 import android.text.TextUtils;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -40,6 +42,7 @@ import org.androidannotations.annotations.EFragment;
 import org.androidannotations.annotations.OptionsItem;
 import org.androidannotations.annotations.OptionsMenu;
 import org.androidannotations.annotations.OptionsMenuItem;
+import org.androidannotations.annotations.ViewById;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -70,7 +73,7 @@ import ch.prokopovi.ui.main.api.Updater;
 @EFragment
 @OptionsMenu(R.menu.best_menu)
 public class BestRatesFragment extends ListFragment implements UpdateListener,
-        OnScrollListener {
+        OnScrollListener, SwipeRefreshLayout.OnRefreshListener {
 
     private static final String LOG_TAG = "BestRatesFragment";
     private static final DecimalFormat DISTANCE_FORMAT = new DecimalFormat(
@@ -265,6 +268,9 @@ public class BestRatesFragment extends ListFragment implements UpdateListener,
     @OptionsMenuItem(R.id.menu_currency)
     MenuItem menuCurrency;
 
+    @ViewById(R.id.swipe_container)
+    SwipeRefreshLayout swipeLayout;
+
     @Override
     public synchronized void onUpdate() {
 
@@ -285,6 +291,8 @@ public class BestRatesFragment extends ListFragment implements UpdateListener,
         updateUiFilterValues();
 
         updateListViewData();
+
+        swipeLayout.setRefreshing(false);
     }
 
     public void updateListViewData() {
@@ -452,6 +460,8 @@ public class BestRatesFragment extends ListFragment implements UpdateListener,
             this.converter.close();
 
             this.selectedRegion = newRegion;
+
+            swipeLayout.setRefreshing(true);
             this.updater.read(this.selectedRegion, false);
         }
     }
@@ -489,6 +499,17 @@ public class BestRatesFragment extends ListFragment implements UpdateListener,
         } // first launch
 
         getListView().setOnScrollListener(this);
+
+        swipeLayout.setOnRefreshListener(this);
+
+        // workaround for
+        // Issue 77712: SwipeRefreshLayout indicator does not shown
+        // see https://code.google.com/p/android/issues/detail?id=77712
+        TypedValue typed_value = new TypedValue();
+        getActivity().getTheme().resolveAttribute(android.support.v7.appcompat.R.attr.actionBarSize, typed_value, true);
+        swipeLayout.setProgressViewOffset(false, 0, getResources().getDimensionPixelSize(typed_value.resourceId));
+        // ---------
+        swipeLayout.setRefreshing(true);
 
         this.updater.read(this.selectedRegion, false);
     }
@@ -568,8 +589,8 @@ public class BestRatesFragment extends ListFragment implements UpdateListener,
                         }).create().show();
     }
 
-    @OptionsItem
-    void menuRefresh() {
+    @Override
+    public void onRefresh() {
         Log.d(LOG_TAG, "updating...");
 
         this.tracker.trackPageView("/menuUpdate");

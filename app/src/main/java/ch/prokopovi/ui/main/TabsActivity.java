@@ -164,7 +164,7 @@ public class TabsActivity extends ActionBarActivity implements Updater,
 
 	private boolean regionByLocationIsSet = false;
 
-	@StringRes(R.string.pref_rate_app_launches)
+    @StringRes(R.string.pref_rate_app_launches)
 	String prefRateAppLaunches;
 
 	@StringRes(R.string.pref_ads_on)
@@ -428,11 +428,6 @@ public class TabsActivity extends ActionBarActivity implements Updater,
 
 			// full screen
 			PrefsUtil.initFullscreen(this);
-		}
-
-		// show progress dialog on orientation change
-		if (this.task.isInProgress()) {
-			getProgressDialog().show();
 		}
 	}
 
@@ -872,10 +867,6 @@ public class TabsActivity extends ActionBarActivity implements Updater,
 	public void onDestroy() {
 		super.onDestroy();
 
-		if (getProgressDialog().isShowing()) {
-			getProgressDialog().dismiss();
-		}
-
 		this.tracker.dispatch();
 		this.tracker.stopSession();
 
@@ -896,21 +887,6 @@ public class TabsActivity extends ActionBarActivity implements Updater,
 		} catch (Exception e) {
 			Log.e(LOG_TAG, "error on fragments update", e);
 		}
-	}
-
-	/**
-	 * lazy progress dialog creating
-     *
-     * @return
-     */
-    ProgressDialog getProgressDialog() {
-		if (this.progressDialog == null) {
-			this.progressDialog = new ProgressDialog(this);
-			this.progressDialog.setMessage("Обновляем ...");
-			this.progressDialog.setCancelable(false);
-		}
-
-		return this.progressDialog;
 	}
 
 	@Override
@@ -982,7 +958,7 @@ public class TabsActivity extends ActionBarActivity implements Updater,
 		if (now || expired) {
 
 			if (!this.task.isInProgress()) {
-				getProgressDialog().show();
+
 				this.task.go(this.dbAdapter, region);
 			} // already running
 		} else {

@@ -65,10 +65,6 @@ public class UpdateTask {
 	@UiThread
 	void end() {
 		this.activity.fireUpdate();
-
-		ProgressDialog dlg = this.activity.getProgressDialog();
-		if (dlg.isShowing())
-			dlg.dismiss();
 	}
 
 	@UiThread
