@@ -17,6 +17,7 @@ import android.widget.TextView;
 import com.google.android.apps.analytics.GoogleAnalyticsTracker;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.Projection;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
@@ -67,6 +68,8 @@ public class NearFragment extends SupportMapFragment
         ClusterManager.OnClusterItemInfoWindowClickListener<NearFragment.NearPlace>,
         GoogleMap.OnCameraChangeListener {
 
+    private static final int DEFAULT_ZOOM = 15;
+
     private static final int MAX_NON_CLUSTERED_SIZE = 6;
 
     private static final String LOG_TAG = "NearFragment";
@@ -80,6 +83,7 @@ public class NearFragment extends SupportMapFragment
     private Region selectedRegion;
 
     private final SparseArray<NearPlace> places = new SparseArray<>();
+    private final Set<Integer> placesOnMap = new HashSet<>();
 
     private Map<CurrencyCode, Map<OperationType, Double>> bestRates;
 
@@ -178,8 +182,8 @@ public class NearFragment extends SupportMapFragment
 
         LatLng currentPosition = this.updater.getMapPosition();
         if (currentPosition != null)
-            getMap().moveCamera(CameraUpdateFactory.newLatLng(
-                    currentPosition));
+            getMap().moveCamera(CameraUpdateFactory.newLatLngZoom(
+                    currentPosition, DEFAULT_ZOOM));
     }
 
     @Override
@@ -189,9 +193,10 @@ public class NearFragment extends SupportMapFragment
 
         super.onPause();
 
-        if (checkReady()) {
-            this.updater.removeUpdateListener(this);
-        }
+        if (!checkReady())
+            return;
+
+        this.updater.removeUpdateListener(this);
     }
 
     @Override
@@ -217,9 +222,11 @@ public class NearFragment extends SupportMapFragment
      * Checks if the map is ready (which depends on whether the Google Play
      * services APK is available. This should be called prior to calling any
      * methods on GoogleMap.
+     *
+     * also checks is fragment added to activity
      */
     private boolean checkReady() {
-        if (getMap() == null) {
+        if (getMap() == null || !isAdded()) {
             Log.w(LOG_TAG, "map is not ready");
             return false;
         }
@@ -246,6 +253,7 @@ public class NearFragment extends SupportMapFragment
                 position.longitude);
         if (positionRegion == null) {
             Log.w(LOG_TAG, "region for new position is not found");
+            // TODO show toast to user
             return;
         }
 
@@ -263,18 +271,44 @@ public class NearFragment extends SupportMapFragment
             this.bestRates = NearFragment.this.updater
                     .getBestRates(NearFragment.this.selectedRegion);
         }
-
-        showNearestWindow(position);
     }
 
 
     @Override
     public void onCameraChange(CameraPosition position) {
 
-            if (!checkReady())
-                return;
+        if (!checkReady())
+            return;
 
         newPosition(position.target);
+
+        // adding only visible
+        boolean isChanged = false;
+        Projection projection = getMap().getProjection();
+        LatLngBounds bounds = projection.getVisibleRegion().latLngBounds;
+        for (int i = 0; i < places.size(); i++) {
+            NearPlace nearPlace = places.valueAt(i);
+
+            // not visible
+            if (!bounds.contains(nearPlace.getPosition()))
+                continue;
+
+            // already added
+            if (placesOnMap.contains(nearPlace.ratePoint.id))
+                continue;
+
+            mClusterManager.addItem(nearPlace);
+            placesOnMap.add(nearPlace.ratePoint.id);
+            isChanged = true;
+        }
+
+        if (isChanged)
+            mClusterManager.cluster();
+
+        Log.w(LOG_TAG, "addMarkers :" + placesOnMap.size());
+        // --------------
+
+        showNearestWindow(position.target);
 
         mClusterManager.onCameraChange(position);
     }
@@ -343,6 +377,9 @@ public class NearFragment extends SupportMapFragment
         @Override
         protected void onBeforeClusterItemRendered(NearPlace item, MarkerOptions markerOptions) {
 
+            if (!checkReady())
+                return;
+
             List<RateItem> list = NearFragment.this.updater.getRates(item.ratePoint.id);
 
             String text;
@@ -390,6 +427,9 @@ public class NearFragment extends SupportMapFragment
         @Override
         public View getInfoWindow(Marker marker) {
 
+            if (!checkReady())
+                return this.mWindow;
+
             try {
 
                 if (selectedClusterItem == null) {
@@ -421,11 +461,11 @@ public class NearFragment extends SupportMapFragment
                         String title = getResources().getString(
                                 currency.getTitleRes());
 
-                        OperationType operaton = item.operationType;
+                        OperationType operation = item.operationType;
 
                         Double rateVal = item.value;
                         Double bestVal = NearFragment.this.bestRates.get(
-                                currency).get(operaton);
+                                currency).get(operation);
 
                         Double diffVal = bestVal - rateVal;
 
@@ -444,7 +484,7 @@ public class NearFragment extends SupportMapFragment
 
                         View row = getRow(table, currency.getId());
 
-                        boolean buy = OperationType.BUY.equals(operaton);
+                        boolean buy = OperationType.BUY.equals(operation);
 
                         int valueId = buy ? R.id.curr_buy : R.id.curr_sell;
                         int diffId = buy ? R.id.curr_buy_diff
@@ -493,37 +533,6 @@ public class NearFragment extends SupportMapFragment
             titleUi.setText(textViewVal);
         }
 
-    }
-
-    /**
-     * set markers on map according provided places
-     *
-     * @param places
-     */
-    private synchronized void reloadMapItems(SparseArray<NearPlace> places) {
-
-        if (!checkReady())
-            return;
-
-        // TODO this.map.clear();
-        this.mClusterManager.clearItems();
-
-        Set<Integer> added = new HashSet<Integer>();
-
-        // Loop through all the items that are available to be placed on the
-        // map
-        for (int i = 0; i < places.size(); i++) {
-            NearPlace place = places.valueAt(i);
-
-            int id = place.ratePoint.id;
-
-            if (added.contains(id)) {
-                continue;
-            }
-
-            mClusterManager.addItem(place);
-            added.add(id);
-        }
     }
 
     // TODO handle case when same point have more then one marker (with and
@@ -605,6 +614,7 @@ public class NearFragment extends SupportMapFragment
             this.places.put(place.id, new NearPlace(place));
         }
 
-        reloadMapItems(this.places);
+        placesOnMap.clear();
+        this.mClusterManager.clearItems();
     }
 }
