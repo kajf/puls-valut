@@ -178,8 +178,6 @@ public class NearFragment extends SupportMapFragment implements
         if (!checkReady())
             return;
 
-        this.updater.addUpdateListener(this);
-
         this.firstTimeOpen = true;
 
         LatLng currentPosition = this.updater.getMapPosition();
@@ -198,7 +196,6 @@ public class NearFragment extends SupportMapFragment implements
         if (!checkReady())
             return;
 
-        this.updater.removeUpdateListener(this);
     }
 
     @Override
@@ -212,7 +209,6 @@ public class NearFragment extends SupportMapFragment implements
         // the callback interface. If not, it throws an exception
         try {
             this.updater = (Updater) activity;
-            this.updater.addUpdateListener(this);
 
         } catch (ClassCastException e) {
             throw new ClassCastException(activity.toString()
@@ -243,8 +239,10 @@ public class NearFragment extends SupportMapFragment implements
             return;
         }
 
+        firstTimeOpen = true; // for showNearest...
         getMap().animateCamera(CameraUpdateFactory.newLatLngZoom(
                 newRegion.getCoords(), DEFAULT_ZOOM));
+
     }
 
     /**

@@ -1,7 +1,6 @@
 package ch.prokopovi.ui.main;
 
 import android.app.AlertDialog;
-import android.app.ProgressDialog;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -54,10 +53,8 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import ch.prokopovi.PrefsUtil;
 import ch.prokopovi.R;
@@ -152,13 +149,9 @@ public class TabsActivity extends ActionBarActivity implements
 		}
 	}
 
-	private ProgressDialog progressDialog;
-
 	private BestRatesDbAdapter dbAdapter;
 
 	private GoogleAnalyticsTracker tracker;
-
-	private final Set<UpdateListener> updateListeners = new HashSet<>();
 
 	private boolean dualPane = false;
 
@@ -904,18 +897,16 @@ public class TabsActivity extends ActionBarActivity implements
 		Log.d(LOG_TAG, "closed");
 	}
 
-	void fireUpdate() {
-		try {
+    void fireDataUpdate() {
+        try {
 
-			Log.d(LOG_TAG, "fire update for " + this.updateListeners.size()
-					+ " listeners");
+            Collection<UpdateListener> upListeners =
+                    getListeners(FragmentTag.BEST, FragmentTag.NEAR);
+            for (UpdateListener upListener : upListeners) {
+                upListener.onUpdate();
+            }
 
-			for (UpdateListener listener : this.updateListeners) {
-
-				listener.onUpdate();
-			}
-
-		} catch (Exception e) {
+        } catch (Exception e) {
 			Log.e(LOG_TAG, "error on fragments update", e);
 		}
 	}
@@ -994,23 +985,13 @@ public class TabsActivity extends ActionBarActivity implements
 			} // already running
 		} else {
 			// skip update
-			fireUpdate();
-		}
+            fireDataUpdate();
+        }
 	}
 
 	@Override
 	public GoogleAnalyticsTracker getTracker() {
 		return this.tracker;
-	}
-
-	@Override
-	public void addUpdateListener(UpdateListener updateListener) {
-		this.updateListeners.add(updateListener);
-	}
-
-	@Override
-	public void removeUpdateListener(UpdateListener updateListener) {
-		this.updateListeners.remove(updateListener);
 	}
 
 	@Override

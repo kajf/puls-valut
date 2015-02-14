@@ -9,7 +9,6 @@ import org.androidannotations.annotations.RootContext;
 import org.androidannotations.annotations.UiThread;
 
 import android.app.AlertDialog;
-import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.util.Log;
 import ch.prokopovi.R;
@@ -64,7 +63,7 @@ public class UpdateTask {
 
 	@UiThread
 	void end() {
-		this.activity.fireUpdate();
+		this.activity.fireDataUpdate();
 	}
 
 	@UiThread

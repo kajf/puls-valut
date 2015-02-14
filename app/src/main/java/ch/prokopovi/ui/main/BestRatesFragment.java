@@ -442,7 +442,6 @@ public class BestRatesFragment extends ListFragment implements
         // the callback interface. If not, it throws an exception
         try {
             this.updater = (Updater) activity;
-            this.updater.addUpdateListener(this);
 
             this.openListener = (OpenListener) activity;
             this.converter = (Converter) activity;

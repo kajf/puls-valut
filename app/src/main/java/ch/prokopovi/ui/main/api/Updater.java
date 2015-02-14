@@ -19,10 +19,6 @@ public interface Updater {
 
 	void read(Region region, boolean now);
 
-	void addUpdateListener(UpdateListener updateListener);
-
-	void removeUpdateListener(UpdateListener updateListener);
-
 	Location getLocation();
 
 	LatLng getMapPosition();
