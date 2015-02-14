@@ -52,6 +52,7 @@ import org.androidannotations.annotations.res.StringRes;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -77,15 +78,18 @@ import ch.prokopovi.ui.main.RateAppFragment.RateAppListener;
 import ch.prokopovi.ui.main.api.Closable;
 import ch.prokopovi.ui.main.api.Converter;
 import ch.prokopovi.ui.main.api.OpenListener;
+import ch.prokopovi.ui.main.api.RegionListener;
 import ch.prokopovi.ui.main.api.UpdateListener;
 import ch.prokopovi.ui.main.api.Updater;
 
 @EActivity(R.layout.fragment_tabs)
-public class TabsActivity extends ActionBarActivity implements Updater,
-		OpenListener, RateAppListener, AdListener, LocationListener, Converter,
-		Closable {
+public class TabsActivity extends ActionBarActivity implements
+        Updater,
+        OpenListener,
+        RateAppListener, AdListener, LocationListener, Converter,
+        Closable {
 
-	private static final long EXPIRATION_PERIOD = 10 * DateUtils.HOUR_IN_MILLIS;
+    private static final long EXPIRATION_PERIOD = 10 * DateUtils.HOUR_IN_MILLIS;
 	private static final int REGION_NEAR_THRESHOLD = 16 * 1000; // meters
 	static final float DUAL_PANE_RATIO = 0.4f;
 
@@ -236,22 +240,15 @@ public class TabsActivity extends ActionBarActivity implements Updater,
 
         ctx.myLastLocation = location;
 
-        Region region = findRegion(location.getLatitude(),
-				location.getLongitude());
-
-		BestRatesFragment brf = (BestRatesFragment) getSupportFragmentManager()
-				.findFragmentByTag(FragmentTag.BEST.tag);
-
         if (!ctx.regionByLocationIsSet) {
+
+            Region region = findRegion(location.getLatitude(),
+                    location.getLongitude());
 
             if (region != null) {
 				Log.d(LOG_TAG, "setting region by location: " + region);
 
-				// set best tab's region
-
-				brf.updateSelectedRegion(region);
-
-                updateRegionTitle(ctx, region);
+                fireRegionUpdate(region);
 
                 ctx.regionByLocationIsSet = true;
 
@@ -260,7 +257,9 @@ public class TabsActivity extends ActionBarActivity implements Updater,
 		} // set first time region (but do not update after first)
 
 		// update data-location calculations in best rates tab
-		if (brf != null && brf.isVisible()) {
+        BestRatesFragment brf = (BestRatesFragment) getSupportFragmentManager()
+                .findFragmentByTag(FragmentTag.BEST.tag);
+        if (brf != null && brf.isVisible()) {
 			brf.updateListViewData();
 		}
 	}
@@ -547,6 +546,15 @@ public class TabsActivity extends ActionBarActivity implements Updater,
 
                 ctx.mapPosition = null;
 
+                if (myLastLocation != null) {
+
+                    Region myRegion = findRegion(
+                            myLastLocation.getLatitude(),
+                            myLastLocation.getLongitude());
+
+                    fireRegionUpdate(myRegion);
+                }
+
                 showFragment(ctx, FragmentTag.NEAR);
             } else if (selected.contains(mTitleRegion)) {
 
@@ -565,14 +573,9 @@ public class TabsActivity extends ActionBarActivity implements Updater,
                             public void onClick(DialogInterface dialog, int which) {
                                 Log.d(LOG_TAG, "filter by: " + which);
 
-                                BestRatesFragment brf = (BestRatesFragment) getSupportFragmentManager()
-                                        .findFragmentByTag(FragmentTag.BEST.tag);
-
                                 Region region = REGIONS[which];
 
-                                brf.updateSelectedRegion(region);
-
-                                updateRegionTitle(context, region);
+                                fireRegionUpdate(region);
                             }
                         }).show();
             }
@@ -582,6 +585,34 @@ public class TabsActivity extends ActionBarActivity implements Updater,
             mDrawerLayout.closeDrawer(mDrawerList);
 
         }
+    }
+
+    private void fireRegionUpdate(Region region) {
+
+        Collection<RegionListener> regListeners =
+                getListeners(FragmentTag.BEST, FragmentTag.NEAR);
+        for (RegionListener regListener : regListeners) {
+            regListener.onRegionChange(region);
+        }
+
+        updateRegionTitle(this, region);
+    }
+
+    private <T> Collection<T> getListeners(FragmentTag... ftags) {
+
+        Collection<T> res = new ArrayList<>();
+
+        for (FragmentTag ftag : ftags) {
+            Fragment f = getSupportFragmentManager()
+                    .findFragmentByTag(ftag.tag);
+
+            if (f == null)
+                continue;
+
+            res.add((T) f);
+        }
+
+        return res;
     }
 
     private String formatRegionTitle(Context context, Titled region) {

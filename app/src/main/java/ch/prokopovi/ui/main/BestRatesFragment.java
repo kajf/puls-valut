@@ -67,13 +67,17 @@ import ch.prokopovi.ui.main.ChoiceDialog.ChoiceCallback;
 import ch.prokopovi.ui.main.ConverterFragment.ConverterParams;
 import ch.prokopovi.ui.main.api.Converter;
 import ch.prokopovi.ui.main.api.OpenListener;
+import ch.prokopovi.ui.main.api.RegionListener;
 import ch.prokopovi.ui.main.api.UpdateListener;
 import ch.prokopovi.ui.main.api.Updater;
 
 @EFragment
 @OptionsMenu(R.menu.best_menu)
-public class BestRatesFragment extends ListFragment implements UpdateListener,
-        OnScrollListener, SwipeRefreshLayout.OnRefreshListener {
+public class BestRatesFragment extends ListFragment implements
+        UpdateListener,
+        RegionListener,
+        OnScrollListener,
+        SwipeRefreshLayout.OnRefreshListener {
 
     private static final String LOG_TAG = "BestRatesFragment";
     private static final DecimalFormat DISTANCE_FORMAT = new DecimalFormat(
@@ -449,7 +453,8 @@ public class BestRatesFragment extends ListFragment implements UpdateListener,
         }
     }
 
-    public void updateSelectedRegion(Region newRegion) {
+    @Override
+    public void onRegionChange(Region newRegion) {
 
         if (!this.selectedRegion.equals(newRegion)) {
 

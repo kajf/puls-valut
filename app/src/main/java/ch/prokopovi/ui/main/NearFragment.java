@@ -48,6 +48,7 @@ import ch.prokopovi.struct.Master.OperationType;
 import ch.prokopovi.struct.Master.Region;
 import ch.prokopovi.struct.best.RateItem;
 import ch.prokopovi.struct.best.RatePoint;
+import ch.prokopovi.ui.main.api.RegionListener;
 import ch.prokopovi.ui.main.api.UpdateListener;
 import ch.prokopovi.ui.main.api.Updater;
 
@@ -60,8 +61,9 @@ import ch.prokopovi.ui.main.api.Updater;
  *
  * @author Pavel_Letsiaha
  */
-public class NearFragment extends SupportMapFragment
-        implements UpdateListener,
+public class NearFragment extends SupportMapFragment implements
+        UpdateListener,
+        RegionListener,
         ClusterManager.OnClusterClickListener<NearFragment.NearPlace>,
         ClusterManager.OnClusterInfoWindowClickListener<NearFragment.NearPlace>,
         ClusterManager.OnClusterItemClickListener<NearFragment.NearPlace>,
@@ -231,6 +233,18 @@ public class NearFragment extends SupportMapFragment
             return false;
         }
         return true;
+    }
+
+    @Override
+    public void onRegionChange(Region newRegion) {
+
+        if (newRegion == null) {
+            Log.e(LOG_TAG, "new region should not be null");
+            return;
+        }
+
+        getMap().animateCamera(CameraUpdateFactory.newLatLngZoom(
+                newRegion.getCoords(), DEFAULT_ZOOM));
     }
 
     /**
