@@ -4,7 +4,7 @@ import java.util.HashMap;
 
 public class BestRatesTable {
 
-	public enum ColumnBestRates {
+	public enum ColumnBestRates implements DbColumn {
 		BEST_RATES_ID, CURRENCY_ID, EXCHANGE_TYPE_ID, RATES_PLACE_ID, TIME_UPDATED, VALUE;
 
 		private static HashMap<String, ColumnBestRates> map;
@@ -30,7 +30,12 @@ public class BestRatesTable {
 
 			return names;
 		}
-	}
+
+        @Override
+        public String getName() {
+            return name();
+        }
+    }
 
 	// Database table
 	public static final String TABLE = "T_BEST_RATES";

@@ -2,9 +2,11 @@ package ch.prokopovi.exported;
 
 import java.util.HashMap;
 
+import ch.prokopovi.db.DbColumn;
+
 public class RatesPlacesTable {
 
-	public enum ColumnRatesPlaces {
+	public enum ColumnRatesPlaces implements DbColumn {
 		RATES_PLACE_ID, REGION_ID, DESCRIPTION, X, Y, ADDR, WORK_HOURS, PHONE, BANK_ID;
 
 		private static HashMap<String, ColumnRatesPlaces> map;
@@ -30,6 +32,11 @@ public class RatesPlacesTable {
 
 			return names;
 		}
+
+        @Override
+        public String getName() {
+            return name();
+        }
 	}
 
 	// Database table

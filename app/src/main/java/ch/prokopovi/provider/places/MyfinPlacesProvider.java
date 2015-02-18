@@ -1,5 +1,9 @@
 package ch.prokopovi.provider.places;
 
+import android.util.Log;
+
+import org.htmlcleaner.TagNode;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -7,9 +11,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map.Entry;
 
-import org.htmlcleaner.TagNode;
-
-import android.util.Log;
 import ch.prokopovi.Util;
 import ch.prokopovi.api.struct.BestRatesRecord;
 import ch.prokopovi.exported.PureConst.MyfinRegion;
@@ -129,13 +130,18 @@ public class MyfinPlacesProvider extends AbstractPlacesProvider {
 					double val = Util.parseDotDouble(placeTag.getText()
 							.toString());
 
-					SimpleBestRatesRecord record = new SimpleBestRatesRecord(
+                    if (val < 0.0001) {
+                        Log.w(LOG_TAG, "to small rate " + val);
+                        continue;
+                    }
+
+                    SimpleBestRatesRecord record = new SimpleBestRatesRecord(
 							mfc.getCurrency().getId(), ot.getId(), val);
 
 					rates.add(record);
 				} catch (Exception e) {
-					Log.w(LOG_TAG, "error on parsing rate " + placeNode + " "
-							+ e.getMessage());
+                    Log.w(LOG_TAG, "invalid rate "
+                            + e.getMessage());
 				}
 			}
 		}

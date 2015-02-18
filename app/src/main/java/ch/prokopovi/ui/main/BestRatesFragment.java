@@ -10,7 +10,6 @@ import android.support.v4.app.ListFragment;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.view.MenuItemCompat.OnActionExpandListener;
 import android.support.v4.widget.CursorAdapter;
-import android.support.v4.widget.SimpleCursorAdapter;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.SearchView.OnQueryTextListener;
@@ -58,6 +57,7 @@ import ch.prokopovi.Util;
 import ch.prokopovi.api.provider.PlacesProvider;
 import ch.prokopovi.api.struct.Titled;
 import ch.prokopovi.db.BestRatesTable.ColumnBestRates;
+import ch.prokopovi.db.DbColumn;
 import ch.prokopovi.exported.RatesPlacesTable.ColumnRatesPlaces;
 import ch.prokopovi.provider.places.PlacesProviderFactory;
 import ch.prokopovi.struct.Master.CurrencyCode;
@@ -85,18 +85,65 @@ public class BestRatesFragment extends ListFragment implements
 
     private static final int PAGE_SIZE = 40;
 
-    private class BestListAdapter extends SimpleCursorAdapter {
+    private class BestListAdapter extends CursorAdapter {
 
-        private BestListAdapter(Context context, int layout, Cursor c,
-                                String[] from, int[] to, int flags) {
-            super(context, layout, c, from, to, flags);
+        private LayoutInflater mInflater;
+
+        public BestListAdapter(Context context) {
+            // empty cursor until update is performed
+            super(context, null, 0);
+            mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         }
 
         @Override
-        public View getView(int i, View convertView, ViewGroup vg) {
-            Log.d(LOG_TAG, "getView " + i);
+        public View newView(Context context, Cursor cursor, ViewGroup parent) {
+            return mInflater.inflate(R.layout.best_item_layout, parent, false);
+        }
 
-            final View rowView = super.getView(i, convertView, vg);
+        private void fillText(View rowView, Cursor cursor, DbColumn col, int viewId) {
+            TextView tv = (TextView) rowView.findViewById(viewId);
+            tv.setText(cursor.getString(cursor.getColumnIndex(col.getName())));
+        }
+
+        private void fillRow(View rowView, Cursor cursor) {
+            // format value
+            fillText(rowView, cursor, ColumnBestRates.VALUE, R.id.tv_item_best_rate_value);
+            fillText(rowView, cursor, ColumnBestRates.TIME_UPDATED, R.id.tv_item_best_rate_time);
+            fillText(rowView, cursor, ColumnRatesPlaces.DESCRIPTION, R.id.tv_item_best_description);
+            fillText(rowView, cursor, ColumnRatesPlaces.ADDR, R.id.tv_item_best_addr);
+            fillText(rowView, cursor, ColumnRatesPlaces.WORK_HOURS, R.id.tv_item_best_wh);
+            fillText(rowView, cursor, ColumnRatesPlaces.PHONE, R.id.tv_item_best_phones);
+
+            // distance text
+            Integer distance = BestRatesFragment.this.distanceMap[cursor.getPosition()];
+            if (distance != null) {
+                String txt = String.valueOf(distance) + " м";
+                if (distance > 1000) {
+
+                    txt = DISTANCE_FORMAT.format(distance / 1000.0);
+                }
+
+                TextView tvDistance = (TextView) rowView
+                        .findViewById(R.id.tv_item_best_rate_distance);
+                tvDistance.setText(txt);
+            }
+        }
+
+        private int getInt(Cursor cursor, DbColumn col) {
+            int index = cursor.getColumnIndex(col.getName());
+            return cursor.getInt(index);
+        }
+
+        private double getDouble(Cursor cursor, DbColumn col) {
+            int index = cursor.getColumnIndex(col.getName());
+            return cursor.getDouble(index);
+        }
+
+        @Override
+        public void bindView(View rowView, Context context, Cursor cursor) {
+            Log.d(LOG_TAG, "getView " + cursor.getPosition());
+
+            fillRow(rowView, cursor);
 
             final ImageView ivExpandCollapse =
                     (ImageView) rowView.findViewById(R.id.iv_expand_collapse);
@@ -109,29 +156,9 @@ public class BestRatesFragment extends ListFragment implements
             phonesView.setVisibility(View.GONE);
             // ---
 
-            UiHelper.applyFont(getActivity(), rowView, null);
-
-            // distance text
-            Integer distance = BestRatesFragment.this.distanceMap[i];
-            if (distance != null) {
-                String txt = String.valueOf(distance) + " м";
-                if (distance > 1000) {
-
-                    txt = DISTANCE_FORMAT.format(distance / 1000.0);
-                }
-
-                TextView tvDistance = (TextView) rowView
-                        .findViewById(R.id.tv_item_best_rate_distance);
-                tvDistance.setText(txt);
-            }
-
             // open button
-            Cursor cursor = getCursor();
-            int latIndex = cursor.getColumnIndex(ColumnRatesPlaces.X.name());
-            final Double lat = cursor.getDouble(latIndex);
-
-            int lngIndex = cursor.getColumnIndex(ColumnRatesPlaces.Y.name());
-            final Double lng = cursor.getDouble(lngIndex);
+            final double lat = getDouble(cursor, ColumnRatesPlaces.X);
+            final double lng = getDouble(cursor, ColumnRatesPlaces.Y);
 
             final LatLng openPoint = new LatLng(lat, lng);
 
@@ -153,20 +180,6 @@ public class BestRatesFragment extends ListFragment implements
                     });
 
             //
-            int regIndex = cursor.getColumnIndex(ColumnRatesPlaces.REGION_ID
-                    .name());
-            final int regId = cursor.getInt(regIndex);
-
-            int currIndex = cursor.getColumnIndex(ColumnBestRates.CURRENCY_ID
-                    .name());
-            final int currId = cursor.getInt(currIndex);
-
-            int exTypeIndex = cursor
-                    .getColumnIndex(ColumnBestRates.EXCHANGE_TYPE_ID.name());
-            final int exTypeId = cursor.getInt(exTypeIndex);
-
-            int rateIndex = cursor.getColumnIndex(ColumnBestRates.VALUE.name());
-            final double rate = cursor.getDouble(rateIndex);
 
             View.OnClickListener expandCollapseListener = new View.OnClickListener() {
                 @Override
@@ -193,6 +206,11 @@ public class BestRatesFragment extends ListFragment implements
 
             LinearLayout itemExpandCollapse = (LinearLayout) rowView.findViewById(R.id.item_best_expand);
             itemExpandCollapse.setOnClickListener(expandCollapseListener);
+
+            final int regId = getInt(cursor, ColumnRatesPlaces.REGION_ID);
+            final int currId = getInt(cursor, ColumnBestRates.CURRENCY_ID);
+            final int exTypeId = getInt(cursor, ColumnBestRates.EXCHANGE_TYPE_ID);
+            final double rate = getDouble(cursor, ColumnBestRates.VALUE);
 
             Button bConverter = (Button) rowView.findViewById(R.id.b_converter);
             bConverter
@@ -221,7 +239,7 @@ public class BestRatesFragment extends ListFragment implements
                         }
                     });
 
-            return rowView;
+            UiHelper.applyFont(getActivity(), rowView, null);
         }
     }
 
@@ -483,23 +501,7 @@ public class BestRatesFragment extends ListFragment implements
         if (getListAdapter() == null) {
             Log.d(LOG_TAG, "new list adapter is created");
 
-            // empty adapter until update is performed
-            CursorAdapter bestListAdapter = new BestListAdapter(getActivity(),
-                    R.layout.best_item_layout, null, //
-                    new String[]{ColumnBestRates.VALUE.name(),
-                            ColumnBestRates.TIME_UPDATED.name(),
-                            ColumnRatesPlaces.DESCRIPTION.name(),
-                            ColumnRatesPlaces.ADDR.name(),
-                            ColumnRatesPlaces.WORK_HOURS.name(),
-                            ColumnRatesPlaces.PHONE.name()}, //
-                    new int[]{R.id.tv_item_best_rate_value,
-                            R.id.tv_item_best_rate_time,
-                            R.id.tv_item_best_description,
-                            R.id.tv_item_best_addr, R.id.tv_item_best_wh,
-                            R.id.tv_item_best_phones}, //
-                    0);
-
-            setListAdapter(bestListAdapter);
+            setListAdapter(new BestListAdapter(getActivity()));
         } // first launch
 
         getListView().setOnScrollListener(this);
