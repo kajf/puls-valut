@@ -663,14 +663,12 @@ public class TabsActivity extends ActionBarActivity implements
 
 		final Context context = this;
 
-		LocationManager locationManager = getLocationManager();
-		String providerName = getProviderName();
+        final List<String> enabledProviders = getLocationManager().getProviders(true);
+        enabledProviders.remove(LocationManager.PASSIVE_PROVIDER); // not enough
 
-        boolean providerEnabled = (providerName != null) && locationManager
-                .isProviderEnabled(providerName);
+        boolean locationIsOn = !enabledProviders.isEmpty();
 
-        Log.d(LOG_TAG, "best location provider enabled: " + providerEnabled);
-        if (!providerEnabled) {
+        if (!locationIsOn) {
 
 			final SharedPreferences prefs = getSharedPreferences(
 					PrefsUtil.PREFS_NAME, Context.MODE_PRIVATE);
@@ -724,7 +722,7 @@ public class TabsActivity extends ActionBarActivity implements
 			}
 		}
 
-		return providerEnabled;
+		return locationIsOn;
 	}
 
 	private LocationManager getLocationManager() {
@@ -732,23 +730,6 @@ public class TabsActivity extends ActionBarActivity implements
 		LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 
 		return locationManager;
-	}
-
-	private String getProviderName() {
-
-		Criteria locationCritera = new Criteria();
-		locationCritera.setAccuracy(Criteria.ACCURACY_COARSE);
-		locationCritera.setAltitudeRequired(false);
-		locationCritera.setBearingRequired(false);
-		locationCritera.setCostAllowed(true);
-		locationCritera.setPowerRequirement(Criteria.NO_REQUIREMENT);
-
-		String providerName = getLocationManager().getBestProvider(
-				locationCritera, true);
-
-		Log.d(LOG_TAG, "best location provider: " + providerName);
-
-		return providerName;
 	}
 
 	/**
