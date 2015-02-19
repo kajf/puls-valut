@@ -406,7 +406,6 @@ public class NearFragment extends SupportMapFragment implements
                 text = "?";
             }
 
-            iconFactory.setStyle(IconGenerator.STYLE_BLUE);
             Bitmap bitmap = iconFactory.makeIcon(text);
 
             markerOptions

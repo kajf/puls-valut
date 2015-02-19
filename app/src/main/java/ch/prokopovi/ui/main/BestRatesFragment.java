@@ -1,12 +1,15 @@
 package ch.prokopovi.ui.main;
 
 import android.app.Activity;
+import android.support.v4.content.AsyncTaskLoader;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.Loader;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.view.MenuItemCompat.OnActionExpandListener;
 import android.support.v4.widget.CursorAdapter;
@@ -77,13 +80,14 @@ public class BestRatesFragment extends ListFragment implements
         UpdateListener,
         RegionListener,
         OnScrollListener,
-        SwipeRefreshLayout.OnRefreshListener {
+        SwipeRefreshLayout.OnRefreshListener,
+        LoaderManager.LoaderCallbacks<Cursor> {
 
     private static final String LOG_TAG = "BestRatesFragment";
     private static final DecimalFormat DISTANCE_FORMAT = new DecimalFormat(
             "#.## км");
 
-    private static final int PAGE_SIZE = 40;
+    private static final int PAGE_SIZE = 20;
 
     private class BestListAdapter extends CursorAdapter {
 
@@ -294,6 +298,40 @@ public class BestRatesFragment extends ListFragment implements
     SwipeRefreshLayout swipeLayout;
 
     @Override
+    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+
+        return new AsyncTaskLoader<Cursor>(getActivity()){
+
+            @Override
+            public Cursor loadInBackground() {
+                BestRatesFragment brf = BestRatesFragment.this;
+
+                Cursor cursor = brf.updater.getData(brf.selectedRegion,
+                        brf.selectedExchangeType, brf.selectedCurrencyCode,
+                        brf.searchQuery, brf.itemsAllowedInList);
+
+                updateDistanceMaps(cursor);
+
+                Cursor cursorWrapper = new ReorderingCursorWrapper(cursor,
+                        brf.positionMap);
+                return cursorWrapper;
+            }
+        };
+    }
+
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+        CursorAdapter adapter = (CursorAdapter) getListAdapter();
+        adapter.changeCursor(data);
+    }
+
+    @Override
+    public void onLoaderReset(Loader<Cursor> args) {
+        CursorAdapter adapter = (CursorAdapter) getListAdapter();
+        adapter.changeCursor(null);
+    }
+
+    @Override
     public synchronized void onUpdate() {
 
         // check/update selected currency
@@ -318,18 +356,7 @@ public class BestRatesFragment extends ListFragment implements
     }
 
     public void updateListViewData() {
-
-        Cursor cursor = this.updater.getData(this.selectedRegion,
-                this.selectedExchangeType, this.selectedCurrencyCode,
-                this.searchQuery, this.itemsAllowedInList);
-
-        updateDistanceMaps(cursor);
-
-        Cursor cursorWrapper = new ReorderingCursorWrapper(cursor,
-                this.positionMap);
-
-        CursorAdapter adapter = (CursorAdapter) getListAdapter();
-        adapter.changeCursor(cursorWrapper);
+        getActivity().getSupportLoaderManager().initLoader(0, null, this).forceLoad();
     }
 
     /**
@@ -735,8 +762,9 @@ public class BestRatesFragment extends ListFragment implements
     public void onScroll(AbsListView view, int firstVisible, int visibleCount,
                          int totalCount) {
 
-        // ---------- add more tows -------------
-        boolean loadMore = /* maybe add a padding */
+        // ---------- add more rows -------------
+        int padding = 3;
+        boolean loadMore = padding +
                 firstVisible + visibleCount >= totalCount;
 
         if (loadMore && this.itemsAllowedInList == totalCount) {
@@ -759,7 +787,5 @@ public class BestRatesFragment extends ListFragment implements
     }
 
     @Override
-    public void onScrollStateChanged(AbsListView view, int scrollState) {
-
-    }
+    public void onScrollStateChanged(AbsListView view, int scrollState) {}
 }
