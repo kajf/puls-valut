@@ -89,14 +89,13 @@ public class NearFragment extends SupportMapFragment implements
 
     private boolean firstTimeOpen = true;
 
-    private NearRenderer nearRenderer;
     private ClusterManager<NearPlace> mClusterManager;
 
     private NearPlace selectedClusterItem;
 
     class NearPlace implements ClusterItem {
 
-        private RatePoint ratePoint;
+        private final RatePoint ratePoint;
 
         public NearPlace(RatePoint p) {
             ratePoint = p;
@@ -119,15 +118,16 @@ public class NearFragment extends SupportMapFragment implements
 
         this.updater.getTracker().trackPageView("/near");
 
-        if (!checkReady())
+        if (isNotReady())
             return;
 
         getMap().setMyLocationEnabled(true);
+        getMap().getUiSettings().setZoomControlsEnabled(true);
 
         if (mClusterManager == null) {
 
             mClusterManager = new ClusterManager<>(getActivity(), getMap());
-            nearRenderer = new NearRenderer(getActivity(), getMap(), mClusterManager);
+            NearRenderer nearRenderer = new NearRenderer(getActivity(), getMap(), mClusterManager);
             mClusterManager.setRenderer(nearRenderer);
 
             mClusterManager.getMarkerCollection()
@@ -172,7 +172,7 @@ public class NearFragment extends SupportMapFragment implements
 
         super.onResume();
 
-        if (!checkReady())
+        if (isNotReady())
             return;
 
         this.firstTimeOpen = true;
@@ -183,18 +183,6 @@ public class NearFragment extends SupportMapFragment implements
         if (currentPosition != null)
             getMap().moveCamera(CameraUpdateFactory.newLatLngZoom(
                     currentPosition, DEFAULT_ZOOM));
-    }
-
-    @Override
-    public void onPause() {
-
-        Log.d(LOG_TAG, "onPause");
-
-        super.onPause();
-
-        if (!checkReady())
-            return;
-
     }
 
     @Override
@@ -223,12 +211,12 @@ public class NearFragment extends SupportMapFragment implements
      *
      * also checks is fragment added to activity
      */
-    private boolean checkReady() {
+    private boolean isNotReady() {
         if (getMap() == null || !isAdded()) {
             Log.w(LOG_TAG, "map is not ready");
-            return false;
+            return true;
         }
-        return true;
+        return false;
     }
 
     @Override
@@ -258,7 +246,7 @@ public class NearFragment extends SupportMapFragment implements
             return;
         }
 
-        if (!checkReady())
+        if (isNotReady())
             return;
 
         Region positionRegion = TabsActivity.findRegion(position.latitude,
@@ -289,7 +277,7 @@ public class NearFragment extends SupportMapFragment implements
     @Override
     public void onCameraChange(CameraPosition position) {
 
-        if (!checkReady())
+        if (isNotReady())
             return;
 
         newPosition(position.target);
@@ -329,7 +317,7 @@ public class NearFragment extends SupportMapFragment implements
     public boolean onClusterClick(Cluster<NearPlace> сluster) {
         NearFragment.this.updater.getTracker().trackPageView("/clusterClick");
 
-        if (!checkReady())
+        if (isNotReady())
             return true;
 
         goToBounds(сluster.getItems());
@@ -338,7 +326,7 @@ public class NearFragment extends SupportMapFragment implements
     }
 
     private void goToBounds(Collection<NearPlace> items) {
-        if (!checkReady())
+        if (isNotReady())
             return;
 
         Builder builder = LatLngBounds.builder();
@@ -389,7 +377,7 @@ public class NearFragment extends SupportMapFragment implements
         @Override
         protected void onBeforeClusterItemRendered(NearPlace item, MarkerOptions markerOptions) {
 
-            if (!checkReady())
+            if (isNotReady())
                 return;
             CurrencyOperationType filter = NearFragment.this.currencyOperationType;
             List<RateItem> list = NearFragment.this.updater.getRates(item.ratePoint.id);
@@ -434,14 +422,14 @@ public class NearFragment extends SupportMapFragment implements
         }
 
         @Override
-        public View getInfoContents(Marker marker) {
+        public View getInfoWindow (Marker marker) {
             return null;
         }
 
         @Override
-        public View getInfoWindow(Marker marker) {
+        public View getInfoContents (Marker marker) {
 
-            if (!checkReady())
+            if (isNotReady())
                 return this.mWindow;
 
             try {
@@ -585,7 +573,7 @@ public class NearFragment extends SupportMapFragment implements
             return Arrays.asList(q.toArray(new NearPlace[q.size()]));
         } else {
             Log.d(LOG_TAG,
-                    "since current position is undefined, nearest markers cant't be found.");
+                    "since current position is undefined, nearest markers can't be found.");
         }
 
         return Collections.emptyList();
@@ -596,7 +584,7 @@ public class NearFragment extends SupportMapFragment implements
 
         Log.d(LOG_TAG, "onUpdate");
 
-        if (!checkReady())
+        if (isNotReady())
             return;
 
         showNearestWindow(this.updater.getMapPosition());

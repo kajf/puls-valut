@@ -103,9 +103,6 @@
     <string name="btn_do_not_ask">больше не спрашивать</string>
     
     <string name="btn_search">Поиск</string>
-    <string name="btn_refresh">Обновить</string>
-    <string name="btn_next">следующий</string>
-    <string name="btn_prev">предыдущий</string>
     
     <string name="btn_share_app">Поделиться</string>
     <string name="btn_rate_app">Оценить</string>
