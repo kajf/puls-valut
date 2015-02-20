@@ -254,7 +254,7 @@ public final class Master {
 				R.drawable.prior_thumb,//
 				PriorProvider.class), //
 		MTB(3, CountryCode.BY,//
-				new int[] { Calendar.SATURDAY, Calendar.SUNDAY }, //
+				new int[] { Calendar.SUNDAY }, //
 				R.string.lbl_mtb_provider, //
 				R.drawable.mtb_thumb,//
 				MtbProvider.class), //

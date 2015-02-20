@@ -61,7 +61,7 @@ public class MtbProvider extends AbstractProvider {
 		MtbCurrencyCode[] mtbCurrencyCodes = MtbCurrencyCode.values();
 		for (MtbCurrencyCode mtbCurrencyCode : mtbCurrencyCodes) {
 			String prefix = String.format(
-					"//currency[codeTo/text()='%1$s'][code/text()='BYR']",
+					"//currency[code/text()='%1$s'][codeTo/text()='BYR']",
 					mtbCurrencyCode.name());
 
 			double purchase = 0.0;
@@ -84,12 +84,12 @@ public class MtbProvider extends AbstractProvider {
 			// !!! purchase and sell are shifted in xml so purchase = sell, sale
 			// = buy
 
-			ProviderRate buyRate = builder.build(OperationType.BUY,
+			ProviderRate buyRate = builder.build(OperationType.SELL,
 					mtbCurrencyCode.getCurrencyCode(), sell);
 			Log.d(LOG_TAG, "buyRate " + buyRate);
 			res.add(buyRate);
 
-			ProviderRate sellRate = builder.build(OperationType.SELL,
+			ProviderRate sellRate = builder.build(OperationType.BUY,
 					mtbCurrencyCode.getCurrencyCode(), purchase);
 			Log.d(LOG_TAG, "sellRate " + sellRate);
 			res.add(sellRate);
