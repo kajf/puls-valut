@@ -14,7 +14,6 @@ import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
 import android.widget.TextView;
 
-import com.google.android.apps.analytics.GoogleAnalyticsTracker;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.Projection;
@@ -48,6 +47,7 @@ import ch.prokopovi.struct.Master.OperationType;
 import ch.prokopovi.struct.Master.Region;
 import ch.prokopovi.struct.best.RateItem;
 import ch.prokopovi.struct.best.RatePoint;
+import ch.prokopovi.ui.main.api.CurrencyOperationType;
 import ch.prokopovi.ui.main.api.RegionListener;
 import ch.prokopovi.ui.main.api.UpdateListener;
 import ch.prokopovi.ui.main.api.Updater;
@@ -76,11 +76,9 @@ public class NearFragment extends SupportMapFragment implements
 
     private static final String LOG_TAG = "NearFragment";
 
-    private static final float ZOOM_CLASTER_THRESHOLD = 18.0f;
-
-    private GoogleAnalyticsTracker tracker;
-
     private Updater updater;
+
+    private CurrencyOperationType currencyOperationType;
 
     private Region selectedRegion;
 
@@ -119,8 +117,7 @@ public class NearFragment extends SupportMapFragment implements
         if (getActivity() == null)
             return;
 
-        this.tracker = this.updater.getTracker();
-        this.tracker.trackPageView("/near");
+        this.updater.getTracker().trackPageView("/near");
 
         if (!checkReady())
             return;
@@ -180,6 +177,8 @@ public class NearFragment extends SupportMapFragment implements
 
         this.firstTimeOpen = true;
 
+        updatePlaces(); // new currency / operation
+
         LatLng currentPosition = this.updater.getMapPosition();
         if (currentPosition != null)
             getMap().moveCamera(CameraUpdateFactory.newLatLngZoom(
@@ -209,6 +208,7 @@ public class NearFragment extends SupportMapFragment implements
         // the callback interface. If not, it throws an exception
         try {
             this.updater = (Updater) activity;
+            this.currencyOperationType = (CurrencyOperationType) activity;
 
         } catch (ClassCastException e) {
             throw new ClassCastException(activity.toString()
@@ -327,7 +327,7 @@ public class NearFragment extends SupportMapFragment implements
 
     @Override
     public boolean onClusterClick(Cluster<NearPlace> сluster) {
-        NearFragment.this.tracker.trackPageView("/clusterClick");
+        NearFragment.this.updater.getTracker().trackPageView("/clusterClick");
 
         if (!checkReady())
             return true;
@@ -391,19 +391,22 @@ public class NearFragment extends SupportMapFragment implements
 
             if (!checkReady())
                 return;
-
+            CurrencyOperationType filter = NearFragment.this.currencyOperationType;
             List<RateItem> list = NearFragment.this.updater.getRates(item.ratePoint.id);
 
-            String text;
-            if (!list.isEmpty()) {
-                RateItem rate = list.get(0);
+            String text = "?";
+            for (RateItem rate : list) {
 
-                String title = getResources().getString(
-                        rate.currency.getTitleRes());
+                if (rate.currency.equals(filter.getCurrencyCode()) &&
+                        rate.operationType.equals(filter.getOperationType())) {
 
-                text = title + " " + rate.value;
-            } else {
-                text = "?";
+                    String title = getResources().getString(
+                            rate.currency.getTitleRes());
+
+                    text = title + " " + TabsActivity.FMT_RATE_VALUE.format(rate.value);
+
+                    break;
+                }
             }
 
             Bitmap bitmap = iconFactory.makeIcon(text);
@@ -615,6 +618,9 @@ public class NearFragment extends SupportMapFragment implements
     }
 
     private void updatePlaces() {
+
+        if (this.selectedRegion == null)
+            return;
 
         this.places.clear();
 

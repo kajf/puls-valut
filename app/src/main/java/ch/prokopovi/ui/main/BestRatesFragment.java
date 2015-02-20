@@ -1,7 +1,6 @@
 package ch.prokopovi.ui.main;
 
 import android.app.Activity;
-import android.support.v4.content.AsyncTaskLoader;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.database.Cursor;
@@ -9,6 +8,7 @@ import android.location.Location;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
 import android.support.v4.app.LoaderManager;
+import android.support.v4.content.AsyncTaskLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.view.MenuItemCompat.OnActionExpandListener;
@@ -69,6 +69,7 @@ import ch.prokopovi.struct.Master.Region;
 import ch.prokopovi.ui.main.ChoiceDialog.ChoiceCallback;
 import ch.prokopovi.ui.main.ConverterFragment.ConverterParams;
 import ch.prokopovi.ui.main.api.Converter;
+import ch.prokopovi.ui.main.api.CurrencyOperationType;
 import ch.prokopovi.ui.main.api.OpenListener;
 import ch.prokopovi.ui.main.api.RegionListener;
 import ch.prokopovi.ui.main.api.UpdateListener;
@@ -77,6 +78,7 @@ import ch.prokopovi.ui.main.api.Updater;
 @EFragment
 @OptionsMenu(R.menu.best_menu)
 public class BestRatesFragment extends ListFragment implements
+        CurrencyOperationType,
         UpdateListener,
         RegionListener,
         OnScrollListener,
@@ -296,6 +298,16 @@ public class BestRatesFragment extends ListFragment implements
 
     @ViewById(R.id.swipe_container)
     SwipeRefreshLayout swipeLayout;
+
+    @Override
+    public CurrencyCode getCurrencyCode() {
+        return selectedCurrencyCode;
+    }
+
+    @Override
+    public OperationType getOperationType() {
+        return selectedExchangeType;
+    }
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {

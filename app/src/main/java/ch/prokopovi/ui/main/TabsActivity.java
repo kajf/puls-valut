@@ -9,7 +9,6 @@ import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -74,6 +73,7 @@ import ch.prokopovi.ui.main.ConverterFragment.ConverterParams;
 import ch.prokopovi.ui.main.RateAppFragment.RateAppListener;
 import ch.prokopovi.ui.main.api.Closable;
 import ch.prokopovi.ui.main.api.Converter;
+import ch.prokopovi.ui.main.api.CurrencyOperationType;
 import ch.prokopovi.ui.main.api.OpenListener;
 import ch.prokopovi.ui.main.api.RegionListener;
 import ch.prokopovi.ui.main.api.UpdateListener;
@@ -82,6 +82,7 @@ import ch.prokopovi.ui.main.api.Updater;
 @EActivity(R.layout.fragment_tabs)
 public class TabsActivity extends ActionBarActivity implements
         Updater,
+        CurrencyOperationType,
         OpenListener,
         RateAppListener, AdListener, LocationListener, Converter,
         Closable {
@@ -205,6 +206,30 @@ public class TabsActivity extends ActionBarActivity implements
 	@NonConfigurationInstance
 	@Bean
 	UpdateTask task;
+
+    @Override
+    public CurrencyCode getCurrencyCode() {
+        Fragment best = getSupportFragmentManager().findFragmentByTag(
+                FragmentTag.BEST.tag);
+
+        if (best != null && best instanceof CurrencyOperationType) {
+            return ((CurrencyOperationType) best).getCurrencyCode();
+        }
+
+        return null;
+    }
+
+    @Override
+    public OperationType getOperationType() {
+        Fragment best = getSupportFragmentManager().findFragmentByTag(
+                FragmentTag.BEST.tag);
+
+        if (best != null && best instanceof CurrencyOperationType) {
+            return ((CurrencyOperationType) best).getOperationType();
+        }
+
+        return null;
+    }
 
 	@Override
 	public void onStatusChanged(String provider, int status, Bundle extras) {
