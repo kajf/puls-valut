@@ -60,7 +60,7 @@ import ch.prokopovi.Util;
 import ch.prokopovi.api.provider.PlacesProvider;
 import ch.prokopovi.api.struct.Titled;
 import ch.prokopovi.db.BestRatesTable.ColumnBestRates;
-import ch.prokopovi.db.DbColumn;
+import ch.prokopovi.exported.DbColumn;
 import ch.prokopovi.exported.RatesPlacesTable.ColumnRatesPlaces;
 import ch.prokopovi.provider.places.PlacesProviderFactory;
 import ch.prokopovi.struct.Master.CurrencyCode;

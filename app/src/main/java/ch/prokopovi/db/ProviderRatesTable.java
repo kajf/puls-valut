@@ -1,6 +1,8 @@
 package ch.prokopovi.db;
 
 
+import ch.prokopovi.exported.DbColumn;
+
 public class ProviderRatesTable {
 
 	public enum ProviderRatesColumn implements DbColumn {

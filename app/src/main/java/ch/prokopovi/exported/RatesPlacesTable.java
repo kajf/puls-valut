@@ -2,8 +2,6 @@ package ch.prokopovi.exported;
 
 import java.util.HashMap;
 
-import ch.prokopovi.db.DbColumn;
-
 public class RatesPlacesTable {
 
 	public enum ColumnRatesPlaces implements DbColumn {
