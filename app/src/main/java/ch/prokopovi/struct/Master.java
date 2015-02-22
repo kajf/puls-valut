@@ -554,20 +554,6 @@ public final class Master {
 				53.02211499712371, 27.54504195000004), CountryCode.BY), //
 		ZODINO(PureConst.ZODINO_ID, R.string.lbl_zodino, new LatLng(
 				54.10266511033568, 28.33700184999998), CountryCode.BY), //
-
-		// Ukraine 1000 - 1999
-
-		KIEV(PureConst.KIEV_ID, R.string.lbl_kiev, new LatLng(
-				50.402411394193074, 30.532690550000098), CountryCode.UA), //
-		ODESSA(PureConst.ODESSA_ID, R.string.lbl_odessa, new LatLng(
-				46.46015314862733, 30.711787500000014), CountryCode.UA), //
-		DONECK(PureConst.DONECK_ID, R.string.lbl_doneck, new LatLng(
-				47.99021347825789, 37.76152060000004), CountryCode.UA), //
-		LVOV(PureConst.LVOV_ID, R.string.lbl_lvov, new LatLng(
-				49.83273243784637, 24.012235550000014), CountryCode.UA), //
-		DNEPROPETROVSK(PureConst.DNEPROPETROVSK_ID,
-				R.string.lbl_dnepropetrovsk, new LatLng(48.46241037424381,
-						35.00035649999995), CountryCode.UA), //
 		;
 
 		private static SparseArray<Region> idMap;
@@ -619,7 +605,7 @@ public final class Master {
 
 		@Override
 		public int getSecondThumbRes() {
-			return this.countryCode.getThumbRes();
+			return 0;
 		}
 	}
 

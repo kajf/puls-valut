@@ -6,8 +6,7 @@ import ch.prokopovi.struct.Master.Region;
 public class PlacesProviderFactory {
 
 	private static PlacesProvider[] placesProviders = new PlacesProvider[] {
-			new MyfinPlacesProvider(), //
-			new FinanceUaPlacesProvider() //
+			new MyfinPlacesProvider()
 	};
 
 	public static PlacesProvider find(Region region) {

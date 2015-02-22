@@ -98,7 +98,6 @@ public class TabsActivity extends ActionBarActivity implements
     private static final Region[] REGIONS = new Region[]{
 
             Region.MINSK, //
-            Region.KIEV, //
 
             Region.BREST, Region.GOMEL, Region.GRODNO, Region.MOGILEV,
             Region.VITEBSK,
@@ -120,11 +119,6 @@ public class TabsActivity extends ActionBarActivity implements
             Region.RE4ICA, //
             Region.SLUCK, //
             Region.ZODINO, //
-
-            Region.ODESSA, //
-            Region.DONECK, //
-            Region.LVOV, //
-            Region.DNEPROPETROVSK, //
     };
 
     private static final String LOG_TAG = "TabsActivity";
