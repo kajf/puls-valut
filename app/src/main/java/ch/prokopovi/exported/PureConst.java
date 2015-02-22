@@ -8,9 +8,6 @@ import java.util.Set;
 
 public class PureConst {
 
-	public static final String ASSETS_DB_POSTFIX_FORMAT = "000";
-	public static final int ASSETS_DB_PARTS_NUMBER = 3;
-
 	// city ids
 	public static final int MINSK_ID = 0;
 	public static final int GRODNO_ID = 1;

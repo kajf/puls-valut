@@ -1,7 +1,7 @@
-SET SQLITE_HOME=d:\programs
-SET APP_HOME=d:\ws_adt\prokopovi-ch-mobile\project
+SET SQLITE_HOME=c:\opt
+SET APP_HOME=C:\_ws_a\PulsValut
 SET DB_NAME=androidovich.db
 
-%SQLITE_HOME%\sqlite3.exe -bail %APP_HOME%\auxiliary\%DB_NAME% < %APP_HOME%\sql\meta.sql
-%SQLITE_HOME%\sqlite3.exe -bail %APP_HOME%\auxiliary\%DB_NAME% < %APP_HOME%\sql\places.sql
-%SQLITE_HOME%\sqlite3.exe -bail %APP_HOME%\auxiliary\%DB_NAME% < %APP_HOME%\sql\places_ua.sql
+%SQLITE_HOME%\sqlite3.exe -bail %APP_HOME%\auxiliary\%DB_NAME% < %APP_HOME%\app\sql\meta.sql
+%SQLITE_HOME%\sqlite3.exe -bail %APP_HOME%\auxiliary\%DB_NAME% < %APP_HOME%\app\sql\places.sql
+rem %SQLITE_HOME%\sqlite3.exe -bail %APP_HOME%\auxiliary\%DB_NAME% < %APP_HOME%\app\sql\places_ua.sql

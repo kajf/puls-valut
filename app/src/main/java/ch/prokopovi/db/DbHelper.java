@@ -1,27 +1,24 @@
 package ch.prokopovi.db;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.text.DecimalFormat;
-
 import android.content.Context;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
-import ch.prokopovi.exported.PureConst;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 
 public class DbHelper extends SQLiteOpenHelper {
 	private static String DB_PATH = "";
 	private static final String DB_NAME = "androidovich.db";
 
 	// update this if assets/<DB_NAME>.db is updated
-	public static final int DB_VERSION = 61;
-	private static final String LOG_TAG = "DbHelper";
+    public static final int DB_VERSION = 64;
+    private static final String LOG_TAG = "DbHelper";
 
 	private final Context context;
 
@@ -116,39 +113,30 @@ public class DbHelper extends SQLiteOpenHelper {
 
 	}
 
-	private void copyDataBase() throws IOException {
-		Log.d(LOG_TAG, "coping db from assets...");
+    private void copyDataBase() throws IOException {
+        Log.d(LOG_TAG, "coping db from assets...");
 
-		DecimalFormat df = new DecimalFormat(PureConst.ASSETS_DB_POSTFIX_FORMAT);
+        // Open the empty db as the output stream
+        OutputStream os = new FileOutputStream(DB_PATH);
 
-		// Open the empty db as the output stream
-		OutputStream os = new FileOutputStream(DB_PATH);
+        // Open your local db as the input stream
+        InputStream is = this.context.getAssets().open(
+                DB_NAME);
 
-		for (int i = 1; i <= PureConst.ASSETS_DB_PARTS_NUMBER; i++) {
+        // transfer bytes from the inputfile to the outputfile
+        byte[] buffer = new byte[1024];
+        int length;
+        while ((length = is.read(buffer)) > 0) {
+            os.write(buffer, 0, length);
+        }
 
-			String postfix = df.format(i);
-			Log.d(LOG_TAG, "reading " + postfix + " db chunk");
+        // Close the streams
+        is.close();
 
-			// Open your local db as the input stream
-			InputStream is = this.context.getAssets().open(
-					DB_NAME + "." + postfix);
+        os.flush();
+        os.close();
 
-			// transfer bytes from the inputfile to the outputfile
-			byte[] buffer = new byte[1024];
-			int length;
-			while ((length = is.read(buffer)) > 0) {
-				os.write(buffer, 0, length);
-			}
-
-			// Close the streams
-			is.close();
-
-		}
-
-		os.flush();
-		os.close();
-
-	}
+    }
 
 	private void openDataBase() throws SQLException {
 
