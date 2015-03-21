@@ -23,7 +23,7 @@ public class MyFinCollectorBot extends AbstractCollectorBot {
 
 	private static final String OUT_FILE = "output.sql";
 	private static String URL_POISK = "http://myfin.by/banki/poisk";
-	private static String URL_LOCATION = "http://myfin.by/banki/location";
+	private static String URL_LOCATION = "http://myfin.by/banki/location/565";
 	private static String URL_SERVICE_FMT = "http://myfin.by/scripts/xml_new/work/banks_city_%d.xml";
 
 	private static String[][] buildLocationParams(int cityId) {
@@ -106,7 +106,7 @@ public class MyFinCollectorBot extends AbstractCollectorBot {
 
 		HtmlCleaner cleaner = initCleaner();
 
-		updateFromLocation(res, cleaner);		
+		updateFromLocation(res, cleaner);
 		updateFromPoisk(res, cleaner);
 		
 		List<Place> uniqList = clenaupCopies(res);
@@ -183,8 +183,8 @@ public class MyFinCollectorBot extends AbstractCollectorBot {
 		System.out.println("### loading cities ...");
 
 		// location page
-		String[][] params = buildLocationParams(MyfinRegion.MINSK.getId());
-		String post = post(URL_LOCATION, params);
+		//String[][] params = buildLocationParams(MyfinRegion.MINSK.getId());
+		String post = get(URL_LOCATION);
 
 		String strBegin = "myPoints = ";
 		int from = post.indexOf(strBegin) + strBegin.length();

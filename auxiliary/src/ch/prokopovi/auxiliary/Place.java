@@ -119,28 +119,35 @@ class Place {
 				.replace("понедельник", mon)
 				.replace("Понедельник", mon)
 				.replace("Пн.", mon)
-				//
-				.replace("вторник", tue)
+        .replace("ПН", mon)
+                //
+        .replace("вторник", tue)
 				.replace("Вторник", tue)
 				.replace("Вт.", tue)
-				//
-				.replace("среда", wed)
+        .replace("ВТ", tue)
+                //
+        .replace("среда", wed)
 				.replace("Среда", wed)
 				.replace("Ср.", wed)
-				//
-				.replace("четверг", thu)
+        .replace("СР", wed)
+                //
+        .replace("четверг", thu)
 				.replace("Четверг", thu)
 				.replace("Чт.", thu)
-				//
-				.replace("пятница", fri)
+        .replace("ЧТ", thu)
+                //
+        .replace("пятница", fri)
 				.replace("Пятница", fri)
 				.replace("Пт.", fri)
-				//
-				.replace("суббота", sat).replace("Суббота", sat)
+        .replace("ПТ", fri)
+                //
+        .replace("суббота", sat).replace("Суббота", sat)
 				.replace("Сб.", sat)
-				//
-				.replace("воскресенье", sun).replace("Воскресенье", sun)
-				.replace("Вс.", sun);
+        .replace("СБ", sat)
+                //
+        .replace("воскресенье", sun).replace("Воскресенье", sun)
+				.replace("Вс.", sun)
+        .replace("ВС", sun);
 
 		String brake = "тех. пер.";
 		String lunch = "обед";

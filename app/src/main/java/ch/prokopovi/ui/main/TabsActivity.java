@@ -33,11 +33,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 
-import com.adsdk.sdk.Ad;
-import com.adsdk.sdk.AdListener;
 import com.google.android.apps.analytics.GoogleAnalyticsTracker;
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.maps.model.LatLng;
 
 import org.androidannotations.annotations.AfterViews;
@@ -78,13 +74,15 @@ import ch.prokopovi.ui.main.api.OpenListener;
 import ch.prokopovi.ui.main.api.RegionListener;
 import ch.prokopovi.ui.main.api.UpdateListener;
 import ch.prokopovi.ui.main.api.Updater;
+import ch.prokopovi.ui.main.resolvers.PaneResolver;
+import ch.prokopovi.ui.main.resolvers.PaneResolverFactory;
 
 @EActivity(R.layout.fragment_tabs)
 public class TabsActivity extends ActionBarActivity implements
         Updater,
         CurrencyOperationType,
         OpenListener,
-        RateAppListener, AdListener, LocationListener, Converter,
+        RateAppListener, LocationListener, Converter,
         Closable {
 
     private static final long EXPIRATION_PERIOD = 10 * DateUtils.HOUR_IN_MILLIS;
@@ -125,34 +123,11 @@ public class TabsActivity extends ActionBarActivity implements
 
 	static final DecimalFormat FMT_RATE_VALUE = new DecimalFormat("#.####");
 
-	enum FragmentTag {
-		CONVERTER(ConverterFragment_.class.getName(), R.id.top_container), //
-		BEST(BestRatesFragment_.class.getName(), R.id.main_container), //
-		NEAR(NearFragment.class.getName(), R.id.main_container), //
-        ABOUT(AboutFragment_.class.getName(), R.id.main_container), //
-		RATE(RateAppFragment_.class.getName(), R.id.bottom_container), //
-		BANNER(BannerFragment_.class.getName(), R.id.bottom_container);
-
-		String tag;
-		String className;
-		int container;
-
-		private FragmentTag(String clazz, int container) {
-			this.tag = name();
-			this.className = clazz;
-			this.container = container;
-		}
-	}
-
 	private BestRatesDbAdapter dbAdapter;
 
 	private GoogleAnalyticsTracker tracker;
 
-	private boolean dualPane = false;
-
 	private Location myLastLocation;
-
-	private LatLng mapPosition;
 
 	private boolean regionByLocationIsSet = false;
 
@@ -182,6 +157,8 @@ public class TabsActivity extends ActionBarActivity implements
 
     @StringRes(R.string.about_title)
     String mTitleAbout;
+
+    PaneResolver paneResolver;
 
     @ViewById(R.id.left_drawer)
     ListView mDrawerList;
@@ -373,21 +350,19 @@ public class TabsActivity extends ActionBarActivity implements
 
 		super.onCreate(savedInstanceState);
 
-		this.dualPane = isDualPane();
+        paneResolver = PaneResolverFactory.createPaneResolver(this, FragmentTag.NEAR);
 
         ActionBar actionBar = getSupportActionBar();
         actionBar.setHomeButtonEnabled(true);
-        actionBar.setDisplayShowTitleEnabled(this.dualPane);
+        actionBar.setDisplayShowTitleEnabled(paneResolver.isDisplayShowTitleEnabled());
         actionBar.setDisplayHomeAsUpEnabled(true);
 
         FragmentTransaction ft = getSupportFragmentManager()
                 .beginTransaction();
 
-        addOrAttachFragment(ft, this, FragmentTag.BEST);
+        UiHelper.addOrAttachFragment(this, ft, FragmentTag.BEST);
 
-        if (this.dualPane) {
-			addOrAttachFragment(ft, this, FragmentTag.NEAR);
-		}
+        paneResolver.onCreate(ft);
 
         ft.commit();
 
@@ -415,10 +390,10 @@ public class TabsActivity extends ActionBarActivity implements
 			if (launches == 0) {
 
 				FragmentTransaction ftRate = getSupportFragmentManager().beginTransaction();
-				addOrAttachFragment(ftRate, this, FragmentTag.RATE);
-				ftRate.commit();
+                UiHelper.addOrAttachFragment(this, ftRate, FragmentTag.RATE);
+                ftRate.commit();
 
-			} else {
+            } else {
 
 				if (launches > 0) {
 					prefs.edit().putInt(this.prefRateAppLaunches, launches - 1)
@@ -429,10 +404,9 @@ public class TabsActivity extends ActionBarActivity implements
 				if (prefs.getBoolean(this.prefAdsOn, true)) {
 
 					FragmentTransaction ftBanner = getSupportFragmentManager().beginTransaction();
-					addOrAttachFragment(ftBanner, this, FragmentTag.BANNER);
 
-					ftBanner.commit();
-				} else {
+                    ftBanner.commit();
+                } else {
 					this.tracker.trackPageView("/adsOff");
 				}
 			}
@@ -452,10 +426,9 @@ public class TabsActivity extends ActionBarActivity implements
         String regionTitle = formatRegionTitle(this, region);
 
         drawerItems.add(regionTitle);
-        if (!dualPane) {
-            drawerItems.add(mTitleBest);
-            drawerItems.add(mTitleNear);
-        }
+
+        paneResolver.addDrawerItems(drawerItems);
+
         drawerItems.add(mTitleSettings);
         drawerItems.add(mTitleShareApp);
         drawerItems.add(mTitleAbout);
@@ -539,7 +512,7 @@ public class TabsActivity extends ActionBarActivity implements
             } else if (mTitleAbout.equals(selected)) {
                 ctx.tracker.trackPageView("/info");
 
-                showFragment(ctx, FragmentTag.ABOUT);
+                UiHelper.showFragment(ctx, FragmentTag.ABOUT);
 
             } else if (mTitleRateApp.equals(selected)) {
                 ctx.tracker.trackPageView("/menuRateApp");
@@ -551,12 +524,10 @@ public class TabsActivity extends ActionBarActivity implements
             } else if (mTitleBest.equals(selected)) {
                 Log.d(LOG_TAG, "open best rates list");
 
-                showFragment(ctx, FragmentTag.BEST);
+                UiHelper.showFragment(ctx, FragmentTag.BEST);
 
             } else if (mTitleNear.equals(selected)) {
                 Log.d(LOG_TAG, "open near rates");
-
-                ctx.mapPosition = null;
 
                 if (myLastLocation != null) {
 
@@ -567,7 +538,7 @@ public class TabsActivity extends ActionBarActivity implements
                     fireRegionUpdate(myRegion);
                 }
 
-                showFragment(ctx, FragmentTag.NEAR);
+                UiHelper.showFragment(ctx, FragmentTag.NEAR);
             } else if (selected.contains(mTitleRegion)) {
 
                 getTracker().trackPageView("/bestRegion");
@@ -778,34 +749,7 @@ public class TabsActivity extends ActionBarActivity implements
 		return bestLocation;
 	}
 
-	/**
-	 * get whether layout is dual-paned or single-paned
-	 * 
-	 * @return
-	 */
-	private boolean isDualPane() {
 
-		int statusCode = GooglePlayServicesUtil
-				.isGooglePlayServicesAvailable(this);
-		boolean mapsAvailable = (statusCode == ConnectionResult.SUCCESS);
-		Log.d(LOG_TAG, "maps available: " + mapsAvailable);
-
-		Configuration cfg = getResources().getConfiguration();
-
-		boolean isLandscape = cfg.orientation == Configuration.ORIENTATION_LANDSCAPE;
-		Log.d(LOG_TAG, "is landscape: " + isLandscape);
-
-		int masked = cfg.screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK;
-		boolean isLarge = masked == Configuration.SCREENLAYOUT_SIZE_LARGE
-				|| VersionHelper.isXlarge(cfg);
-		Log.d(LOG_TAG, "is large: " + isLarge);
-
-		boolean res = mapsAvailable && isLandscape && isLarge;
-
-		Log.d(LOG_TAG, "dual pane: " + res);
-
-		return res;
-	}
 
 	/**
 	 * find nearest region by location
@@ -874,8 +818,6 @@ public class TabsActivity extends ActionBarActivity implements
 		super.onResume();
 
 		initLocation(); // location on/off
-
-		this.dualPane = isDualPane(); // maps installed
 	}
 
 	@Override
@@ -913,24 +855,21 @@ public class TabsActivity extends ActionBarActivity implements
 
 	@Override
 	public void onOpen(LatLng latLng) {
+        paneResolver.onOpen(latLng);
+    }
 
-		this.mapPosition = latLng;
-
-		showFragment(this, FragmentTag.NEAR);
-	}
-
-	@Override
+    @Override
 	public void open(ConverterParams params) {
 		FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
 
 		ft.setCustomAnimations(R.anim.abc_slide_in_top, 0);
 
-		ConverterFragment_ converterFragment = (ConverterFragment_) addOrAttachFragment(
-				ft, this, FragmentTag.CONVERTER);
+        ConverterFragment_ converterFragment = UiHelper.addOrAttachFragment(
+                this, ft, FragmentTag.CONVERTER);
 
-		converterFragment.setParams(params);
+        converterFragment.setParams(params);
 
-		ft.commit();
+        ft.commit();
 
 		// update values if converter already open
 		converterFragment.reload();
@@ -1000,18 +939,6 @@ public class TabsActivity extends ActionBarActivity implements
 	}
 
 	@Override
-	public LatLng getMapPosition() {
-
-		if (this.mapPosition == null && this.myLastLocation != null) {
-
-			this.mapPosition = new LatLng(this.myLastLocation.getLatitude(),
-					this.myLastLocation.getLongitude());
-		}
-
-		return this.mapPosition;
-	}
-
-	@Override
 	public Double getWorstRate(Region region, OperationType operation,
 			CurrencyCode currency) {
 		return this.dbAdapter.fetchWorstRate(region, currency, operation);
@@ -1042,36 +969,6 @@ public class TabsActivity extends ActionBarActivity implements
     }
 
 	/**
-	 * add-new or attach-existing fragment
-	 * 
-	 * @param ft
-	 *            transaction
-	 * @param context
-	 * @param info
-	 *            fragment info
-	 * 
-	 * @return resulting fragment
-	 */
-	private Fragment addOrAttachFragment(FragmentTransaction ft,
-			Context context, FragmentTag info) {
-		FragmentManager fm = getSupportFragmentManager();
-		Fragment fragment = fm.findFragmentByTag(info.tag);
-
-		if (fragment == null) {
-
-			fragment = Fragment.instantiate(context, info.className);
-
-			ft.add(info.container, fragment, info.tag);
-		} else {
-			if (fragment.isDetached()) {
-				ft.attach(fragment);
-			}
-		}
-
-		return fragment;
-	}
-
-	/**
 	 * fragment detach-if-exists
 	 * 
 	 * @param ft
@@ -1085,33 +982,6 @@ public class TabsActivity extends ActionBarActivity implements
 			ft.detach(fragment);
 		}
 	}
-
-    private void clearFragments(FragmentTransaction ft, String skipTag) {
-        FragmentManager fm = getSupportFragmentManager();
-        List<Fragment> fs = fm.getFragments();
-        for (Fragment f : fs) {
-
-            if (f == null) continue;
-
-            if (skipTag != null && skipTag.equals(f.getTag())) continue;
-
-            ft.detach(f);
-        }
-    }
-
-    private void showFragment(Context ctx, FragmentTag ftag) {
-        FragmentManager fm = getSupportFragmentManager();
-
-        FragmentTransaction ft = fm.beginTransaction();
-
-        ft.setCustomAnimations(R.anim.abc_slide_in_top, 0);
-
-        clearFragments(ft, ftag.tag);
-
-        addOrAttachFragment(ft, ctx, ftag);
-
-        ft.commit();
-    }
 
 	/**
 	 * fragment remove-if-exists in separate transaction
@@ -1142,9 +1012,9 @@ public class TabsActivity extends ActionBarActivity implements
         Fragment best = getSupportFragmentManager().findFragmentByTag(
                 FragmentTag.BEST.tag);
 		if (best == null || !best.isVisible()) { // go main list
-			showFragment(this, FragmentTag.BEST);
-		} else { // finish
-			super.onBackPressed();
+            UiHelper.showFragment(this, FragmentTag.BEST);
+        } else { // finish
+            super.onBackPressed();
         }
     }
 
@@ -1220,33 +1090,6 @@ public class TabsActivity extends ActionBarActivity implements
 		}
 
 		afterRating(launches);
-	}
-
-	@Override
-	public void adClicked() {
-	}
-
-	@Override
-	public void adClosed(Ad arg0, boolean arg1) {
-	}
-
-	@Override
-	public void adLoadSucceeded(Ad arg0) {
-		Log.d(LOG_TAG, "ad load");
-		this.tracker.trackPageView("/adLoaded");
-	}
-
-	@Override
-	public void adShown(Ad arg0, boolean arg1) {
-		Log.d(LOG_TAG, "ad shown");
-	}
-
-	@Override
-	public void noAdFound() {
-		Log.d(LOG_TAG, "no ad found");
-		this.tracker.trackPageView("/noAdFound");
-
-		removeFragment(FragmentTag.BANNER);
 	}
 
 }

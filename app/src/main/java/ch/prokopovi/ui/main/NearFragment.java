@@ -48,6 +48,7 @@ import ch.prokopovi.struct.Master.Region;
 import ch.prokopovi.struct.best.RateItem;
 import ch.prokopovi.struct.best.RatePoint;
 import ch.prokopovi.ui.main.api.CurrencyOperationType;
+import ch.prokopovi.ui.main.api.OpenListener;
 import ch.prokopovi.ui.main.api.RegionListener;
 import ch.prokopovi.ui.main.api.UpdateListener;
 import ch.prokopovi.ui.main.api.Updater;
@@ -64,6 +65,7 @@ import ch.prokopovi.ui.main.api.Updater;
 public class NearFragment extends SupportMapFragment implements
         UpdateListener,
         RegionListener,
+        OpenListener,
         ClusterManager.OnClusterClickListener<NearFragment.NearPlace>,
         ClusterManager.OnClusterInfoWindowClickListener<NearFragment.NearPlace>,
         ClusterManager.OnClusterItemClickListener<NearFragment.NearPlace>,
@@ -92,6 +94,8 @@ public class NearFragment extends SupportMapFragment implements
     private ClusterManager<NearPlace> mClusterManager;
 
     private NearPlace selectedClusterItem;
+
+    private LatLng mapPosition;
 
     class NearPlace implements ClusterItem {
 
@@ -172,17 +176,30 @@ public class NearFragment extends SupportMapFragment implements
 
         super.onResume();
 
+        this.firstTimeOpen = true;
+
+        onOpen();
+    }
+
+    @Override
+    public void onOpen(LatLng latLng) {
+
+        mapPosition = latLng;
+
+        onOpen();
+    }
+
+    private void onOpen() {
         if (isNotReady())
             return;
 
-        this.firstTimeOpen = true;
-
         updatePlaces(); // new currency / operation
 
-        LatLng currentPosition = this.updater.getMapPosition();
-        if (currentPosition != null)
+        LatLng pos = getMapPosition();
+
+        if (pos != null)
             getMap().moveCamera(CameraUpdateFactory.newLatLngZoom(
-                    currentPosition, DEFAULT_ZOOM));
+                    pos, DEFAULT_ZOOM));
     }
 
     @Override
@@ -587,7 +604,24 @@ public class NearFragment extends SupportMapFragment implements
         if (isNotReady())
             return;
 
-        showNearestWindow(this.updater.getMapPosition());
+        updatePlaces(); // new currency / operation
+
+        LatLng pos = getMapPosition();
+
+        if (pos != null)
+            getMap().moveCamera(CameraUpdateFactory.newLatLng(
+                    pos));
+    }
+
+    private LatLng getMapPosition() {
+
+        if (this.mapPosition == null && this.updater.getLocation() != null) {
+
+            this.mapPosition = new LatLng(this.updater.getLocation().getLatitude(),
+                    this.updater.getLocation().getLongitude());
+        }
+
+        return this.mapPosition;
     }
 
     private void showNearestWindow(LatLng currentPosition) {

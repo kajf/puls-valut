@@ -31,14 +31,7 @@ public class VersionHelper {
 			a.invalidateOptionsMenu();
 	}
 
-	@SuppressLint("InlinedApi")
 	public static boolean isXlarge(Configuration c) {
-		// SCREENLAYOUT_SIZE_XLARGE flag was introduced only on API level 9
-
-		if (Build.VERSION.SDK_INT >= 9) {
-			return (c.screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK) == Configuration.SCREENLAYOUT_SIZE_XLARGE;
-		} else {
-			return false;
-		}
-	}
+        return (c.screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK) == Configuration.SCREENLAYOUT_SIZE_XLARGE;
+    }
 }

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-package="ch.prokopovi" android:versionCode="116" android:versionName="9.0"
+package="ch.prokopovi" android:versionCode="117" android:versionName="9.1"
 android:installLocation="auto">
 
 <uses-sdk android:minSdkVersion="9" android:targetSdkVersion="19"/>
@@ -33,12 +33,6 @@ android:installLocation="auto">
     android:icon="@drawable/ic_launcher"
     android:label="@string/app_name"
     android:allowBackup="true">
-
-    <!-- ads -->
-    <activity android:name="com.adsdk.sdk.banner.InAppWebView" android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize" />
-    <activity android:name="com.adsdk.sdk.video.RichMediaActivity" android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize"	android:hardwareAccelerated="false" />
-    <activity android:name="com.adsdk.sdk.mraid.MraidBrowser" android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize" />
-    <!--  -->
 
     <activity android:name=".ui.main.TabsActivity_"
         android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize">
@@ -152,8 +146,8 @@ android:installLocation="auto">
         android:name="com.google.android.gms.version"
         android:value="@integer/google_play_services_version" />
 
-    <!-- prod [need to regenerate] -->
-    <!-- <meta-data
+    <!-- prod-->
+    <!--<meta-data
         android:name="com.google.android.maps.v2.API_KEY"
         android:value="AIzaSyAODM_MEtEayFWTzqjfNqizw4u9fu4_w6Q"/>-->
 

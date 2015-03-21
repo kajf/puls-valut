@@ -43,12 +43,12 @@ android {
         applicationId "ch.prokopovi"
         minSdkVersion 9
         targetSdkVersion 21
-        versionCode 1
-        versionName "1.0"
+        versionCode 117
+        versionName "9.1"
     }
     buildTypes {
         release {
-            minifyEnabled false
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
@@ -76,8 +76,9 @@ dependencies {
     compile 'com.google.android.gms:play-services-maps:6.5.+'
     compile 'com.google.android.gms:play-services-base:6.5.+'
 
+    compile 'com.google.maps.android:android-maps-utils:0.3+'
     // maps extensions
-    compile 'com.androidmapsextensions:android-maps-extensions:2.2.0'
+    //compile 'com.androidmapsextensions:android-maps-extensions:2.2.0'
     //compile 'com.google.android.gms:play-services-maps:6.5.87'
     //
 
