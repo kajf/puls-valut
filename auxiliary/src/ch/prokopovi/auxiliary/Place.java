@@ -101,53 +101,36 @@ class Place {
 	 * @param wh
 	 * @return
 	 */
-	private static String shortenWorkHours(String wh) {
+	static String shortenWorkHours(String wh) {
 
 		String res = commonCleanUp(wh);
-		
-		String mon = "Пн";
-		String tue = "Вт";
-		String wed = "Ср";
-		String thu = "Чт";
-		String fri = "Пт";
-		String sat = "Сб";
-		String sun = "Вс";
 
-		res = res
-				.replace("Время работы:", "")
+    String[] days = new String[] {"Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс"};
+
+    // (?ui) case insensitive pattern modifier
+
+    res = res.replace("Время работы:", "")
 				.trim()
-				.replace("понедельник", mon)
-				.replace("Понедельник", mon)
-				.replace("Пн.", mon)
-        .replace("ПН", mon)
+				.replaceAll("(?ui)понедельник", days[0])
                 //
-        .replace("вторник", tue)
-				.replace("Вторник", tue)
-				.replace("Вт.", tue)
-        .replace("ВТ", tue)
+        .replaceAll("(?ui)вторник", days[1])
                 //
-        .replace("среда", wed)
-				.replace("Среда", wed)
-				.replace("Ср.", wed)
-        .replace("СР", wed)
+        .replaceAll("(?ui)среда", days[2])
                 //
-        .replace("четверг", thu)
-				.replace("Четверг", thu)
-				.replace("Чт.", thu)
-        .replace("ЧТ", thu)
+        .replaceAll("(?ui)четверг", days[3])
                 //
-        .replace("пятница", fri)
-				.replace("Пятница", fri)
-				.replace("Пт.", fri)
-        .replace("ПТ", fri)
+        .replaceAll("(?ui)пятница", days[4])
                 //
-        .replace("суббота", sat).replace("Суббота", sat)
-				.replace("Сб.", sat)
-        .replace("СБ", sat)
+        .replaceAll("(?ui)суббота", days[5])
                 //
-        .replace("воскресенье", sun).replace("Воскресенье", sun)
-				.replace("Вс.", sun)
-        .replace("ВС", sun);
+        .replaceAll("(?ui)воскресенье", days[6]);
+
+
+    for (String day : days) {
+      res = res
+          .replaceAll("(?ui)"+day+"\\.", day) // пн. -> Пн
+          .replace(day.toUpperCase(), day);
+    }
 
 		String brake = "тех. пер.";
 		String lunch = "обед";
@@ -155,32 +138,23 @@ class Place {
 		String dayOff = "вых.";
 		String allDays = "ежедн.";
 
-		res = res.replace("выходной", dayOff).replace("Выходной", dayOff) //
-				.replace("ежедневно", allDays).replace("Ежедневно", allDays) //
-				.replace("технический перерыв", brake) //
-				.replace("Технический перерыв", brake) //
-				.replace("технические перерывы", brake) //
-				.replace("Технические перерывы", brake) //
-				.replace("технологические перерывы", brake) //
-				.replace("обеденный перерыв", lunch) //
-				.replace("Обеденный перерыв", lunch) //
-				.replace("последний рабочий день месяца", "посл. раб. день мес.")
-				.replace("Исключения в режиме работы:", "")
-				.replace("круглосуточно", allHours) //
-				.replace("Круглосуточно", allHours);
+		res = res.replaceAll("(?ui)выходной", dayOff) //
+				.replaceAll("(?ui)ежедневно", allDays) //
+				.replaceAll("(?ui)технический перерыв", brake) //
+				.replaceAll("(?ui)технические перерывы", brake) //
+				.replaceAll("(?ui)технологические перерывы", brake) //
+				.replaceAll("(?ui)обеденный перерыв", lunch) //
+				.replaceAll("(?ui)последний рабочий день месяца", "посл. раб. день мес.")
+				.replaceAll("(?ui)исключения в режиме работы:", "")
+				.replaceAll("(?ui)круглосуточно", allHours);
 
 		res = commonCleanUp(res);
 
 		return res;
 	}
 	
-	private static String cleanUpPhone(String phone) {
-		String br = "<br>";
-		String br2 = ";&lt;br /&gt; ";	
-		String br3 = "&lt;br&gt; ";
-		String br4 = "&lt;br&gt;";
-				
-		String[] prefixes = new String[] {												 
+	static String cleanUpPhone(String phone) {
+		String[] prefixes = new String[] {
 				"15", "152", "154", "1545",
 				"16", "162", "163", "165", "1653",
 				"17", "174", "176", "177", "1742", "1775", "1777", "1795", 				
@@ -199,12 +173,17 @@ class Place {
 		String res = commonCleanUp(phone);
 
 		String [] replaceArr = new String [] {"(круглосуточно)", "(МТС, Life:), Velcom)", "(velcom, МТС и life)",
-				"(факс)", "факс:", "тел/факс", "Факс:"};
+				"(факс)", "факс:", "тел/факс", "Факс:", "(Минск)"};
 		for (String s : replaceArr) {
 			res = res.replace(s, "");
 		}
-		
-		res = res.replace(br, comma).replace(br2, comma).replace(br3, comma).replace(br4, comma);
+
+    String[] brs = new String[] {"<br>", "<br />", "<br/>", "&lt;br&gt;", "&lt;br /&gt;"};
+
+    for (String br : brs) {
+      res = res.replace(br, comma);
+    }
+
 		
 		if (res.endsWith(comma)) {
 			res = res.substring(0, res.length() - comma.length());
@@ -243,9 +222,8 @@ class Place {
 				.replaceAll("\t", " ") // tabs
 				.replaceAll(" +", " ") // replace 2 or more spaces with single
 						// space
-				.replace(" -", "-").replace("- ", "-")
-				.replace(" —", "—").replace("— ", "—")
-				.replace(" " + comma, comma); // replace comma leading spaces
+        .replaceAll("\\.\\.", ".").replace(" -", "-").replace("- ", "-").replace(" —", "—").replace("— ",
+            "—").replace(" " + comma, comma); // replace comma leading spaces
 		
 	
 		return res;
