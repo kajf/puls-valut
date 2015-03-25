@@ -19,12 +19,7 @@ import android.support.v7.widget.SearchView.OnQueryTextListener;
 import android.text.TextUtils;
 import android.util.Log;
 import android.util.TypedValue;
-import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
+import android.view.*;
 import android.widget.AbsListView;
 import android.widget.AbsListView.OnScrollListener;
 import android.widget.LinearLayout;
@@ -32,38 +27,19 @@ import android.widget.LinearLayout.LayoutParams;
 
 import com.google.android.apps.analytics.GoogleAnalyticsTracker;
 
-import org.androidannotations.annotations.AfterViews;
-import org.androidannotations.annotations.EFragment;
-import org.androidannotations.annotations.OptionsItem;
-import org.androidannotations.annotations.OptionsMenu;
-import org.androidannotations.annotations.OptionsMenuItem;
-import org.androidannotations.annotations.ViewById;
+import org.androidannotations.annotations.*;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
-import ch.prokopovi.PrefsUtil;
-import ch.prokopovi.R;
-import ch.prokopovi.Util;
+import ch.prokopovi.*;
 import ch.prokopovi.api.provider.PlacesProvider;
 import ch.prokopovi.api.struct.Titled;
 import ch.prokopovi.db.BestRatesTable.ColumnBestRates;
 import ch.prokopovi.exported.RatesPlacesTable.ColumnRatesPlaces;
 import ch.prokopovi.provider.places.PlacesProviderFactory;
-import ch.prokopovi.struct.Master.CurrencyCode;
-import ch.prokopovi.struct.Master.OperationType;
-import ch.prokopovi.struct.Master.Region;
+import ch.prokopovi.struct.Master.*;
 import ch.prokopovi.ui.main.ChoiceDialog.ChoiceCallback;
-import ch.prokopovi.ui.main.api.Converter;
-import ch.prokopovi.ui.main.api.CurrencyOperationType;
-import ch.prokopovi.ui.main.api.OpenListener;
-import ch.prokopovi.ui.main.api.RegionListener;
-import ch.prokopovi.ui.main.api.UpdateListener;
-import ch.prokopovi.ui.main.api.Updater;
+import ch.prokopovi.ui.main.api.*;
 
 @EFragment
 @OptionsMenu(R.menu.best_menu)
@@ -128,7 +104,7 @@ public class BestRatesFragment extends ListFragment implements
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
 
-        return new AsyncTaskLoader<Cursor>(getActivity()){
+        return new AsyncTaskLoader<Cursor>(getActivity()) {
 
             @Override
             public Cursor loadInBackground() {
@@ -615,7 +591,8 @@ public class BestRatesFragment extends ListFragment implements
     }
 
     @Override
-    public void onScrollStateChanged(AbsListView view, int scrollState) {}
+    public void onScrollStateChanged(AbsListView view, int scrollState) {
+    }
 
     public Integer[] getDistanceMap() {
         return distanceMap;
