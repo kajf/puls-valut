@@ -25,19 +25,12 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.Animation;
-import android.view.animation.RotateAnimation;
 import android.widget.AbsListView;
 import android.widget.AbsListView.OnScrollListener;
-import android.widget.Button;
-import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
-import android.widget.TextView;
 
 import com.google.android.apps.analytics.GoogleAnalyticsTracker;
-import com.google.android.gms.maps.model.LatLng;
 
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.EFragment;
@@ -46,7 +39,6 @@ import org.androidannotations.annotations.OptionsMenu;
 import org.androidannotations.annotations.OptionsMenuItem;
 import org.androidannotations.annotations.ViewById;
 
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -60,14 +52,12 @@ import ch.prokopovi.Util;
 import ch.prokopovi.api.provider.PlacesProvider;
 import ch.prokopovi.api.struct.Titled;
 import ch.prokopovi.db.BestRatesTable.ColumnBestRates;
-import ch.prokopovi.exported.DbColumn;
 import ch.prokopovi.exported.RatesPlacesTable.ColumnRatesPlaces;
 import ch.prokopovi.provider.places.PlacesProviderFactory;
 import ch.prokopovi.struct.Master.CurrencyCode;
 import ch.prokopovi.struct.Master.OperationType;
 import ch.prokopovi.struct.Master.Region;
 import ch.prokopovi.ui.main.ChoiceDialog.ChoiceCallback;
-import ch.prokopovi.ui.main.ConverterFragment.ConverterParams;
 import ch.prokopovi.ui.main.api.Converter;
 import ch.prokopovi.ui.main.api.CurrencyOperationType;
 import ch.prokopovi.ui.main.api.OpenListener;
@@ -86,183 +76,9 @@ public class BestRatesFragment extends ListFragment implements
         LoaderManager.LoaderCallbacks<Cursor> {
 
     private static final String LOG_TAG = "BestRatesFragment";
-    private static final DecimalFormat DISTANCE_FORMAT = new DecimalFormat(
-            "#.## км");
 
     private static final int PAGE_SIZE = 20;
 
-    private class BestListAdapter extends CursorAdapter {
-
-        private LayoutInflater mInflater;
-
-        public BestListAdapter(Context context) {
-            // empty cursor until update is performed
-            super(context, null, 0);
-            mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        }
-
-        @Override
-        public View newView(Context context, Cursor cursor, ViewGroup parent) {
-            return mInflater.inflate(R.layout.best_item_layout, parent, false);
-        }
-
-        private void fillText(View rowView, Cursor cursor, DbColumn col, int viewId) {
-            TextView tv = (TextView) rowView.findViewById(viewId);
-            tv.setText(cursor.getString(cursor.getColumnIndex(col.getName())));
-        }
-
-        private void fillRow(View rowView, Cursor cursor) {
-            // format value
-            fillText(rowView, cursor, ColumnBestRates.VALUE, R.id.tv_item_best_rate_value);
-            fillText(rowView, cursor, ColumnBestRates.TIME_UPDATED, R.id.tv_item_best_rate_time);
-            fillText(rowView, cursor, ColumnRatesPlaces.DESCRIPTION, R.id.tv_item_best_description);
-            fillText(rowView, cursor, ColumnRatesPlaces.ADDR, R.id.tv_item_best_addr);
-            fillText(rowView, cursor, ColumnRatesPlaces.WORK_HOURS, R.id.tv_item_best_wh);
-            fillText(rowView, cursor, ColumnRatesPlaces.PHONE, R.id.tv_item_best_phones);
-
-            // distance text
-            Integer distance = BestRatesFragment.this.distanceMap[cursor.getPosition()];
-            if (distance != null) {
-                String txt = String.valueOf(distance) + " м";
-                if (distance > 1000) {
-
-                    txt = DISTANCE_FORMAT.format(distance / 1000.0);
-                }
-
-                TextView tvDistance = (TextView) rowView
-                        .findViewById(R.id.tv_item_best_rate_distance);
-                tvDistance.setText(txt);
-            }
-        }
-
-        private int getInt(Cursor cursor, DbColumn col) {
-            int index = cursor.getColumnIndex(col.getName());
-            return cursor.getInt(index);
-        }
-
-        private double getDouble(Cursor cursor, DbColumn col) {
-            int index = cursor.getColumnIndex(col.getName());
-            return cursor.getDouble(index);
-        }
-
-        @Override
-        public void bindView(View rowView, Context context, Cursor cursor) {
-            Log.d(LOG_TAG, "getView " + cursor.getPosition());
-
-            fillRow(rowView, cursor);
-
-            final ImageView ivExpandCollapse =
-                    (ImageView) rowView.findViewById(R.id.iv_expand_collapse);
-            final View whView = rowView.findViewById(R.id.tv_item_best_wh);
-            final View phonesView = rowView.findViewById(R.id.tv_item_best_phones);
-
-            // reset expand/collapse visibility
-            ivExpandCollapse.clearAnimation();
-            whView.setVisibility(View.GONE);
-            phonesView.setVisibility(View.GONE);
-            // ---
-
-            // open button
-            final double lat = getDouble(cursor, ColumnRatesPlaces.X);
-            final double lng = getDouble(cursor, ColumnRatesPlaces.Y);
-
-            final LatLng openPoint = new LatLng(lat, lng);
-
-            ImageButton ibShowMap = (ImageButton) rowView
-                    .findViewById(R.id.ib_show_map);
-            ibShowMap
-                    .setOnClickListener(new android.view.View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-
-                            BestRatesFragment.this.tracker
-                                    .trackPageView("/openMap");
-
-                            Log.d(LOG_TAG, "open click " + openPoint);
-
-                            BestRatesFragment.this.openListener
-                                    .onOpen(openPoint);
-                        }
-                    });
-
-            //
-
-            View.OnClickListener expandCollapseListener = new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-
-                    boolean expanded = whView.getVisibility() == View.VISIBLE;
-
-                    RotateAnimation rotate = new RotateAnimation(
-                            expanded ? 90 : 0,
-                            expanded ? 0 : 90,
-                            Animation.RELATIVE_TO_SELF, 0.5f,
-                            Animation.RELATIVE_TO_SELF, 0.5f);
-                    rotate.setDuration(500);
-                    rotate.setFillEnabled(true);
-                    rotate.setFillAfter(true);
-                    ivExpandCollapse.startAnimation(rotate);
-
-                    shiftVisibility(whView);
-                    shiftVisibility(phonesView);
-                }
-            };
-
-            ivExpandCollapse.setOnClickListener(expandCollapseListener);
-
-            LinearLayout itemExpandCollapse = (LinearLayout) rowView.findViewById(R.id.item_best_expand);
-            itemExpandCollapse.setOnClickListener(expandCollapseListener);
-
-            final int regId = getInt(cursor, ColumnRatesPlaces.REGION_ID);
-            final int currId = getInt(cursor, ColumnBestRates.CURRENCY_ID);
-            final int exTypeId = getInt(cursor, ColumnBestRates.EXCHANGE_TYPE_ID);
-            final double rate = getDouble(cursor, ColumnBestRates.VALUE);
-
-            Button bConverter = (Button) rowView.findViewById(R.id.b_converter);
-            bConverter
-                    .setOnClickListener(new android.view.View.OnClickListener() {
-
-                        @Override
-                        public void onClick(View v) {
-                            BestRatesFragment.this.tracker
-                                    .trackPageView("/openConverter");
-
-                            OperationType operationType = OperationType
-                                    .get(exTypeId);
-
-                            CurrencyCode currFrom = CurrencyCode.get(currId);
-
-                            Log.d(LOG_TAG, "converter click from: " + currFrom
-                                    + ", oper: " + operationType + ", rate: "
-                                    + rate);
-
-                            ConverterParams converterParams = ConverterParams.instaniate(
-                                    Region.get(regId), currFrom, operationType,
-                                    rate, BestRatesFragment.this.worstRateValue);
-
-                            BestRatesFragment.this.converter
-                                    .open(converterParams);
-                        }
-                    });
-
-            UiHelper.applyFont(getActivity(), rowView, null);
-        }
-    }
-
-    private void shiftVisibility(View v) {
-
-        if (v.getVisibility() == View.VISIBLE) {
-            v.setVisibility(View.GONE);
-        } else {
-            v.setVisibility(View.VISIBLE);
-        }
-    }
-
-    /**
-     * container for place distance info
-     *
-     * @author Pavel_Letsiaha
-     */
     private class SortEntry {
         int id;
         Double rate;
@@ -540,7 +356,7 @@ public class BestRatesFragment extends ListFragment implements
         if (getListAdapter() == null) {
             Log.d(LOG_TAG, "new list adapter is created");
 
-            setListAdapter(new BestListAdapter(getActivity()));
+            setListAdapter(new BestListAdapter(this));
         } // first launch
 
         getListView().setOnScrollListener(this);
@@ -800,4 +616,24 @@ public class BestRatesFragment extends ListFragment implements
 
     @Override
     public void onScrollStateChanged(AbsListView view, int scrollState) {}
+
+    public Integer[] getDistanceMap() {
+        return distanceMap;
+    }
+
+    public GoogleAnalyticsTracker getTracker() {
+        return tracker;
+    }
+
+    public OpenListener getOpenListener() {
+        return openListener;
+    }
+
+    public Converter getConverter() {
+        return converter;
+    }
+
+    public Double getWorstRateValue() {
+        return worstRateValue;
+    }
 }

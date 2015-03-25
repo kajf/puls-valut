@@ -1,6 +1,6 @@
 package ch.prokopovi.ui.main;
 
-import android.content.ContextWrapper;
+import android.content.Context;
 import android.graphics.Typeface;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -66,9 +66,9 @@ public final class UiHelper {
         }
     }
 
-    public static void applyFont(ContextWrapper ctx, View parent, Typeface tf) {
+    public static void applyFont(Context ctx, View parent, Typeface tf) {
 
-		if (tf == null)
+        if (tf == null)
 			tf = Typeface.createFromAsset(ctx.getAssets(),
 					"fonts/Roboto-Light.ttf");
 
