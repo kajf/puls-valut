@@ -261,7 +261,7 @@ public class MyFinCollectorBot extends AbstractCollectorBot {
 				place.setRegionId(city.getMasterId());
 				
 				String strPhone = placePoisk.getString("phone");
-				place.setPhone(strPhone);
+				place.updatePhoneWith(strPhone);
 				
 			}
 			
@@ -358,14 +358,8 @@ public class MyFinCollectorBot extends AbstractCollectorBot {
 			String text = phoneNode.getText().toString();
 			
 			if (!text.isEmpty() && !"-".equals(text)) {
-								
-				String phone = place.getPhone();
-				if (phone == null) {
-					place.setPhone(text);
-				} else if (!phone.contains(text)) {
-					place.setPhone(text+", "+phone);
-				}
-				
+
+        place.updatePhoneWith(text);
 			}
 		}
 	}

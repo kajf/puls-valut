@@ -17,7 +17,7 @@ public class DbHelper extends SQLiteOpenHelper {
 	private static final String DB_NAME = "androidovich.db";
 
 	// update this if assets/<DB_NAME>.db is updated
-    public static final int DB_VERSION = 64;
+    public static final int DB_VERSION = 66;
     private static final String LOG_TAG = "DbHelper";
 
 	private final Context context;
@@ -29,7 +29,7 @@ public class DbHelper extends SQLiteOpenHelper {
 	public static synchronized DbHelper getInstance(Context ctx) {
 		/**
 		 * use the application context as suggested by CommonsWare. this will
-		 * ensure that you dont accidentally leak an Activitys context (see this
+		 * ensure that you don't accidentally leak an Activities context (see this
 		 * article for more information:
 		 * http://developer.android.com/resources/articles
 		 * /avoiding-memory-leaks.html)

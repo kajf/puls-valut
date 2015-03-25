@@ -21,11 +21,11 @@ class Place {
 	String addr;
 	String wh;
 	String phone = "";
-	
+
 	public Place(int id, Integer regionId, Bank bank, String name, Double x,
 			Double y, String addr, String wh, String phone) {
 		super();
-		
+
 		this.id = id;
 		this.regionId = regionId;
 		this.bank = bank;
@@ -34,19 +34,22 @@ class Place {
 		this.y = y;
 		this.addr = shortenAddr(addr);
 		this.wh = shortenWorkHours(wh);
-		setPhone(phone);
+        this.phone = cleanUpPhone(phone);
+    }
+
+	public Place(int id, Bank bank, String name,
+			Double x, Double y, String addr, String wh) {
+
+		this(id, -1, bank, name, x, y, addr, wh, null);
 	}
 
-	public Place(int id, Bank bank, String name, 
-			Double x, Double y, String addr, String wh) {
-		
-		this(id, -1, bank, name, x, y, addr, wh, null);		
-	}
-	
 	private static String shortenAddr(String addr){
-		
-		String res = addr.replace("г.", "").replace("Г.", "").trim();
-				
+
+        if (addr == null)
+            return addr;
+
+        String res = addr.replace("г.", "").replace("Г.", "").trim();
+
 		for (String city : CITIES) {
 			String prefix1 = city + ", ";
 			if (res.startsWith(prefix1)) {
@@ -64,16 +67,19 @@ class Place {
 		res = res.replace("проспект", "пр.").replace("пр-т", "пр.");
 
 		res = commonCleanUp(res);
-		
+
 		return res;
 	}
-	
+
 	private static String shortenName(String nm) {
-		final String pov = "ПОВ";
+        if (nm == null)
+            return nm;
+
+        final String pov = "ПОВ";
 		final String cbu = "ЦБУ";
 
 		String res = commonCleanUp(nm);
-		
+
 		res = res.replace("Центр банковских услуг", cbu)
 				//
 				.replace("Центр Банковских услуг", cbu)
@@ -94,43 +100,39 @@ class Place {
 
 		return res;
 	}
-	
+
 	/**
 	 * shorten some words (weekdays) in provided string
-	 * 
+	 *
 	 * @param wh
 	 * @return
 	 */
 	static String shortenWorkHours(String wh) {
+        if (wh == null)
+            return wh;
 
-		String res = commonCleanUp(wh);
+        String res = commonCleanUp(wh);
 
-    String[] days = new String[] {"Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс"};
+        String[] days = new String[] {"Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс"};
 
-    // (?ui) case insensitive pattern modifier
+        // (?ui) case insensitive pattern modifier
 
-    res = res.replace("Время работы:", "")
+        res = res.replace("Время работы:", "")
 				.trim()
 				.replaceAll("(?ui)понедельник", days[0])
-                //
-        .replaceAll("(?ui)вторник", days[1])
-                //
-        .replaceAll("(?ui)среда", days[2])
-                //
-        .replaceAll("(?ui)четверг", days[3])
-                //
-        .replaceAll("(?ui)пятница", days[4])
-                //
-        .replaceAll("(?ui)суббота", days[5])
-                //
-        .replaceAll("(?ui)воскресенье", days[6]);
+                .replaceAll("(?ui)вторник", days[1])
+                .replaceAll("(?ui)среда", days[2])
+                .replaceAll("(?ui)четверг", days[3])
+                .replaceAll("(?ui)пятница", days[4])
+                .replaceAll("(?ui)суббота", days[5])
+                .replaceAll("(?ui)воскресенье", days[6]);
 
 
-    for (String day : days) {
-      res = res
-          .replaceAll("(?ui)"+day+"\\.", day) // пн. -> Пн
-          .replace(day.toUpperCase(), day);
-    }
+        for (String day : days) {
+          res = res
+              .replaceAll("(?ui)"+day+"\\.", day) // пн. -> Пн
+              .replace(day.toUpperCase(), day);
+        }
 
 		String brake = "тех. пер.";
 		String lunch = "обед";
@@ -152,24 +154,25 @@ class Place {
 
 		return res;
 	}
-	
+
 	static String cleanUpPhone(String phone) {
 		String[] prefixes = new String[] {
 				"15", "152", "154", "1545",
 				"16", "162", "163", "165", "1653",
-				"17", "174", "176", "177", "1742", "1775", "1777", "1795", 				
-				"21", "212", "214", "216",  
-				"22", "222", "225",  
+				"17", "174", "176", "177", "1742", "1775", "1777", "1795",
+				"21", "212", "214", "216",
+				"22", "222", "225",
 				"23", "232", "2334", "2339", "2340", "2342", "236", "2363",
-				"29", "291",
-				"33", 
+                "25",
+                "29", "291",
+				"33",
 				"44"};
-				
+
 		String comma = ", ";
-		
+
 		if (phone == null)
 			return phone;
-		
+
 		String res = commonCleanUp(phone);
 
 		String [] replaceArr = new String [] {"(круглосуточно)", "(МТС, Life:), Velcom)", "(velcom, МТС и life)",
@@ -178,54 +181,56 @@ class Place {
 			res = res.replace(s, "");
 		}
 
-    String[] brs = new String[] {"<br>", "<br />", "<br/>", "&lt;br&gt;", "&lt;br /&gt;"};
+        String[] brs = new String[] {"<br>", "<br />", "<br/>", "&lt;br&gt;", "&lt;br /&gt;"};
 
-    for (String br : brs) {
-      res = res.replace(br, comma);
-    }
+        for (String br : brs) {
+          res = res.replace(br, comma);
+        }
 
-		
 		if (res.endsWith(comma)) {
 			res = res.substring(0, res.length() - comma.length());
 		} // remove trailing comma
-		
+
 		res = res //
 				.replace(
 						" (круглосуточно, звонок со стационарного телефона бесплатно)",
 						"") //
 				.replace(" (бесплатно со стационарного телефона)", "");
-				
-		for (String prefix : prefixes) {
+
+        res = res.replace("+ ", "+");
+        res = res.replace("-", " ");
+
+        for (String prefix : prefixes) {
 			res = res
-					.replace("(+375 "+prefix+")", "+375 " + prefix)
-					.replace("+375 (0"+prefix+")", "+375 " + prefix)
-					.replace("(8-0"+prefix+")", "+375 " + prefix)
+                    .replace("(+375 " + prefix + ")", "+375 " + prefix)
+                    .replace("+375 (0"+prefix+")", "+375 " + prefix)
 					.replace("(8 0"+prefix+")", "+375 " + prefix)
-					.replace("(80"+prefix+")", "+375 " + prefix)
-					.replace("8 (0"+prefix+")", "+375 " + prefix)
+                    .replace("8 0" + prefix + ")", "+375 " + prefix)
+                    .replace("(80" + prefix + ")", "+375 " + prefix)
+                    .replace("8 (0"+prefix+")", "+375 " + prefix)
 					.replace("(0"+prefix+")", "+375 " + prefix)
-					.replace("("+prefix+")", prefix);	
+					.replace("("+prefix+")", prefix);
 		}// un-brecket prefixes
 
 		res = commonCleanUp(res);
 
 		return res;
 	}
-	
+
 	private static String commonCleanUp(String str) {
 		if (str == null)
 			return str;
-		
+
 		String comma = ", ";
-				
+
 		String res = str.trim() //
 				.replaceAll("\t", " ") // tabs
 				.replaceAll(" +", " ") // replace 2 or more spaces with single
 						// space
         .replaceAll("\\.\\.", ".").replace(" -", "-").replace("- ", "-").replace(" —", "—").replace("— ",
             "—").replace(" " + comma, comma); // replace comma leading spaces
-		
-	
+
+
 		return res;
 	}
 
@@ -265,9 +270,18 @@ class Place {
 		return phone != null ? phone : "";
 	}
 
-	public void setPhone(String phone) {		
-		this.phone = cleanUpPhone(phone);
-	}		
+    public void updatePhoneWith(String newPhone) {
+
+        newPhone = cleanUpPhone(newPhone);
+
+        if (phone == null) {
+            phone = newPhone;
+        } else if (!phone.contains(newPhone)) {
+            phone = newPhone + ", " + phone;
+        }
+
+        this.phone = cleanUpPhone(phone);
+	}
 
 	public void setRegionId(Integer regionId) {
 		this.regionId = regionId;
