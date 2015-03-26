@@ -5,12 +5,12 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 public class PlaceTest {
+    String[] WEEK_DAYS = new String[]{"Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс"};
+
     @Test
     public void testWorkWeekDaysShortened() throws Exception {
 
-        String[] days = new String[]{"Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс"};
-
-        for (String day : days) {
+        for (String day : WEEK_DAYS) {
             String dot = ".";
             String shortened = Place.shortenWorkHours("prefix " + day + dot + " suffix");
 
@@ -28,7 +28,7 @@ public class PlaceTest {
     @Test
     public void testPhoneLineBreaksShortened() throws Exception {
 
-        String[] brs = new String[]{"<br>", "<br />", "<br/>", "&lt;br&gt;", "&lt;br /&gt;"};
+        String[] brs = new String[]{"<br>", "<br />", "<br/>", "&lt;br&gt;", "&lt;br /&gt;", "&lt;/br&gt;"};
 
         for (String br : brs) {
             String shortened = Place.cleanUpPhone("+375 29 123456 " + br);
@@ -72,4 +72,36 @@ public class PlaceTest {
         Place stub = new Place(-1, -1, null, null, null, null, null, null, null);
     }
 
+    @Test
+    public void testCleanUpDuplicatedDotsAndCommas() throws Exception {
+        String clean = Place.commonCleanUp("bla.. +375 ,,");
+
+        assertEquals("bla. +375 ,", clean);
+    }
+
+    @Test
+    public void testWorkDaysWithDashes() throws Exception {
+        CharSequence dash = "-";
+
+        for (String day : WEEK_DAYS) {
+            String prefix = "prefix";
+            String suffix = "suffix";
+
+            String shortenedDashRight = Place.shortenWorkHours(prefix + day.toLowerCase() + dash + suffix);
+
+            assertTrue(shortenedDashRight, shortenedDashRight.contains(prefix));
+            assertTrue(shortenedDashRight, shortenedDashRight.contains(day));
+            assertTrue(shortenedDashRight, shortenedDashRight.contains(dash));
+            assertTrue(shortenedDashRight, shortenedDashRight.contains(suffix));
+
+
+            String shortenedDashLeft = Place.shortenWorkHours(prefix + dash + day.toLowerCase() + suffix);
+
+            assertTrue(shortenedDashLeft, shortenedDashLeft.contains(prefix));
+            assertTrue(shortenedDashLeft, shortenedDashLeft.contains(day));
+            assertTrue(shortenedDashLeft, shortenedDashLeft.contains(dash));
+            assertTrue(shortenedDashLeft, shortenedDashLeft.contains(suffix));
+        }
+
+    }
 }

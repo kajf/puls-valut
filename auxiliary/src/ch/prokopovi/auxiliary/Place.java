@@ -130,7 +130,9 @@ class Place {
 
         for (String day : days) {
           res = res
-              .replaceAll("(?ui)"+day+"\\.", day) // пн. -> Пн
+              .replaceAll("(?ui)"+ day + "\\.", day) // пн. -> Пн
+              .replaceAll("(?ui)" + day + "-", day + "-") // пн- -> Пн-
+              .replaceAll("(?ui)" + "-" + day, "-" + day) // -пт -> -Пт
               .replace(day.toUpperCase(), day);
         }
 
@@ -181,7 +183,7 @@ class Place {
 			res = res.replace(s, "");
 		}
 
-        String[] brs = new String[] {"<br>", "<br />", "<br/>", "&lt;br&gt;", "&lt;br /&gt;"};
+        String[] brs = new String[] {"<br>", "<br />", "<br/>", "&lt;br&gt;", "&lt;br /&gt;", "&lt;/br&gt;"};
 
         for (String br : brs) {
           res = res.replace(br, comma);
@@ -217,17 +219,22 @@ class Place {
 		return res;
 	}
 
-	private static String commonCleanUp(String str) {
+	static String commonCleanUp(String str) {
 		if (str == null)
 			return str;
 
 		String comma = ", ";
 
-		String res = str.trim() //
-				.replaceAll("\t", " ") // tabs
+        String res = str.trim() //
+                .replaceAll("\t", " ") // tabs
 				.replaceAll(" +", " ") // replace 2 or more spaces with single
-						// space
-        .replaceAll("\\.\\.", ".").replace(" -", "-").replace("- ", "-").replace(" —", "—").replace("— ",
+                        // space
+                .replace("..", ".")
+                .replace(",,", ",")
+                .replace(" -", "-")
+                .replace("- ", "-")
+                .replace(" —", "—")
+                .replace("— ",
             "—").replace(" " + comma, comma); // replace comma leading spaces
 
 
