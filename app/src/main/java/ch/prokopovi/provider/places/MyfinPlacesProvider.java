@@ -31,7 +31,6 @@ public class MyfinPlacesProvider extends AbstractPlacesProvider {
 		EUR("eur", CurrencyCode.EUR), //
 		RUR("rur", CurrencyCode.RUR), //
 		PLN("pln", CurrencyCode.PLN), //
-		LTL("ltl", CurrencyCode.LTL), //
 		UAH("uah", CurrencyCode.UAH), //
 		EUR_USD("eurusd", CurrencyCode.EUR_USD);
 
