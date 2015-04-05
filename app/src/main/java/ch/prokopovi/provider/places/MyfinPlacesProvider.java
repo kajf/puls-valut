@@ -4,11 +4,7 @@ import android.util.Log;
 
 import org.htmlcleaner.TagNode;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
+import java.util.*;
 import java.util.Map.Entry;
 
 import ch.prokopovi.Util;
@@ -115,7 +111,9 @@ public class MyfinPlacesProvider extends AbstractPlacesProvider {
 
 	private static List<BestRatesRecord> parseRates(TagNode placeNode) {
 
-		List<BestRatesRecord> rates = new ArrayList<BestRatesRecord>();
+        Set<String> vauesToSkip = new HashSet<>(Arrays.asList("-", "1"));
+
+		List<BestRatesRecord> rates = new ArrayList<>();
 
 		for (MyfinCurrency mfc : MyfinCurrency.values()) {
 			for (OperationType ot : OperationType.values()) {
@@ -124,10 +122,15 @@ public class MyfinPlacesProvider extends AbstractPlacesProvider {
 						+ ot.name().toLowerCase(Locale.US);
 
 				TagNode placeTag = placeNode.findElementByName(tag, false);
+                String strValue = placeTag.getText()
+                        .toString();
+
+                if (vauesToSkip.contains(strValue))
+                    continue;
 
 				try {
-					double val = Util.parseDotDouble(placeTag.getText()
-							.toString());
+
+                    double val = Util.parseDotDouble(strValue);
 
                     if (val < 0.0001) {
                         Log.w(LOG_TAG, "to small rate " + val);
