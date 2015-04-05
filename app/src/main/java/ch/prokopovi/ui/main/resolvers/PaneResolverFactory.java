@@ -17,13 +17,13 @@ import ch.prokopovi.ui.main.FragmentTag;
 public class PaneResolverFactory {
     private static final String LOG_TAG = "PaneResolverFactory";
 
-    public static PaneResolver createPaneResolver(FragmentActivity context, FragmentTag fragmentTag) {
+    public static PaneResolver createPaneResolver(FragmentActivity context, FragmentTag fragmentTag, boolean adsOn) {
 
         if (isDualPane(context)) {
             return new DualPaneResolver(context, fragmentTag);
         }
 
-        return new SinglePaneResolver(context, fragmentTag);
+        return new SinglePaneResolver(context, fragmentTag, adsOn);
     }
 
     /**

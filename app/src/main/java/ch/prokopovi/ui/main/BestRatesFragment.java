@@ -73,8 +73,8 @@ public class BestRatesFragment extends ListFragment implements
     private Converter converter;
     private Double worstRateValue;
 
-    private int[] positionMap;
-    private Integer[] distanceMap;
+    private int[] positionMap = new int[0];
+    private Integer[] distanceMap = new Integer[0];
 
     private int firstVisiblePosition = 0;
     private int itemsAllowedInList = 0;

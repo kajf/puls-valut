@@ -51,13 +51,6 @@
     <string name="lbl_re4ica">Речица</string>
     <string name="lbl_sluck">Слуцк</string>
     <string name="lbl_zodino">Жодино</string>
-        
-    <string name="lbl_kiev">Киев</string>
-    <string name="lbl_odessa">Одесса</string>
-    <string name="lbl_doneck">Донецк</string>
-    <string name="lbl_lvov">Львов</string>
-    <string name="lbl_dnepropetrovsk">Днепропетровск</string>
-   
     
     <string name="lbl_nbrb_provider">НБРБ</string>
     <string name="lbl_prior_provider">Приорбанк</string>
@@ -120,6 +113,11 @@
     <string name="lbl_best">лучший</string>
     
     <string name="msg_updating">Обновляю …</string>
+
+    <!-- prod admob -->
+    <!--<string name="banner_ad_unit_id">ca-app-pub-7782909295061759/6150499226</string>-->
+    <!-- test admob -->
+    <string name="banner_ad_unit_id">ca-app-pub-3940256099942544/6300978111</string>
 
     <string name="btn_about_notice">Лицензия Google Play Services</string>
     <string name="msg_about_widget">

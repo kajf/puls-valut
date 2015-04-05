@@ -347,7 +347,11 @@ public class TabsActivity extends ActionBarActivity implements
 
 		super.onCreate(savedInstanceState);
 
-        paneResolver = PaneResolverFactory.createPaneResolver(this, FragmentTag.NEAR);
+        SharedPreferences prefs = getSharedPreferences(
+                PrefsUtil.PREFS_NAME, Context.MODE_PRIVATE);
+
+        boolean adsOn = prefs.getBoolean(this.prefAdsOn, true);
+        paneResolver = PaneResolverFactory.createPaneResolver(this, FragmentTag.NEAR, adsOn);
 
         ActionBar actionBar = getSupportActionBar();
         actionBar.setHomeButtonEnabled(true);
@@ -377,9 +381,6 @@ public class TabsActivity extends ActionBarActivity implements
 		// rate me
 		if (savedInstanceState == null) { // only freshly created activity
 
-			SharedPreferences prefs = getSharedPreferences(
-					PrefsUtil.PREFS_NAME, Context.MODE_PRIVATE);
-
 			// launches count
 			int launches = prefs.getInt(this.prefRateAppLaunches, 5);
 			Log.d(LOG_TAG, "rate app launches: " + launches);
@@ -398,10 +399,11 @@ public class TabsActivity extends ActionBarActivity implements
                 } // update count
 
                 // ads if allowed
-				if (prefs.getBoolean(this.prefAdsOn, true)) {
+
+                if (adsOn) {
 
 					FragmentTransaction ftBanner = getSupportFragmentManager().beginTransaction();
-
+                    UiHelper.addOrAttachFragment(this, ftBanner, FragmentTag.BANNER);
                     ftBanner.commit();
                 } else {
 					this.tracker.trackPageView("/adsOff");
@@ -521,7 +523,7 @@ public class TabsActivity extends ActionBarActivity implements
             } else if (mTitleBest.equals(selected)) {
                 Log.d(LOG_TAG, "open best rates list");
 
-                UiHelper.showFragment(ctx, FragmentTag.BEST);
+                paneResolver.showBest();
 
             } else if (mTitleNear.equals(selected)) {
                 Log.d(LOG_TAG, "open near rates");
@@ -1012,12 +1014,10 @@ public class TabsActivity extends ActionBarActivity implements
             return;
         }
 
-        Fragment best = getSupportFragmentManager().findFragmentByTag(
-                FragmentTag.BEST.tag);
-		if (best == null || !best.isVisible()) { // go main list
-            UiHelper.showFragment(this, FragmentTag.BEST);
-        } else { // finish
+        if (paneResolver.isBestActive()){
             super.onBackPressed();
+        } else {
+            paneResolver.showBest();
         }
     }
 

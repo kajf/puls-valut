@@ -71,10 +71,11 @@ dependencies {
     compile 'com.android.support:appcompat-v7:21.0.3'
 
     // http://developer.android.com/google/play-services/setup.html
-    //compile 'com.google.android.gms:play-services:6.5.+'
-    compile 'com.google.android.gms:play-services-location:6.5.+'
-    compile 'com.google.android.gms:play-services-maps:6.5.+'
-    compile 'com.google.android.gms:play-services-base:6.5.+'
+    compile 'com.google.android.gms:play-services-location:7.0.+'
+    compile 'com.google.android.gms:play-services-maps:7.0.+'
+    compile 'com.google.android.gms:play-services-base:7.0.+'
+    compile 'com.google.android.gms:play-services-ads:7.0.+'
+
 
     compile 'com.google.maps.android:android-maps-utils:0.3+'
     // maps extensions

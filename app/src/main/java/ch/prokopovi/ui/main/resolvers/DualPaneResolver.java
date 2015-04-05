@@ -1,8 +1,6 @@
 package ch.prokopovi.ui.main.resolvers;
 
-import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
+import android.support.v4.app.*;
 
 import com.google.android.gms.maps.model.LatLng;
 
@@ -40,5 +38,14 @@ public class DualPaneResolver implements PaneResolver {
 
     @Override
     public void addDrawerItems(List<String> drawerItems) {
+    }
+
+    @Override
+    public boolean isBestActive() {
+        return true;
+    }
+
+    @Override
+    public void showBest() {
     }
 }
