@@ -4,16 +4,10 @@ import android.content.Context;
 import android.database.Cursor;
 import android.support.v4.widget.CursorAdapter;
 import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
+import android.view.*;
 import android.view.animation.Animation;
 import android.view.animation.RotateAnimation;
-import android.widget.Button;
-import android.widget.ImageButton;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.TextView;
+import android.widget.*;
 
 import com.google.android.gms.maps.model.LatLng;
 
@@ -197,16 +191,21 @@ class BestListAdapter extends CursorAdapter {
         fillText(holder.phones, cursor, RatesPlacesTable.ColumnRatesPlaces.PHONE);
 
         // distance text
-        Integer distance = fragment.getDistanceMap()[cursor.getPosition()];
-        if (distance != null) {
-            String txt = String.valueOf(distance) + " м";
-            if (distance > 1000) {
+        Integer[] distanceMap = fragment.getDistanceMap();
+        int position = cursor.getPosition();
+        if (distanceMap.length > position) {
 
-                txt = DISTANCE_FORMAT.format(distance / 1000.0);
+            Integer distance = distanceMap[position];
+            if (distance != null) {
+                String txt = String.valueOf(distance) + " м";
+                if (distance > 1000) {
+
+                    txt = DISTANCE_FORMAT.format(distance / 1000.0);
+                }
+
+                TextView tvDistance = holder.distance;
+                tvDistance.setText(txt);
             }
-
-            TextView tvDistance = holder.distance;
-            tvDistance.setText(txt);
         }
     }
 

@@ -28,10 +28,7 @@ import android.util.SparseArray;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.ListAdapter;
-import android.widget.ListView;
+import android.widget.*;
 
 import com.google.android.apps.analytics.GoogleAnalyticsTracker;
 import com.google.android.gms.maps.model.LatLng;
@@ -490,7 +487,7 @@ public class TabsActivity extends ActionBarActivity implements
         @Override
         public void onItemClick(AdapterView parent, View view, final int position, long id) {
 
-            TabsActivity ctx = TabsActivity.this;
+            final TabsActivity ctx = TabsActivity.this;
             String selected = (String) parent.getItemAtPosition(position);
 
             if (mTitleSettings.equals(selected)) {
@@ -535,7 +532,15 @@ public class TabsActivity extends ActionBarActivity implements
                             myLastLocation.getLatitude(),
                             myLastLocation.getLongitude());
 
-                    fireRegionUpdate(myRegion);
+                    if (myRegion != null) {
+                        fireRegionUpdate(myRegion);
+                    } else {
+
+                        Toast toast = Toast.makeText(
+                                ctx, R.string.lbl_region_too_far, Toast.LENGTH_LONG);
+
+                        toast.show();
+                    }
                 }
 
                 UiHelper.showFragment(ctx, FragmentTag.NEAR);
@@ -543,12 +548,10 @@ public class TabsActivity extends ActionBarActivity implements
 
                 getTracker().trackPageView("/bestRegion");
 
-                final Context context = TabsActivity.this;
-
-                ListAdapter adapter = AbstractWidgetConfigure.buildAdapter(context,
+                ListAdapter adapter = AbstractWidgetConfigure.buildAdapter(ctx,
                         REGIONS);
 
-                AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                AlertDialog.Builder builder = new AlertDialog.Builder(ctx);
                 builder.setTitle(R.string.lbl_choose_region)
                         .setAdapter(adapter, new DialogInterface.OnClickListener() {
 

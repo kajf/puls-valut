@@ -13,6 +13,8 @@
     
     <string name="lbl_choose_region">Выберите регион</string>
 
+    <string name="lbl_region_too_far">Вы находитесь слишком далеко от ближайшего известного обменного пункта</string>
+
     <string name="lbl_usd">$</string>
     <string name="lbl_eur">€</string>
     <string name="lbl_rur">RUR</string>
