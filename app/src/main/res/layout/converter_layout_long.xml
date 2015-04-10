@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:padding="6dp">
+
+    <TableLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical" >
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/lbl_conv_amount"
+                android:textColor="?android:textColorPrimary"
+                android:textSize="16sp" />
+
+            <EditText
+                android:id="@+id/et_amount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ems="4"
+                android:inputType="numberDecimal"
+                android:layout_margin="4dp"
+                android:imeOptions="actionDone">
+
+                <requestFocus />
+            </EditText>
+
+            <TextView
+                android:id="@+id/tv_conv_amount_curr"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="?android:textColorPrimary"
+                android:textSize="16sp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/lbl_conv_rate"
+                android:textColor="?android:textColorPrimary"
+                android:textSize="16sp"
+                android:layout_margin="6dp" />
+
+            <TextView
+                android:id="@+id/tv_conv_rate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <TextView
+            android:id="@+id/tv_conv_lbl_get_or_give"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/lbl_conv_i_get"
+                android:textColor="?android:textColorPrimary"
+                android:textSize="16sp"
+                android:layout_margin="6dp" />
+
+            <TextView
+                android:id="@+id/tv_conv_get_or_give"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <TextView
+                android:id="@+id/tv_conv_get_curr"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="?android:textColorPrimary"
+                android:textSize="16sp"
+                android:layout_margin="6dp" />
+
+            <TextView
+                android:id="@+id/tv_conv_lbl_profit"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/lbl_conv_profit"
+                android:textColor="?android:textColorPrimary"
+                android:textSize="16sp"
+                android:drawableRight="@android:drawable/ic_menu_info_details"
+                android:gravity="center_vertical" />
+
+            <TextView
+                android:id="@+id/tv_conv_profit"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="6dp" />
+
+            <TextView
+                android:id="@+id/tv_conv_profit_curr"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="?android:textColorPrimary"
+                android:textSize="16sp" />
+
+        </TableRow>
+
+    </TableLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="right">
+
+        <ImageButton
+            android:id="@+id/ib_conv_close"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="?attr/selectableItemBackground"
+            android:src="?attr/buttonClose" />
+    </LinearLayout>
+
+</LinearLayout>

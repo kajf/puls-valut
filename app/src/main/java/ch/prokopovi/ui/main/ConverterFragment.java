@@ -1,29 +1,24 @@
 package ch.prokopovi.ui.main;
 
-import java.text.DecimalFormat;
-import java.util.HashMap;
-import java.util.Map;
-
-import org.androidannotations.annotations.AfterTextChange;
-import org.androidannotations.annotations.BeforeTextChange;
-import org.androidannotations.annotations.Click;
-import org.androidannotations.annotations.EFragment;
-import org.androidannotations.annotations.ViewById;
-
 import android.app.Activity;
+import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
 import android.util.Log;
-import android.widget.EditText;
-import android.widget.ImageButton;
-import android.widget.TextView;
-import ch.prokopovi.R;
-import ch.prokopovi.struct.Master.CurrencyCode;
-import ch.prokopovi.struct.Master.OperationType;
-import ch.prokopovi.struct.Master.Region;
-import ch.prokopovi.ui.main.api.Closable;
+import android.view.*;
+import android.widget.*;
 
-@EFragment(R.layout.converter_layout)
+import org.androidannotations.annotations.*;
+
+import java.text.DecimalFormat;
+
+import ch.prokopovi.R;
+import ch.prokopovi.struct.Master.*;
+import ch.prokopovi.ui.main.api.Closable;
+import ch.prokopovi.ui.main.resolvers.PaneResolverFactory;
+
+@EFragment
 public class ConverterFragment extends Fragment {
 
 	private static final String LOG_TAG = "ConverterFragment";
@@ -31,23 +26,10 @@ public class ConverterFragment extends Fragment {
 	private static final DecimalFormat FMT_RATE_VALUE = new DecimalFormat(
 			"###,###,###.####");
 
-	private static final Map<CurrencyCode, String> CURRENCY_INITIAL_AMOUNTS = new HashMap<CurrencyCode, String>();
-	static {
-		CURRENCY_INITIAL_AMOUNTS.put(CurrencyCode.BYR, "500000");
-		CURRENCY_INITIAL_AMOUNTS.put(CurrencyCode.UAH, "1000");
+    public static final String INITIAL_AMOUNT = "100";
 
-		CURRENCY_INITIAL_AMOUNTS.put(CurrencyCode.USD, "100");
-		CURRENCY_INITIAL_AMOUNTS.put(CurrencyCode.EUR, "100");
-		CURRENCY_INITIAL_AMOUNTS.put(CurrencyCode.RUR, "3500");
-		CURRENCY_INITIAL_AMOUNTS.put(CurrencyCode.PLN, "300");
-		CURRENCY_INITIAL_AMOUNTS.put(CurrencyCode.LTL, "250");
-		CURRENCY_INITIAL_AMOUNTS.put(CurrencyCode.EUR_USD, "100");
 
-		CURRENCY_INITIAL_AMOUNTS.put(CurrencyCode.CHF, "100");
-		CURRENCY_INITIAL_AMOUNTS.put(CurrencyCode.GBP, "100");
-	}
-
-	public static class ConverterParams {
+    public static class ConverterParams {
 		private Region region;
 		private CurrencyCode currency;
 		private OperationType operationType;
@@ -57,8 +39,8 @@ public class ConverterFragment extends Fragment {
 		private ConverterParams() {
 		}
 
-		public static ConverterParams instaniate(Region region,
-				CurrencyCode currency, OperationType operationType,
+        public static ConverterParams instantiate(Region region,
+                                                  CurrencyCode currency, OperationType operationType,
 				Double rate, Double altRate) {
 
 			ConverterParams res = new ConverterParams();
@@ -77,22 +59,28 @@ public class ConverterFragment extends Fragment {
 	@ViewById(R.id.ib_conv_close)
 	ImageButton ibClose;
 
-	@ViewById(R.id.et_i_have)
-	EditText etIhave;
+    @ViewById(R.id.et_amount)
+    EditText etAmount;
 
-	@ViewById(R.id.tv_i_have_curr)
-	TextView tvIhaveCurr;
+    @ViewById(R.id.tv_conv_amount_curr)
+    TextView tvAmountCurr;
 
-	@ViewById(R.id.tv_conv_rate)
+    @ViewById(R.id.tv_conv_rate)
 	TextView tvConvRate;
 
-	@ViewById(R.id.tv_conv_i_will_get)
-	TextView tvIwillGet;
+    @ViewById(R.id.tv_conv_lbl_get_or_give)
+    TextView tvLblGetOrGive;
 
-	@ViewById(R.id.tv_conv_i_will_get_curr)
-	TextView tvIwillGetCurr;
+    @ViewById(R.id.tv_conv_get_or_give)
+    TextView tvGetOrGive;
 
-	@ViewById(R.id.tv_conv_profit)
+    @ViewById(R.id.tv_conv_get_curr)
+    TextView tvGetCurr;
+
+    @ViewById(R.id.tv_conv_lbl_profit)
+    TextView tvConvLblProfit;
+
+    @ViewById(R.id.tv_conv_profit)
 	TextView tvConvProfit;
 
 	@ViewById(R.id.tv_conv_profit_curr)
@@ -108,10 +96,20 @@ public class ConverterFragment extends Fragment {
 		this.params = params;
 	}
 
-	@Override
-	public void onAttach(Activity activity) {
+    @Override
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        boolean isDualPane = PaneResolverFactory.isLargeLayout(getActivity());
+        int layout = isDualPane ?
+                R.layout.converter_layout_long :
+                R.layout.converter_layout;
 
-		Log.d(LOG_TAG, "onAttach");
+        return inflater.inflate(layout, container, false);
+    }
+
+    @Override
+    public void onAttach(Activity activity) {
+
+        Log.d(LOG_TAG, "onAttach");
 
 		super.onAttach(activity);
 
@@ -127,14 +125,6 @@ public class ConverterFragment extends Fragment {
 		}
 	}
 
-	private CurrencyCode getFirstCurrency() {
-
-		if (CurrencyCode.EUR_USD.equals(this.params.currency)) {
-			return CurrencyCode.EUR;
-		} else {
-			return this.params.currency;
-		}
-	}
 
 	private CurrencyCode getSecondCurrency() {
 
@@ -165,38 +155,45 @@ public class ConverterFragment extends Fragment {
 			return;
 		} // in case if method called separately (not on resume)
 
-		final CurrencyCode mainCurrency = getFirstCurrency();
 		final OperationType operType = this.params.operationType;
 		final Double rate = this.params.rate;
 
-		CurrencyCode secondCurrency = getSecondCurrency();
 
-		CurrencyCode currencyFrom = secondCurrency;
-		CurrencyCode currencyTo = mainCurrency;
+        boolean buy = OperationType.BUY.equals(operType);
+        tvLblGetOrGive.setText(buy ? R.string.lbl_conv_i_get : R.string.lbl_conv_i_give);
 
-		if (OperationType.BUY.equals(operType)) {
-			currencyFrom = mainCurrency;
-			currencyTo = secondCurrency;
-		}
+        if (!this.isUserValue) {
+            this.etAmount.setText(INITIAL_AMOUNT);
+        }
 
-		if (!this.isUserValue) {
-			String initialAmount = CURRENCY_INITIAL_AMOUNTS.get(currencyFrom);
-			this.etIhave.setText(initialAmount);
-		}
+        this.tvAmountCurr.setText(getFirstCurrency().name());
 
-		this.tvIhaveCurr.setText(currencyFrom.name());
+        this.tvConvRate.setText(FMT_RATE_VALUE.format(rate));
 
-		this.tvConvRate.setText(FMT_RATE_VALUE.format(rate));
+        CurrencyCode secondCurrency = getSecondCurrency();
+        this.tvGetCurr.setText(secondCurrency.name());
+        this.tvConvProfitCurr.setText(secondCurrency.name());
 
-		this.tvIwillGetCurr.setText(currencyTo.name());
-		this.tvConvProfitCurr.setText(currencyTo.name());
-
-		UiHelper.applyFont(getActivity(),
+        UiHelper.applyFont(getActivity(),
 				getActivity().findViewById(android.R.id.content), null);
 	}
 
-	@BeforeTextChange(R.id.et_i_have)
-	void beforeInputSumChange(TextView tv, CharSequence text, int start,
+    private CurrencyCode getFirstCurrency() {
+
+        if (CurrencyCode.EUR_USD.equals(this.params.currency)) {
+            return CurrencyCode.EUR;
+        } else {
+            return this.params.currency;
+        }
+    }
+
+    @Click(R.id.tv_conv_lbl_profit)
+    public void clickProfitInfo(View v) {
+        Toast.makeText(getActivity(), R.string.lbl_conv_profit_info, Toast.LENGTH_LONG).show();
+    }
+
+    @BeforeTextChange(R.id.et_amount)
+    void beforeInputSumChange(TextView tv, CharSequence text, int start,
 			int count, int after) {
 
 		// one char modified at a time
@@ -204,30 +201,25 @@ public class ConverterFragment extends Fragment {
 				&& (after == 0 || after == 1);
 	}
 
-	@AfterTextChange({ R.id.et_i_have, R.id.tv_conv_rate })
-	void afterInputChange(TextView tv, Editable text) {
+    @AfterTextChange({R.id.et_amount, R.id.tv_conv_rate})
+    void afterInputChange(TextView tv, Editable text) {
 
 		final Double rate = this.params.rate;
 		final Double altRate = this.params.altRate;
 
 		double input = 0d;
 		try {
-			input = Double.valueOf(this.etIhave.getText().toString());
-		} catch (NumberFormatException e) {
+            input = Double.valueOf(this.etAmount.getText().toString());
+        } catch (NumberFormatException e) {
 		}
 
-		Double iWillGet = input * rate;
+        Double total = input * rate;
 
-		Double profit = iWillGet - input * altRate;
+        Double profit = Math.abs(total - input * altRate);
 
-		if (OperationType.SELL.equals(this.params.operationType)) {
-			iWillGet = input / rate;
-			profit = iWillGet - input / altRate;
-		}
+        this.tvGetOrGive.setText(FMT_RATE_VALUE.format(total));
 
-		this.tvIwillGet.setText(FMT_RATE_VALUE.format(iWillGet));
-
-		this.tvConvProfit.setText(FMT_RATE_VALUE.format(profit));
+        this.tvConvProfit.setText(FMT_RATE_VALUE.format(profit));
 	}
 
 	@Click(R.id.ib_conv_close)

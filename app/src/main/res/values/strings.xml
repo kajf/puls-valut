@@ -85,13 +85,18 @@
     <string name="lbl_short_hour">ч</string>
     <string name="lbl_short_minute">мин</string>
     
-    <string name="lbl_conv_i_have">у меня есть</string>
+    <string name="lbl_conv_amount">за</string>
     <string name="lbl_conv_rate">по курсу</string>
-    <string name="lbl_conv_i_will_get">я получу</string>
+
+    <string name="lbl_conv_i_get">я получу</string>
+    <string name="lbl_conv_i_give">я отдам</string>
+
     <string name="lbl_conv_profit">выигрыш</string>
     
     <string name="lbl_conv_open">посчитать</string>
-    
+
+    <string name="lbl_conv_profit_info">выигрыш - разница между выбранным и наихудшим курсом умноженная на сумму обмена</string>
+
     <string name="lbl_rate_please">Если вам понравилось приложение, оставьте, пожалуйста, отзыв. Спасибо!</string>
     
     <string name="btn_not_now">не сейчас</string>

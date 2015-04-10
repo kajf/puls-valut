@@ -2,8 +2,8 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
     	android:layout_height="wrap_content"
-    	android:padding="6dp">
-    
+              android:padding="6dp">
+
 <TableLayout 
     android:layout_width="wrap_content"
     android:layout_height="wrap_content">
@@ -16,24 +16,24 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/lbl_conv_i_have"
+            android:text="@string/lbl_conv_amount"
             android:textColor="?android:textColorPrimary"
             android:textSize="16sp" />
 
         <EditText
-            android:id="@+id/et_i_have"
+            android:id="@+id/et_amount"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:ems="7"
+            android:ems="4"
             android:inputType="numberDecimal"
-            android:layout_margin="6dp"
+            android:layout_margin="4dp"
             android:imeOptions="actionDone">
             
         	<requestFocus />
         </EditText>
         
         <TextView
-            android:id="@+id/tv_i_have_curr"
+            android:id="@+id/tv_conv_amount_curr"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="?android:textColorPrimary"
@@ -57,7 +57,7 @@
             android:id="@+id/tv_conv_rate"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="6dp" />
+            android:layout_margin="4dp" />
         
     </TableRow>        
     
@@ -67,20 +67,21 @@
         android:gravity="center_vertical">
 
         <TextView
+            android:id="@+id/tv_conv_lbl_get_or_give"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/lbl_conv_i_will_get"
+            android:text="@string/lbl_conv_i_get"
             android:textColor="?android:textColorPrimary"
             android:textSize="16sp" />
 
         <TextView
-            android:id="@+id/tv_conv_i_will_get"
+            android:id="@+id/tv_conv_get_or_give"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="6dp" />
+            android:layout_margin="4dp" />
         
         <TextView
-            android:id="@+id/tv_conv_i_will_get_curr"
+            android:id="@+id/tv_conv_get_curr"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="?android:textColorPrimary"
@@ -94,17 +95,20 @@
         android:gravity="center_vertical">
 
         <TextView
+            android:id="@+id/tv_conv_lbl_profit"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/lbl_conv_profit"
             android:textColor="?android:textColorPrimary"
-            android:textSize="16sp" />
+            android:textSize="16sp"
+            android:drawableRight="@android:drawable/ic_menu_info_details"
+            android:gravity="center_vertical" />
 
         <TextView
             android:id="@+id/tv_conv_profit"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="6dp" />
+            android:layout_margin="4dp" />
         
         <TextView
             android:id="@+id/tv_conv_profit_curr"

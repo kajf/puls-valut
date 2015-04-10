@@ -171,7 +171,7 @@ class BestListAdapter extends CursorAdapter {
                                 + ", oper: " + operationType + ", rate: "
                                 + rate);
 
-                        ConverterFragment.ConverterParams converterParams = ConverterFragment.ConverterParams.instaniate(
+                        ConverterFragment.ConverterParams converterParams = ConverterFragment.ConverterParams.instantiate(
                                 Master.Region.get(regId), currFrom, operationType,
                                 rate, fragment.getWorstRateValue());
 

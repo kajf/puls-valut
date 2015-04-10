@@ -886,7 +886,7 @@ public class TabsActivity extends ActionBarActivity implements
 		InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
 
 		View currentFocus = getCurrentFocus();
-		if (currentFocus != null && currentFocus.getId() == R.id.et_i_have) {
+		if (currentFocus != null && currentFocus.getId() == R.id.et_amount) {
 			imm.hideSoftInputFromWindow(currentFocus.getWindowToken(),
 					InputMethodManager.HIDE_NOT_ALWAYS);
 		}
