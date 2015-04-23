@@ -8,6 +8,9 @@ import java.util.Set;
 import org.htmlcleaner.TagNode;
 
 import android.util.Log;
+
+import javax.net.ssl.*;
+
 import ch.prokopovi.api.struct.ProviderRate;
 import ch.prokopovi.err.WebUpdatingException;
 import ch.prokopovi.struct.Master.CurrencyCode;
@@ -20,7 +23,17 @@ public class AlfaProvider extends AbstractProvider {
 
 	private static final String LOG_TAG = "AlfaProvider";
 
-	private static final String URL = "http://www.alfabank.ru/_/_currency.xml";
+	private static final String URL = "https://www.alfabank.ru/_/_currency.xml";
+
+    // avoid https verification
+    {
+        HttpsURLConnection.setDefaultHostnameVerifier(new HostnameVerifier() {
+            @Override
+            public boolean verify(String s, SSLSession sslSession) {
+                return true;
+            }
+        });
+    }
 
 	private static final String XPATH_FMT = "//rates[@type='%1$s']//item[@currency-id='%2$s']";
 	private static final String XPATH_SELL_FMT = XPATH_FMT + "/@value-selling";
@@ -102,7 +115,7 @@ public class AlfaProvider extends AbstractProvider {
 		RateType rateType = requirements.getRateType();
 		AlfaRateType alfaRateType = AlfaRateType.get(rateType);
 
-		TagNode tmpNode = ProviderUtils.load(URL);
+        TagNode tmpNode = ProviderUtils.load(URL);
 
 		Set<CurrencyCode> currencyCodes = requirements.getCurrencyCodes();
 		for (CurrencyCode currencyCode : currencyCodes) {

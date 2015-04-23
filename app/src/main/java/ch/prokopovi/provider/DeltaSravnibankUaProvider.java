@@ -6,7 +6,7 @@ public class DeltaSravnibankUaProvider extends AbstractSravnibankUaProvider {
 
 	@Override
 	protected String getBankCode() {
-		return "delita-bank";
+		return "delta-bank";
 	}
 
 	@Override

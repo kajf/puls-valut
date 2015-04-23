@@ -128,7 +128,7 @@ public class ByAlfaProvider extends AbstractProvider {
 			// res.addAll(today);
 		} catch (Exception e) {
 			Log.e(LOG_TAG, "error on update");
-			throw new WebUpdatingException();
+			throw new WebUpdatingException(e);
 		}
 
 		return res;

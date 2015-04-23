@@ -154,7 +154,7 @@ public class MyfinPlacesProvider extends AbstractPlacesProvider {
 	static List<Entry<Long, BestRatesRecord>> parsePlace(TagNode placeNode) {
 
 		try {
-			List<Entry<Long, BestRatesRecord>> placeRecords = new ArrayList<Entry<Long, BestRatesRecord>>();
+			List<Entry<Long, BestRatesRecord>> placeRecords = new ArrayList<>();
 
 			TagNode idNode = placeNode.getElementsByName("filialid", false)[0];
 			String strId = idNode.getText().toString();
@@ -177,7 +177,7 @@ public class MyfinPlacesProvider extends AbstractPlacesProvider {
 
 		} catch (Exception e) {
 			Log.d(LOG_TAG, "error on parse place. Skipped.", e);
-			return null;
+			return Collections.emptyList();
 		}
 	}
 }

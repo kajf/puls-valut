@@ -42,7 +42,7 @@ public class AlfaProviderTest extends AndroidTestCase {
 		List<ProviderRate> list = this.provider.update(requirements);
 
 		assertNotNull("result is null", list);
-		assertTrue("result has wrong size", list.size() == 4);
+		assertTrue("result has wrong size: "+list.size(), list.size() == 4);
 
 		for (ProviderRate providerRate : list) {
 			RateType rateType = providerRate.getRateType();
