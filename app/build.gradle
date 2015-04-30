@@ -43,8 +43,8 @@ android {
         applicationId "ch.prokopovi"
         minSdkVersion 9
         targetSdkVersion 21
-        versionCode 117
-        versionName "9.1"
+        versionCode 118
+        versionName "9.11"
     }
     buildTypes {
         release {
