@@ -294,6 +294,10 @@ class Place {
 		this.regionId = regionId;
 	}
 
+    public void setBank(Bank b) {
+        this.bank = b;
+    }
+
 	@Override
 	public String toString() {
 		StringBuilder builder = new StringBuilder();

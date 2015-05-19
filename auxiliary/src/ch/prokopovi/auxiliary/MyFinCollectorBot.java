@@ -1,405 +1,318 @@
 package ch.prokopovi.auxiliary;
 
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-
-import org.htmlcleaner.CleanerProperties;
-import org.htmlcleaner.HtmlCleaner;
-import org.htmlcleaner.TagNode;
-import org.htmlcleaner.XPatherException;
+import ch.prokopovi.exported.PureConst.Bank;
+import ch.prokopovi.exported.PureConst.MyfinRegion;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.InputSource;
 
-import ch.prokopovi.exported.PureConst.Bank;
-import ch.prokopovi.exported.PureConst.MyfinRegion;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import java.net.URL;
+import java.util.*;
 
 public class MyFinCollectorBot extends AbstractCollectorBot {
 
-	private static final String OUT_FILE = "output.sql";
-	private static String URL_POISK = "http://myfin.by/banki/poisk";
-	private static String URL_LOCATION = "http://myfin.by/banki/location/565";
-	private static String URL_SERVICE_FMT = "http://myfin.by/scripts/xml_new/work/banks_city_%d.xml";
+    private static final String OUT_FILE = "output.sql";
+    private static String URL_POISK = "http://myfin.by/banki/poisk";
+    private static String URL_SERVICE_FMT = "http://myfin.by/scripts/xml_new/work/banks_city_%d.xml";
 
-	private static String[][] buildLocationParams(int cityId) {
+    public static void main(String[] args) throws Throwable {
 
-		String[][] params = new String [][] {
-			{"city", String.valueOf(cityId)},
-			{"operation", "sell"},
-			{"currency", "usd"},
-			{"range", "5000"}
-		};
-		return params;
-	}
+        System.out.println("--- start ---");
 
-	private static String[][] buildPoiskParams(int cityId) {
+        List<Place> res = loadAndParse();
 
-		String[][] params = new String [][] {
-				{"Mapobject[city_id]", String.valueOf(cityId)},
-				{"Mapobject[filial_type_id][]", "1"},
-				{"Mapobject[filial_type_id][]", "3"},
-				//{"Mapobject[filial_type_id][]", "4"},
-				{"Mapobject[filial_type_id][]", "5"},
-		};
-		
-		return params;
-	}
+        List<Place> uniqList = clenaupCopies(res);
 
-	private static Place parse(Integer uid, JSONObject place, HtmlCleaner cleaner, String whXpath) throws JSONException, XPatherException {
-		JSONArray coords = 
-				place.getJSONArray("coords");
-		
-		Double cx = coords.getDouble(0);
-		if (cx == null)
-			return null;
+        // sort
+        Collections.sort(uniqList, new PlaceIdComparator());
 
-		Double cy = coords.getDouble(1);
-		if (cy == null)
-			return null;
-		
-		if (isZero(cx) && isZero(cy))
-			return null;
+        System.out.println();
 
-		String name = place.getString("name");
-		if (name == null)
-			return null;
+        StringBuilder script = new StringBuilder();
+        for (Place place : uniqList) {
+            if (place.getRegionId() == null || "".equals(place.getPhone())) {
+                System.out.println("!!! NO MATCH " + place);
+            }
 
-		String adr = place.getString("adr");
-		if (adr == null)
-			return null;
-		
-		String wh = extractTag(cleaner, place.getString("main"), whXpath);
-				
-		//wh = wh.replace("Время работы:", "").trim();
-		
-		// System.out.println("uid[" + uid + "] bank[" + bank +
-		// "] type[" + type + "] addr[" + addr + "] wh[" + wh + "]");
-		
-		name = name.trim();
-		adr = adr.trim();		
-		if (uid == null)		
-			uid = Math.abs((name+adr).hashCode());
-		
-		Bank bank = Bank.getByPart(name);
-		if (bank == null) {
-			System.out.printf("- bank for [%s] is not found \n", name);
-		}
+            script.append(getInsert(place));
+        }
 
-		Place p = new Place(uid, bank, name, cx, cy, adr, wh);
-		
-		return p;
-	}
-	
-	/**
-	 * @param args
-	 */
-	public static void main(String[] args) throws Throwable {
+    /*System.out.println();
+    System.out.println("--- script begin ---");
+    System.out.println(script.toString());
+    System.out.println("--- script end ---");*/
 
-		System.out.println("--- start ---");
+        toFile(OUT_FILE, script.toString());
 
-		List<Place> res = new ArrayList<Place>();
+        System.out.println("--- end ---");
+    }
 
-		HtmlCleaner cleaner = initCleaner();
+    private static boolean isFilterPassed(Place p) {
+        if (p == null)
+            return false;
 
-		updateFromLocation(res, cleaner);
-		updateFromPoisk(res, cleaner);
-		
-		List<Place> uniqList = clenaupCopies(res);
-		
-		// sort
-		Collections.sort(uniqList, new PlaceIdComparator());
-		
-		System.out.println();
-		
-		StringBuilder script = new StringBuilder();
-		for (Place place : uniqList) {
-			if (place.getRegionId() == null || "".equals(place.getPhone())) {
-				System.out.println("!!! NO MATCH " + place);
-			}
+        String name = p.getName().toLowerCase();
 
-			script.append(getInsert(place));
-		}
-		
-		/*System.out.println();
-		System.out.println("--- script begin ---");
-		System.out.println(script.toString());
-		System.out.println("--- script end ---");*/
-		
-		toFile(OUT_FILE, script.toString());
-				
-		System.out.println("--- end ---");
-	}
-	
-	private static boolean isFilterPassed(Place p) {
-		if (p == null)
-			return false;
-		
-		String name = p.getName().toLowerCase();
-		
-		String atm = "банкомат";
-		String kiosk = "инфокиоск";
-		
-		if (name.contains(atm)) {
-			System.out.println("atm fileter is not passed: "+p);
-			return false;
-		} else if (name.contains(kiosk)) {
-			System.out.println("kiosk fileter is not passed: "+p);
-			return false;
-		}
-		
-		return true;	
-	}
-		
-	private static List<Place> clenaupCopies(List<Place> res){
-		
-		System.out.println("### removing copies ...");
-		
-		List<Place> newList = new ArrayList<Place>();
-		
-		Iterator<Place> it = res.iterator();
-		while (it.hasNext()) {
-			Place p = it.next();
-			
-			Place p2 = find(p.getName(), p.getAddr(), p.getX(), p.getY(), newList);				
-			if (p2 != null) {
-				System.out.println("> copy found: ");
-				System.out.println(p);
-				System.out.println(p2);				
-			} else {
-				newList.add(p);
-			}
-		}		
-		
-		return newList;
-	}
-	
-	private static void updateFromLocation(Collection<Place> res, HtmlCleaner cleaner) throws Exception {
-		
-		System.out.println("### loading cities ...");
+        String atm = "банкомат";
+        String kiosk = "инфокиоск";
 
-		// location page
-		//String[][] params = buildLocationParams(MyfinRegion.MINSK.getId());
-		String post = get(URL_LOCATION);
+        if (name.contains(atm)) {
+            System.out.println("atm fileter is not passed: " + p);
+            return false;
+        } else if (name.contains(kiosk)) {
+            System.out.println("kiosk fileter is not passed: " + p);
+            return false;
+        }
 
-		String strBegin = "myPoints = ";
-		int from = post.indexOf(strBegin) + strBegin.length();
-		int to = post.indexOf("myPoints.forEach(function (point)");
+        return true;
+    }
 
-		String strJson = post.substring(from, to).trim();
+    private static List<Place> clenaupCopies(List<Place> res) {
 
-		JSONArray places = new JSONArray(strJson);
-		for (int i = 0; i < places.length(); i++) {
-			JSONObject place = places.getJSONObject(i);
+        System.out.println("### removing copies ...");
 
-			int uid = place.getInt("id");
-			
-			Place p = parse(uid, place, cleaner, "//p[2]/text()");
-						
-			if (!isFilterPassed(p))
-				continue;
-			
-			res.add(p);
-		}
-		System.out.printf(" %s loaded. ", res.size());
+        List<Place> newList = new ArrayList<>();
 
-		System.out.println();
-		
-	}
-	
-	private static void updateFromPoisk(Collection<Place> res, HtmlCleaner cleaner) throws Exception {
-		System.out.println("### loading all cities ...");
-		
-		for (MyfinRegion city : MyfinRegion.values()) {
+        Iterator<Place> it = res.iterator();
+        while (it.hasNext()) {
+            Place p = it.next();
 
-			System.out.printf("%s, \n", city.name());
-			
-			// poisk page
-			String[][] poiskParams = buildPoiskParams(city.getId());
-			String postPoisk = post(URL_POISK, poiskParams);
+            Place p2 = find(p, newList);
+            if (p2 != null) {
+                System.out.println("> copy found: ");
+                System.out.println(p);
+                System.out.println(p2);
+            } else {
+                newList.add(p);
+            }
+        }
 
-			String strBeginPoisk = "myPoints = ";
-			int fromPoisk = postPoisk.indexOf(strBeginPoisk)
-					+ strBeginPoisk.length();
-			int toPoisk = postPoisk
-					.indexOf("myPoints.forEach(function (point)");
+        return newList;
+    }
 
-			String strJsonPoisk = postPoisk.substring(fromPoisk, toPoisk)
-					.trim();
+    private static List<Place> loadAndParse() throws Exception {
+        System.out.println("### loading all cities ...");
 
-			JSONArray placesPoisk = new JSONArray(strJsonPoisk);
-			for (int i = 0; i < placesPoisk.length(); i++) {
-				JSONObject placePoisk = placesPoisk.getJSONObject(i);
-				
-//				{ 
-//					coords: [55.193574,30.203313],
-//					adr: 'г. Витебск, ул. Замковая, 4', 
-//					main: '<p><a href="/bank/bvebank/o_banke"><img src="/images/bank_logos/bveb.png" width="100px"/></a></p><p>Время работы:</p><p>Пн — чт: 9:00 — 19:00, пт:9:00 — 18:00</p>',
-//					name: 'Витебское региональное отделение ОАО "Банк БелВЭБ"',
-//					type: 'Главное отделение',
-//					phone: '205 (МТС, Life:), Velcom)<br>+375 (17) 209 29 44', 
-//					icon: '/images/bank_logos/icons/bveb.png' 
-//				}				
+        List<Place> res = new ArrayList<>();
 
-				
-				Place parsedPlace = parse(null, placePoisk, cleaner, "//p[3]/text()");			
-				if (!isFilterPassed(parsedPlace))
-					continue;
-								
-				// find existing
-				Place place = find(parsedPlace.getName(), parsedPlace.getAddr(), parsedPlace.getX(), parsedPlace.getY(), res);
-				if (place == null) {
-					//continue;
-					place = parsedPlace;
-					res.add(place);
-				}
-				
-				place.setRegionId(city.getMasterId());
-				
-				String strPhone = placePoisk.getString("phone");
-				place.updatePhoneWith(strPhone);
-				
-			}
-			
-			// update phones
-			updateFromService(res, city);
-		}	
-				
-		System.out.printf("%s loaded. ", res.size());
-	}
+        for (MyfinRegion city : MyfinRegion.values()) {
 
-	private static HtmlCleaner initCleaner() {
-		HtmlCleaner cleaner = new HtmlCleaner();
-		CleanerProperties props = cleaner.getProperties();
-		props.setAllowHtmlInsideAttributes(true);
-		props.setOmitComments(true);
-		props.setNamespacesAware(false);
-		return cleaner;
-	}
-	
-	private static void updateFromService(Iterable<Place> places, MyfinRegion city) throws Exception {
-		
-		// using map to search by id
-		HashMap<Integer,Place> map = new HashMap<Integer, Place>();
-		for (Place place : places) {
-			map.put(place.getId(), place);
-		}
-		//
-		
-		String location = String.format(URL_SERVICE_FMT, city.getId());
-		URL url = new URL(location);
-						
-		HtmlCleaner cleaner = new HtmlCleaner();
-		TagNode root = cleaner.clean(url).findElementByName("root", true);
-				
-		TagNode[] bankNodes = root.getAllElements(false);		
-		for (TagNode bankNode : bankNodes) {	
-			
-//			<bank>
-	//			<bankid>5</bankid>
-	//			<filialid>1143</filialid>
-	//			<date>17.01.2014</date>
-	//			<bankname>ЗАО "Абсолютбанк"</bankname>
-	//			<bankaddress>
-	//				Минский район, 9-ый км.Московского шоссе (м-н "Виталюр")
-	//			</bankaddress>
-	//			<bankphone>+375 (17) 266 06 79</bankphone>
-	//			<filialname>Касса №6 ЗАО "Абсолютбанк"</filialname>
-	//			<usd_buy>9530</usd_buy>
-	//			<usd_sell>9620</usd_sell>
-	//			<eur_buy>12940</eur_buy>
-	//			<eur_sell>13120</eur_sell>
-	//			<rur_buy>281</rur_buy>
-	//			<rur_sell>288</rur_sell>
-	//			<pln_buy>3080</pln_buy>
-	//			<pln_sell>3150</pln_sell>
-	//			<eurusd_buy>1.3477</eurusd_buy>
-	//			<eurusd_sell>1.374</eurusd_sell>
-//			</bank>			
-			
-			TagNode filialIdNode = bankNode.findElementByName("filialid", false);
-			Integer filialId = Integer.valueOf(filialIdNode.getText().toString());
-			
-			Place place = map.get(filialId);
-			if (place == null) {
-				System.out.printf("!!! place: %d is not found list but exists in service xml.\n", filialId);
-				continue;
-			}
-			
-			place.setRegionId(city.getMasterId());
-		
-//			<bank>
-	//			<bankid>29</bankid>
-	//			<filialid>1491</filialid>
-	//			<date>30.12.2013</date>
-	//			<bankname>ЗАО «Идея Банк»</bankname>
-	//			<bankaddress>
-	//				г. Минск, пр-т Партизанский (ст. метро "Партизанская"), ТЦ "Подземный город"
-	//			</bankaddress>
-	//			<bankphone>+375 (17) 346 91 91</bankphone>
-	//			<filialname>Пункт обмена валют №3 ЗАО "Идея Банк"</filialname>
-	//			<usd_buy>9500</usd_buy>
-	//			<usd_sell>9590</usd_sell>
-	//			<eur_buy>13050</eur_buy>
-	//			<eur_sell>13250</eur_sell>
-	//			<rur_buy>287.5</rur_buy>
-	//			<rur_sell>294</rur_sell>
-	//			<pln_buy>-</pln_buy>
-	//			<pln_sell>-</pln_sell>
-	//			<eurusd_buy>1.363</eurusd_buy>
-	//			<eurusd_sell>1.389</eurusd_sell>
-//			</bank>			
-			
-			TagNode phoneNode = bankNode.getElementsByName("bankphone", false)[0];
-			String text = phoneNode.getText().toString();
-			
-			if (!text.isEmpty() && !"-".equals(text)) {
+            System.out.printf("%s, \n", city.name());
 
-        place.updatePhoneWith(text);
-			}
-		}
-	}
+            // poisk page
+            String[][] poiskParams = buildPoiskParams(city.getId());
+            String postPoisk = post(URL_POISK, poiskParams);
 
-	private static String extractTag(HtmlCleaner cleaner, String src, String xpath) throws JSONException, XPatherException{
-		TagNode tagNode = cleaner.clean(src);
+            String strJsonPoisk = extract(postPoisk, "myPoints = ", "myPoints.forEach(function (point)");
 
-		Object[] whNodes = tagNode.evaluateXPath(xpath);
+            JSONArray placesPoisk = new JSONArray(strJsonPoisk);
+            for (int i = 0; i < placesPoisk.length(); i++) {
+                JSONObject placePoisk = placesPoisk.getJSONObject(i);
 
-		String wh = "";
-		if (whNodes.length > 0) {
-			wh = whNodes[0].toString();
-		}
-		
-		return wh;
-	}
-	
-	private static Place find(String name, String addr, Double x, Double y,
-			Iterable<Place> list) {
-		
-		double trh = 0.0001;
+                //				{
+                //					coords: [53.926849,27.589382],
+                //					adr: 'г. Минск, ул. Сурганова, 43',
+                //					show_icon: '0',
+                //					main: '<p><a href="/bank/alfabank"><img src="/images/bank_logos/alfabank.png" width="100px"/></a></p>
+                // 								 <p>Время работы:</p><p>юр. лицам: пн-чт: 09:00 - 17:00, пт: 09:00 - 16:00 сб, вс: выходной</p>
+                //                 <a href="/bank/alfabank/department/15">Подробнее</a>',
+                //					name: 'Головной офис ЗАО «Альфа-Банк»',
+                //					type: 'Главное отделение',
+                //					phone: '198 (круглосуточно)<br>+375 (44,29,25) 733 33 32',
+                // 					icon: ''
+                //				}
 
-		for (Place place : list) {
+                Place parsedPlace = parse(placePoisk);
+                if (!isFilterPassed(parsedPlace))
+                    continue;
 
-			Double xDiff = place.getX() - x;
-			Double yDiff = place.getY() - y;
+                // find existing
+                Place place = find(parsedPlace, res);
+                if (place == null) {
+                    //continue;
+                    place = parsedPlace;
+                    res.add(place);
+                }
 
-			boolean xEq = (-trh <= xDiff && xDiff <= trh);
-			boolean yEq = (-trh <= yDiff && yDiff <= trh);
+                place.setRegionId(city.getMasterId());
 
-			boolean sameName = place.getName().equals(name);
-			boolean sameCoords = xEq && yEq;
-			boolean sameAddr = place.getAddr().equals(addr);
-			if (
-					sameName &&  (sameCoords || sameAddr)
-				) {
-				return place;
-			}
-		}
+                String strPhone = placePoisk.getString("phone");
+                place.updatePhoneWith(strPhone);
 
-		return null;
-	}
+            }
+
+            // update phones
+            updateFromService(res, city);
+        }
+
+        System.out.printf("%s loaded. ", res.size());
+
+        return res;
+    }
+
+    private static String[][] buildPoiskParams(int cityId) {
+
+        String[][] params = new String[][]{
+                {"Mapobject[city_id]", String.valueOf(cityId)},
+                {"Mapobject[filial_type_id][]", "1"},
+                {"Mapobject[filial_type_id][]", "3"},
+                //{"Mapobject[filial_type_id][]", "4"},
+                {"Mapobject[filial_type_id][]", "5"},};
+
+        return params;
+    }
+
+    private static Place parse(JSONObject place) throws JSONException {
+        JSONArray coords = place.getJSONArray("coords");
+
+        Double cx = coords.getDouble(0);
+        Double cy = coords.getDouble(1);
+        String name = place.getString("name");
+        String adr = place.getString("adr");
+
+        if (cx == null || cy == null || name == null || adr == null)
+            return null;
+
+        if (isZero(cx) && isZero(cy))
+            return null;
+
+        String main = place.getString("main");
+
+        // department/15">Подробнее
+        String strUid = extract(main, "department/", "\">Подробнее");
+        int uid = Integer.valueOf(strUid);
+
+        String wh = extractWh(main);
+
+        name = name.trim();
+        adr = adr.trim();
+
+        Bank bank = Bank.getByPart(name);
+
+        Place p = new Place(uid, bank, name, cx, cy, adr, wh);
+
+        return p;
+    }
+
+    private static String extract(String src, String from, String to) {
+
+        int fromIndex = src.indexOf(from) + from.length();
+        int toIndex = src.indexOf(to);
+
+        return src.substring(fromIndex, toIndex).trim();
+    }
+
+    private static String extractWh(String src) {
+        return src.split("<p>")[3].split("</p>")[0].replace("<br>", "").replace("<br />", "");
+    }
+
+    private static void updateFromService(Iterable<Place> places, MyfinRegion city) throws Exception {
+
+        // using map to search by id
+        HashMap<Integer, Place> map = new HashMap<>();
+        for (Place place : places) {
+            map.put(place.getId(), place);
+        }
+        //
+
+        String location = String.format(URL_SERVICE_FMT, city.getId());
+        URL url = new URL(location);
+
+        DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+        InputSource is = new InputSource(url.openStream());
+        Document doc = builder.parse(is);
+        NodeList banks = doc.getElementsByTagName("bank");
+
+        for (int i = 0; i < banks.getLength(); i++) {
+
+            Node node = banks.item(i);
+
+            if (node.getNodeType() != Node.ELEMENT_NODE)
+                continue;
+
+            Element bank = (Element) node;
+
+            //      <bank>
+            //      <bankid>5</bankid>
+            //      <filialid>1142</filialid>
+            //      <date>19.05.2015</date>
+            //      <bankname>ЗАО "Абсолютбанк"</bankname>
+            //      <bankaddress>
+            //       г.Минск, пр-т. Независимости, 23 (у-м "Центральный")
+            //      </bankaddress>
+            //      <bankphone>+375 17 211-83-56 (Кассовый центр)</bankphone>
+            //      <filialname>Касса №5 ЗАО "Абсолютбанк"</filialname>
+            //      <usd_buy>14000</usd_buy>
+            //      <usd_sell>14200</usd_sell>
+            //      <eur_buy>15660</eur_buy>
+            //      <eur_sell>16000</eur_sell>
+            //      <rur_buy>281</rur_buy>
+            //      <rur_sell>288</rur_sell>
+            //      <pln_buy>3800</pln_buy>
+            //      <pln_sell>4000</pln_sell>
+            //      <ltl_buy>-</ltl_buy>
+            //      <ltl_sell>-</ltl_sell>
+            //      <uah_buy>350</uah_buy>
+            //      <uah_sell>650</uah_sell>
+            //      <eurusd_buy>1.104</eurusd_buy>
+            //      <eurusd_sell>1.146</eurusd_sell>
+            //      </bank>
+
+            Integer filialId = Integer.valueOf(bank.getElementsByTagName("filialid").item(0).getTextContent());
+
+            Place place = map.get(filialId);
+            if (place == null) {
+                System.out.printf("!!! place: %d is not found list but exists in service xml.\n", filialId);
+                continue;
+            }
+
+            if (place.getBank() == null) {
+                String bankName = bank.getElementsByTagName("bankname").item(0).getTextContent();
+                Bank b = Bank.getByPart(bankName);
+                place.setBank(b);
+            }
+
+            if (place.getBank() == null) {
+                System.out.printf("- bank for [%s] is not found \n", place.getId());
+            }
+
+            place.setRegionId(city.getMasterId());
+
+            String phone = bank.getElementsByTagName("bankphone").item(0).getTextContent();
+
+            if (!phone.isEmpty() && !"-".equals(phone)) {
+                place.updatePhoneWith(phone);
+            }
+        }
+    }
+
+    private static Place find(Place p, Iterable<Place> list) {
+
+        double trh = 0.0001;
+
+        for (Place place : list) {
+
+            Double xDiff = place.getX() - p.getX();
+            Double yDiff = place.getY() - p.getY();
+
+            boolean xEq = (-trh <= xDiff && xDiff <= trh);
+            boolean yEq = (-trh <= yDiff && yDiff <= trh);
+
+            boolean sameName = place.getName().equals(p.getName());
+            boolean sameCoords = xEq && yEq;
+            boolean sameAddr = place.getAddr().equals(p.getAddr());
+            if (sameName && (sameCoords || sameAddr)) {
+                return place;
+            }
+        }
+
+        return null;
+    }
 }

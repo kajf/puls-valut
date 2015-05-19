@@ -1,10 +1,6 @@
 package ch.prokopovi.exported;
 
-import java.nio.ByteBuffer;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Locale;
-import java.util.Set;
+import java.util.*;
 
 public class PureConst {
 
@@ -34,34 +30,6 @@ public class PureConst {
 	public static final int SLUCK_ID = 34;
 	public static final int ZODINO_ID = 35;
 
-
-    // TODO
-    //public static final int VILEIKA_ID = 36;
-//    37">Дзержинск
-//    38">Марьина Горка
-//    39">Горки
-//
-//    40">Осиповичи
-//    41">Кричев
-//    42">Калинковичи
-//    43">Рогачев
-//    44">Кобрин
-//    45">Береза
-//    46">Лунинец
-//    47">Ивацевичи
-//    48">Слоним
-//    49">Волковыск
-//
-//    50">Сморгонь
-//    51">Новогрудок
-
-	public static final int KIEV_ID = 1000;
-	public static final int ODESSA_ID = 1001;
-	public static final int DONECK_ID = 1002;
-	public static final int LVOV_ID = 1003;
-	public static final int DNEPROPETROVSK_ID = 1004;
-
-	//
 
 	public enum Bank {
 		// belarus
@@ -96,29 +64,6 @@ public class PureConst {
 		FRANS(1029, "Франсабанк"), //
 		HOME_CREDIT(1030, "Хоум Кредит Банк", "ХКБанк"), //
 		ZEPTER(1031, "Цептер Банк", "Цептер-Банк"), //
-
-		// ukraine
-		CITY_COMMERCE(2001, "CityCommerceBank"), //
-		AVANT(2002, "АВАНТ-БАНК"), //
-		BM(2003, "БМ Банк"), //
-		DIAMANT(2005, "Диамантбанк"), //
-		CREDI_AGRIKOL(2006, "Креди Агриколь Банк"), //
-		LEG(2007, "Легбанк"), //
-		NATIONAL_CREDIT(2008, "Национальный Кредит"), //
-		PROMINVEST(2009, "Проминвестбанк"), //
-		REAL(2010, "РЕАЛ БАНК"), //
-		SIC(2011, "Сич"), //
-		TASCOM(2012, "ТАСкомбанк"), //
-		TRAST(2013, "ТРАСТ"), //
-		UKRGAZ(2014, "Укргазбанк"), //
-		UKRGAZPROM(2015, "Укргазпромбанк"), //
-		UKRSIB(2016, "УкрСиббанк"), //
-		UKREKSIM(2017, "Укрэксимбанк"), //
-		UPB(2018, "УПБ"), //
-		FIN_INIT(2019, "Финансовая Инициатива"), //
-		FINROST(2020, "Финростбанк"), //
-		FORUM(2021, "Форум"), //
-		UNEX(2022, "ЮНЕКС БАНК"), //
 		;
 
 		private final int id;
@@ -264,69 +209,5 @@ public class PureConst {
 			}
 			return null;
 		}
-	}
-
-	public enum FinanceUaRegion {
-
-		KIEV("7oiylpmiow8iy1smadi", KIEV_ID), //
-		ODESSA("7oiylpmiow8iy1smadk", ODESSA_ID), //
-		DONECK("7oiylpmiow8iy1smaee", DONECK_ID), //
-		LVOV("7oiylpmiow8iy1smadr", LVOV_ID), //
-		DNEPROPETROVSK("7oiylpmiow8iy1smadm", DNEPROPETROVSK_ID), //
-		;
-
-		private final String uid;
-		private final int regionId;
-
-		private FinanceUaRegion(String uid, int masterId) {
-			this.uid = uid;
-			this.regionId = masterId;
-		}
-
-		public static FinanceUaRegion get(String uid) {
-			for (FinanceUaRegion tmp : values()) {
-				if (tmp.uid.equals(uid)) {
-					return tmp;
-				}
-			}
-
-			return null;
-		}
-
-		public static FinanceUaRegion get(int masterId) {
-			for (FinanceUaRegion tmp : values()) {
-				if (tmp.regionId == masterId) {
-					return tmp;
-				}
-			}
-			return null;
-		}
-
-		public String getUid() {
-			return this.uid;
-		}
-
-		public int getRegionId() {
-			return this.regionId;
-		}
-	}
-
-	public static int financeUaPlaceIdTransform(String uid) {
-		// final String uidPrefix = "7oiylpmiow8iy1sm";
-
-		byte[] bytes = uid.getBytes();
-		int length = bytes.length;
-
-		byte[] b = new byte[4];
-		System.arraycopy(bytes, length - 4, b, 0, 4);
-
-		final int id = ByteBuffer.wrap(b).getInt() % 1000000;
-
-		return id;
-	}
-
-	public static Integer toPositiveHashCode(String str) {
-
-		return str != null ? Math.abs(str.hashCode()) : null;
 	}
 }
