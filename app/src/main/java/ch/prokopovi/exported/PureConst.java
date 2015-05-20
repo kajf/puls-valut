@@ -188,7 +188,7 @@ public class PureConst {
 		private final int id;
 		private final int masterId;
 
-		private MyfinRegion(int id, int masterId) {
+		MyfinRegion(int id, int masterId) {
 			this.id = id;
 			this.masterId = masterId;
 		}

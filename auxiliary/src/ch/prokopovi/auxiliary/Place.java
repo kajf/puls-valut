@@ -177,13 +177,17 @@ class Place {
 
 		String res = commonCleanUp(phone);
 
-		String [] replaceArr = new String [] {"(круглосуточно)", "(МТС, Life:), Velcom)", "(velcom, МТС и life)",
-				"(факс)", "факс:", "тел/факс", "Факс:", "(Минск)"};
+		String [] replaceArr = new String [] {//
+				"Контакт центр", "(круглосуточно)",
+				"(МТС, Life:), Velcom)", "(velcom, МТС и life)", "для абонентов velcom, МТС и life:)", "для velcom, МТС, life:)", //
+				"(МТС)", "МТС",
+				"(факс)", "факс:", "тел/факс", "Факс:",
+				"(Минск)"};
 		for (String s : replaceArr) {
 			res = res.replace(s, "");
 		}
 
-        String[] brs = new String[] {"<br>", "<br />", "<br/>", "&lt;br&gt;", "&lt;br /&gt;", "&lt;/br&gt;"};
+        String[] brs = new String[] {"<br>", "<br />", "<br/>", "</br>", "&lt;br&gt;", "&lt;br /&gt;", "&lt;/br&gt;"};
 
         for (String br : brs) {
           res = res.replace(br, comma);

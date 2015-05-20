@@ -24,6 +24,7 @@ public class MyFinCollectorBot extends AbstractCollectorBot {
 
     public static void main(String[] args) throws Throwable {
 
+        long startTime = System.currentTimeMillis();
         System.out.println("--- start ---");
 
         List<Place> res = loadAndParse();
@@ -51,7 +52,8 @@ public class MyFinCollectorBot extends AbstractCollectorBot {
 
         toFile(OUT_FILE, script.toString());
 
-        System.out.println("--- end ---");
+        long timeSpent = System.currentTimeMillis() - startTime;
+        System.out.println("--- end (" + timeSpent + ") ---");
     }
 
     private static boolean isFilterPassed(Place p) {
