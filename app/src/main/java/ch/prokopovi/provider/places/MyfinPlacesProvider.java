@@ -11,9 +11,7 @@ import ch.prokopovi.Util;
 import ch.prokopovi.api.struct.BestRatesRecord;
 import ch.prokopovi.exported.PureConst.MyfinRegion;
 import ch.prokopovi.provider.ProviderUtils;
-import ch.prokopovi.struct.Master.CurrencyCode;
-import ch.prokopovi.struct.Master.OperationType;
-import ch.prokopovi.struct.Master.Region;
+import ch.prokopovi.struct.Master.*;
 import ch.prokopovi.struct.SimpleBestRatesRecord;
 
 public class MyfinPlacesProvider extends AbstractPlacesProvider {
