@@ -78,6 +78,7 @@ public abstract class AbstractSravnibankUaProvider extends AbstractProvider {
 
 		Set<CurrencyCode> currencyCodes = requirements.getCurrencyCodes();
 
+		// TODO move xpath creation here
 		List<ProviderRate> res = new ArrayList<ProviderRate>();
 		for (CurrencyCode currencyCode : currencyCodes) {
 			SravnibankUaCurrencyCode sbCurr = SravnibankUaCurrencyCode

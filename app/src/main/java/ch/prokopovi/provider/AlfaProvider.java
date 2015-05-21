@@ -1,21 +1,16 @@
 package ch.prokopovi.provider;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
-
-import org.htmlcleaner.TagNode;
-
 import android.util.Log;
+
+import org.w3c.dom.Node;
+
+import java.util.*;
 
 import javax.net.ssl.*;
 
 import ch.prokopovi.api.struct.ProviderRate;
 import ch.prokopovi.err.WebUpdatingException;
-import ch.prokopovi.struct.Master.CurrencyCode;
-import ch.prokopovi.struct.Master.ProviderCode;
-import ch.prokopovi.struct.Master.RateType;
+import ch.prokopovi.struct.Master.*;
 import ch.prokopovi.struct.ProviderRateBuilder;
 import ch.prokopovi.struct.ProviderRequirements;
 
@@ -115,7 +110,7 @@ public class AlfaProvider extends AbstractProvider {
 		RateType rateType = requirements.getRateType();
 		AlfaRateType alfaRateType = AlfaRateType.get(rateType);
 
-        TagNode tmpNode = ProviderUtils.load(URL);
+		Node root = ProviderUtils.readFrom(URL);
 
 		Set<CurrencyCode> currencyCodes = requirements.getCurrencyCodes();
 		for (CurrencyCode currencyCode : currencyCodes) {
@@ -125,11 +120,11 @@ public class AlfaProvider extends AbstractProvider {
 			try {
 				String buyXpath = String.format(XPATH_BUY_FMT,
 						alfaRateType.getCode(), alfaCurrencyCode.getCode());
-				double buy = extractValue(tmpNode, buyXpath, true);
+				double buy = extractCommaValue(root, buyXpath);
 
 				String sellXpath = String.format(XPATH_SELL_FMT,
 						alfaRateType.getCode(), alfaCurrencyCode.getCode());
-				double sell = extractValue(tmpNode, sellXpath, true);
+				double sell = extractCommaValue(root, sellXpath);
 
 				List<ProviderRate> tmpRates = assembleProviderRates(builder,
 						currencyCode, buy, sell);

@@ -15,6 +15,7 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.htmlcleaner.TagNode;
+import org.w3c.dom.Node;
 
 import android.util.Log;
 import ch.prokopovi.Util;
@@ -110,19 +111,7 @@ abstract class AbstractProvider implements Provider {
 		return res;
 	}
 
-	/**
-	 * collect value from node by path and parse them to double
-	 * 
-	 * @param root
-	 *            node to evaluate xpath on
-	 * @param path
-	 *            xpath expression (should result a text() values of double )
-	 * @param commaSepartor
-	 *            true - comma decimal separator expected, false - dot separtor
-	 * 
-	 * @return two-elements array
-	 * @throws Exception
-	 */
+	@Deprecated
 	protected double extractValue(TagNode root, String path,
 			boolean commaSepartor) throws Exception {
 		double res = -1;
@@ -131,10 +120,33 @@ abstract class AbstractProvider implements Provider {
 
 		if (val != null && val.length > 0) {
 			String str = val[0].toString();
-			Log.d(LOG_TAG, "str from xpath: " + str);
 			double dbl = commaSepartor ? Util.parseCommaDouble(str) : Util
 					.parseDotDouble(str);
 			res = dbl;
+		}
+
+		return res;
+	}
+
+	protected double extractCommaValue(Node root, String path) throws Exception {
+		double res = -1;
+
+		String str = ProviderUtils.evaluateXPath(path, root);
+
+		if (str != null) {
+			res = Util.parseCommaDouble(str) ;
+		}
+
+		return res;
+	}
+
+	protected double extractDotValue(Node root, String path) throws Exception {
+		double res = -1;
+
+		String str = ProviderUtils.evaluateXPath(path, root);
+
+		if (str != null) {
+			res = Util.parseCommaDouble(str) ;
 		}
 
 		return res;

@@ -96,6 +96,7 @@ public class MmProvider extends AbstractProvider {
 
 		List<ProviderRate> res = new ArrayList<ProviderRate>();
 
+		// TODO move xpath creation here
 		Set<CurrencyCode> currencyCodes = requirements.getCurrencyCodes();
 		for (CurrencyCode currencyCode : currencyCodes) {
 			MmCurrencyCode mmCurrencyCode = MmCurrencyCode.get(currencyCode);

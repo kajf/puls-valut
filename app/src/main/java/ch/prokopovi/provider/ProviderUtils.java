@@ -1,16 +1,19 @@
 package ch.prokopovi.provider;
 
+import android.util.Log;
+
+import org.htmlcleaner.*;
+import org.w3c.dom.Node;
+import org.xml.sax.InputSource;
+
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Date;
 
-import org.htmlcleaner.CleanerProperties;
-import org.htmlcleaner.HtmlCleaner;
-import org.htmlcleaner.TagNode;
+import javax.xml.xpath.*;
 
-import android.util.Log;
 import ch.prokopovi.err.WebUpdatingException;
 
 public class ProviderUtils {
@@ -42,13 +45,7 @@ public class ProviderUtils {
 		return response.toString();
 	}
 
-	/**
-	 * fetch and parse doc from location
-	 * 
-	 * @param location
-	 * @return
-	 * @throws WebUpdatingException
-	 */
+	@Deprecated
 	public static TagNode load(String location) throws WebUpdatingException {
 
 		try {
@@ -65,11 +62,35 @@ public class ProviderUtils {
 		}
 	}
 
-	/**
-	 * initialize xpath processor
-	 * 
-	 * @return
-	 */
+	public static Node readFrom(String location) {
+		try {
+			URL url = new URL(location);
+
+			InputSource src = new InputSource(url.openStream());
+
+			Node root = (Node) newXpath().evaluate("/", src, XPathConstants.NODE);
+
+			return root;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return null;
+	}
+
+	public static String evaluateXPath(String xpath, Node root) {
+		try {
+			return newXpath().evaluate(xpath, root);
+		} catch (XPathExpressionException e) {
+			return null;
+		}
+	}
+
+	public static XPath newXpath() {
+		return XPathFactory.newInstance().newXPath();
+	}
+
+	@Deprecated
 	public static HtmlCleaner initHtmlCleaner() {
 		long start = new Date().getTime();
 
