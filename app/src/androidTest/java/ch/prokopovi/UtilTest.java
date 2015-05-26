@@ -1,11 +1,11 @@
 package ch.prokopovi;
 
+import android.test.AndroidTestCase;
+import android.util.Log;
+
 import java.text.ParseException;
 import java.util.Calendar;
 import java.util.Date;
-
-import android.test.AndroidTestCase;
-import android.util.Log;
 
 public class UtilTest extends AndroidTestCase {
 
@@ -43,4 +43,47 @@ public class UtilTest extends AndroidTestCase {
 
 	}
 
+	public void testIsBlankNull() {
+		// given
+		String str = null;
+
+		// when
+		boolean isBlank = Util.isBlank(str);
+
+		// then
+		assertTrue(isBlank);
+	}
+
+	public void testIsBlankEmpty() {
+		// given
+		String str = "";
+
+		// when
+		boolean isBlank = Util.isBlank(str);
+
+		// then
+		assertTrue(isBlank);
+	}
+
+	public void testIsBlankNo() {
+		// given
+		String str = "test";
+
+		// when
+		boolean isBlank = Util.isBlank(str);
+
+		// then
+		assertFalse(isBlank);
+	}
+
+	public void testIsBlankSpaces() {
+		// given
+		String str = "  ";
+
+		// when
+		boolean isBlank = Util.isBlank(str);
+
+		// then
+		assertTrue(isBlank);
+	}
 }

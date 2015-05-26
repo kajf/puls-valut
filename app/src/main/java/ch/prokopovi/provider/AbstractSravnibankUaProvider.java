@@ -1,26 +1,23 @@
 package ch.prokopovi.provider;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
-
-import org.htmlcleaner.TagNode;
-
 import android.util.Log;
+
+import org.w3c.dom.Node;
+
+import java.util.*;
+
+import javax.xml.xpath.XPathExpression;
+
 import ch.prokopovi.Util;
 import ch.prokopovi.api.struct.ProviderRate;
 import ch.prokopovi.err.WebUpdatingException;
-import ch.prokopovi.struct.Master.CurrencyCode;
-import ch.prokopovi.struct.Master.OperationType;
-import ch.prokopovi.struct.Master.ProviderCode;
-import ch.prokopovi.struct.Master.RateType;
+import ch.prokopovi.struct.Master.*;
 import ch.prokopovi.struct.ProviderRateBuilder;
 import ch.prokopovi.struct.ProviderRequirements;
 
 public abstract class AbstractSravnibankUaProvider extends AbstractProvider {
 
-	private static final String LOG_TAG = "AbstractSravnibankUaProvider";
+	private static final String LOG_TAG = "AbSravnibankUaProvider";
 
 	private static final String DATA_URL_FORMAT = "http://www.sravnibank.com.ua/kursy-valut/cash_xml/?id=chprokopovipl-023711&currency=%1$s&bank=%2$s&date=%3$tY-%3$tm-%3$td";
 
@@ -76,35 +73,39 @@ public abstract class AbstractSravnibankUaProvider extends AbstractProvider {
 			ProviderRequirements requirements, Date now,
 			ProviderRateBuilder builder) throws WebUpdatingException {
 
+		List<ProviderRate> res = new ArrayList<>();
+
 		Set<CurrencyCode> currencyCodes = requirements.getCurrencyCodes();
+		try {
 
-		// TODO move xpath creation here
-		List<ProviderRate> res = new ArrayList<ProviderRate>();
-		for (CurrencyCode currencyCode : currencyCodes) {
-			SravnibankUaCurrencyCode sbCurr = SravnibankUaCurrencyCode
-					.get(currencyCode);
-			String location = buildUrlString(sbCurr, getBankCode(), now);
+			XPathExpression buyXpath = ProviderUtils.newXpath().compile(BUY_RATE_XPATH);
+			XPathExpression saleXpath = ProviderUtils.newXpath().compile(SALE_RATE_XPATH);
 
-			try {
-				TagNode tagNode = ProviderUtils.load(location);
 
-				Object[] buyNodes = tagNode.evaluateXPath(BUY_RATE_XPATH);
-				if (buyNodes != null && buyNodes.length > 0) {
-					double val = Util.parseDotDouble(buyNodes[0].toString());
+			for (CurrencyCode currencyCode : currencyCodes) {
+				SravnibankUaCurrencyCode sbCurr = SravnibankUaCurrencyCode
+						.get(currencyCode);
+				String location = buildUrlString(sbCurr, getBankCode(), now);
+
+				Node root = ProviderUtils.readFrom(location);
+
+				String strBuy = buyXpath.evaluate(root);
+				if (!Util.isBlank(strBuy)) {
+					double val = Util.parseDotDouble(strBuy);
 					res.add(builder.build(OperationType.BUY, currencyCode, val));
 				}
 
-				Object[] sellNodes = tagNode.evaluateXPath(SALE_RATE_XPATH);
-				if (sellNodes != null && sellNodes.length > 0) {
-					double val = Util.parseDotDouble(sellNodes[0].toString());
+				String strSell = saleXpath.evaluate(root);
+				if (!Util.isBlank(strSell)) {
+					double val = Util.parseDotDouble(strSell);
 					res.add(builder
 							.build(OperationType.SELL, currencyCode, val));
 				}
-
-			} catch (Exception e) {
-				Log.e(LOG_TAG, "error parsing", e);
-				throw new WebUpdatingException();
 			}
+
+		} catch (Exception e) {
+			Log.e(LOG_TAG, "error parsing", e);
+			throw new WebUpdatingException(e);
 		}
 
 		return res;

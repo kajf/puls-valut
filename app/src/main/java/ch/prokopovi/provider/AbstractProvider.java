@@ -76,7 +76,7 @@ abstract class AbstractProvider implements Provider {
 
 		} catch (Exception e) {
 			Log.e(LOG_TAG, "web load error");
-			throw new WebUpdatingException();
+			throw new WebUpdatingException(e);
 		}
 	}
 

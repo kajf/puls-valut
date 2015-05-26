@@ -12,6 +12,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Date;
 
+import javax.net.ssl.*;
 import javax.xml.xpath.*;
 
 import ch.prokopovi.err.WebUpdatingException;
@@ -19,6 +20,16 @@ import ch.prokopovi.err.WebUpdatingException;
 public class ProviderUtils {
 
 	private static final String LOG_TAG = "ProviderUtils";
+
+	// avoid https verification
+	{
+		HttpsURLConnection.setDefaultHostnameVerifier(new HostnameVerifier() {
+			@Override
+			public boolean verify(String s, SSLSession sslSession) {
+				return true;
+			}
+		});
+	}
 
 	/**
 	 * get string response form url

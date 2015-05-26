@@ -143,7 +143,7 @@ public class NbrbProvider extends AbstractProvider {
 				}// now value should not be null
 			} catch (Exception e) {
 				Log.e(LOG_TAG, "error parsing", e);
-				throw new WebUpdatingException();
+				throw new WebUpdatingException(e);
 			}
 		}
 

@@ -129,7 +129,7 @@ public class NbuProvider extends AbstractProvider {
 				// Log.d(LOG_TAG, "rates are : " + Arrays.toString(res));
 			} catch (Exception e) {
 				Log.e(LOG_TAG, "error parsing", e);
-				throw new WebUpdatingException();
+				throw new WebUpdatingException(e);
 			}
 		}
 

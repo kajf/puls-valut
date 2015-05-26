@@ -112,4 +112,16 @@ public final class Util {
 
 		return dbl > -th && dbl < th;
 	}
+
+	public static boolean isBlank(String str) {
+		if (str == null)
+			return true;
+
+		String stripped = str.replace(" ", "");
+
+		if ("".equals(stripped))
+			return true;
+
+		return false;
+	}
 }

@@ -225,7 +225,7 @@ public class SbrProvider extends AbstractProvider {
 
 		} catch (Exception e) {
 			Log.e(LOG_TAG, "error on update");
-			throw new WebUpdatingException();
+			throw new WebUpdatingException(e);
 		}
 
 		return res;

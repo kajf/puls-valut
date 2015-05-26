@@ -141,7 +141,7 @@ public class MmProvider extends AbstractProvider {
 				res.addAll(tmpRates);
 			} catch (Exception e) {
 				Log.e(LOG_TAG, "error on mm data loading", e);
-				throw new WebUpdatingException();
+				throw new WebUpdatingException(e);
 			}
 		}
 

@@ -120,7 +120,7 @@ public class AlfaProvider extends AbstractProvider {
 				res.addAll(tmpRates);
 			} catch (Exception e) {
 				Log.e(LOG_TAG, "error on data loading", e);
-				throw new WebUpdatingException();
+				throw new WebUpdatingException(e);
 			}
 		}
 		return res;
