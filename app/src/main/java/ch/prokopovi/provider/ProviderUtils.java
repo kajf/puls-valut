@@ -58,20 +58,36 @@ public class ProviderUtils {
 			return node;
 		} catch (Exception e) {
 			Log.e(LOG_TAG, "load error", e);
-			throw new WebUpdatingException();
+			throw new WebUpdatingException(e);
 		}
+	}
+
+	public static String readFrom(String location, String xpath) {
+		try {
+			URL url = new URL(location);
+			InputSource src = new InputSource(url.openStream());
+
+			String s = (String) newXpath().evaluate(location, src, XPathConstants.STRING);
+
+			return s;
+		} catch (Exception e) {
+			Log.e(LOG_TAG, "load error", e);
+			e.printStackTrace();
+		}
+
+		return null;
 	}
 
 	public static Node readFrom(String location) {
 		try {
 			URL url = new URL(location);
-
 			InputSource src = new InputSource(url.openStream());
 
 			Node root = (Node) newXpath().evaluate("/", src, XPathConstants.NODE);
 
 			return root;
 		} catch (Exception e) {
+			Log.e(LOG_TAG, "load error", e);
 			e.printStackTrace();
 		}
 

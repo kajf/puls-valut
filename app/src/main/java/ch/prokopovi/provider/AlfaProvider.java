@@ -6,8 +6,6 @@ import org.w3c.dom.Node;
 
 import java.util.*;
 
-import javax.net.ssl.*;
-
 import ch.prokopovi.api.struct.ProviderRate;
 import ch.prokopovi.err.WebUpdatingException;
 import ch.prokopovi.struct.Master.*;
@@ -19,16 +17,6 @@ public class AlfaProvider extends AbstractProvider {
 	private static final String LOG_TAG = "AlfaProvider";
 
 	private static final String URL = "https://www.alfabank.ru/_/_currency.xml";
-
-    // avoid https verification
-    {
-        HttpsURLConnection.setDefaultHostnameVerifier(new HostnameVerifier() {
-            @Override
-            public boolean verify(String s, SSLSession sslSession) {
-                return true;
-            }
-        });
-    }
 
 	private static final String XPATH_FMT = "//rates[@type='%1$s']//item[@currency-id='%2$s']";
 	private static final String XPATH_SELL_FMT = XPATH_FMT + "/@value-selling";

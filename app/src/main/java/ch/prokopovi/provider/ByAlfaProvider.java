@@ -1,25 +1,23 @@
 package ch.prokopovi.provider;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
-import java.util.Set;
-
-import org.htmlcleaner.TagNode;
-
 import android.util.Log;
+
+import org.w3c.dom.Element;
+
+import java.io.ByteArrayInputStream;
+import java.util.*;
+
+import javax.xml.parsers.DocumentBuilderFactory;
+
 import ch.prokopovi.api.struct.ProviderRate;
 import ch.prokopovi.err.WebUpdatingException;
-import ch.prokopovi.struct.Master.CurrencyCode;
-import ch.prokopovi.struct.Master.ProviderCode;
-import ch.prokopovi.struct.Master.RateType;
+import ch.prokopovi.struct.Master.*;
 import ch.prokopovi.struct.ProviderRateBuilder;
 import ch.prokopovi.struct.ProviderRequirements;
 
 public class ByAlfaProvider extends AbstractProvider {
 
-	private static final String DATA_URL = "http://alfabank.by/personal/currency/rates.rss";
+	private static final String DATA_URL = "https://www.alfabank.by/personal/currency/rates.rss";
 
 	private static final String XPATH_BUY_FMT = "//td[@id='%1$s%2$sBy']/text()";
 	private static final String XPATH_SELL_FMT = "//td[@id='%1$s%2$sSell']/text()";
@@ -32,7 +30,7 @@ public class ByAlfaProvider extends AbstractProvider {
 		private final String code;
 		private final RateType rateType;
 
-		private ByAlfaRateType(String code, RateType rateType) {
+		ByAlfaRateType(String code, RateType rateType) {
 			this.code = code;
 			this.rateType = rateType;
 		}
@@ -94,38 +92,39 @@ public class ByAlfaProvider extends AbstractProvider {
 
 		Set<CurrencyCode> currencyCodes = requirements.getCurrencyCodes();
 
-		List<ProviderRate> res = new ArrayList<ProviderRate>();
+		List<ProviderRate> res = new ArrayList<>();
 		try {
-			TagNode tagNode = ProviderUtils.load(DATA_URL);
+			String cdataDescription = ProviderUtils.readFrom(DATA_URL, "//rss/channel/item/description");
 
-			Object[] nodes = tagNode
-					.evaluateXPath("//rss/channel/item/description");
-			if (nodes.length > 0) {
-				TagNode node = (TagNode) nodes[0];
+			if (cdataDescription == null)
+				return res;
 
-				for (CurrencyCode currencyCode : currencyCodes) {
+			Element root = DocumentBuilderFactory
+					.newInstance()
+					.newDocumentBuilder()
+					.parse(new ByteArrayInputStream(cdataDescription.getBytes()))
+					.getDocumentElement();
 
-					ByAlfaCurrencyCode baCode = ByAlfaCurrencyCode
-							.get(currencyCode);
+			if (root == null) return res;
 
-					String buyXpath = String.format(Locale.US, XPATH_BUY_FMT,
-							baCode.code, baRateType.code);
-					double buy = extractValue(node, buyXpath, false);
+			for (CurrencyCode currencyCode : currencyCodes) {
 
-					String sellXpath = String.format(Locale.US, XPATH_SELL_FMT,
-							baCode.code, baRateType.code);
-					double sell = extractValue(node, sellXpath, false);
+				ByAlfaCurrencyCode baCode = ByAlfaCurrencyCode.get(currencyCode);
 
-					List<ProviderRate> tmpRates = assembleProviderRates(
-							builder, currencyCode, buy, sell);
+				String buyXpath = String.format(Locale.US, XPATH_BUY_FMT,
+						baCode.code, baRateType.code);
+				double buy = extractDotValue(root, buyXpath);
 
-					res.addAll(tmpRates);
-				}
+				String sellXpath = String.format(Locale.US, XPATH_SELL_FMT,
+						baCode.code, baRateType.code);
+				double sell = extractDotValue(root, sellXpath);
 
+				List<ProviderRate> tmpRates = assembleProviderRates(
+						builder, currencyCode, buy, sell);
+
+				res.addAll(tmpRates);
 			}
 
-			// List<ProviderRate> today = update(brRateType, now, builder);
-			// res.addAll(today);
 		} catch (Exception e) {
 			Log.e(LOG_TAG, "error on update");
 			throw new WebUpdatingException(e);
