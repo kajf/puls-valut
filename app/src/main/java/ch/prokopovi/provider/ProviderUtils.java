@@ -67,7 +67,7 @@ public class ProviderUtils {
 			URL url = new URL(location);
 			InputSource src = new InputSource(url.openStream());
 
-			String s = (String) newXpath().evaluate(location, src, XPathConstants.STRING);
+			String s = (String) newXpath().evaluate(xpath, src, XPathConstants.STRING);
 
 			return s;
 		} catch (Exception e) {
