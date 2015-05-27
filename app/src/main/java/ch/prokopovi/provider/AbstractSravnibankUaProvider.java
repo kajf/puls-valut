@@ -30,7 +30,7 @@ public abstract class AbstractSravnibankUaProvider extends AbstractProvider {
 
 		private final CurrencyCode currencyCode;
 
-		private SravnibankUaCurrencyCode(CurrencyCode currencyCode) {
+		SravnibankUaCurrencyCode(CurrencyCode currencyCode) {
 			this.currencyCode = currencyCode;
 		}
 

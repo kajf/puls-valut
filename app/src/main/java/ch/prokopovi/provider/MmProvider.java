@@ -1,19 +1,14 @@
 package ch.prokopovi.provider;
 
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
-
-import org.htmlcleaner.TagNode;
-
 import android.util.Log;
+
+import org.w3c.dom.Node;
+
+import java.util.*;
+
 import ch.prokopovi.api.struct.ProviderRate;
 import ch.prokopovi.err.WebUpdatingException;
-import ch.prokopovi.struct.Master.CurrencyCode;
-import ch.prokopovi.struct.Master.ProviderCode;
-import ch.prokopovi.struct.Master.RateType;
+import ch.prokopovi.struct.Master.*;
 import ch.prokopovi.struct.ProviderRateBuilder;
 import ch.prokopovi.struct.ProviderRequirements;
 
@@ -102,8 +97,6 @@ public class MmProvider extends AbstractProvider {
 			MmCurrencyCode mmCurrencyCode = MmCurrencyCode.get(currencyCode);
 
 			try {
-				TagNode node = null;
-
 				Calendar cal = Calendar.getInstance();
 				cal.setTime(now);
 
@@ -115,25 +108,13 @@ public class MmProvider extends AbstractProvider {
 						mmCurrencyCode.getCode(), mmRateType.getCode(), now,
 						tomorrow);
 
-				TagNode tmpNode = ProviderUtils.load(location);
+				Node root = ProviderUtils.readFrom(location);
 
-				Object[] dateNodes = tmpNode.evaluateXPath("//graph/value");
-				if (dateNodes != null && dateNodes.length > 1) {
-					Log.d(LOG_TAG, "appropreate rates are found");
-					node = tmpNode;
-				}
+				String prefix = "//chart/graphs/graph[@gid='";
+				String postfix = "']/value[last()]/text()";
 
-				if (node == null) {
-					Log.e(LOG_TAG, "can't found appropreate rates");
-					throw new WebUpdatingException();
-				}
-
-				double buy = extractValue(node,
-						"//chart/graphs/graph[@gid='1']/value[last()]/text()",
-						false);
-				double sell = extractValue(node,
-						"//chart/graphs/graph[@gid='2']/value[last()]/text()",
-						false);
+				Double buy = extractDotValue(root, prefix + "1" + postfix);
+				Double sell = extractDotValue(root, prefix + "2" + postfix);
 
 				List<ProviderRate> tmpRates = assembleProviderRates(builder,
 						currencyCode, buy, sell);
