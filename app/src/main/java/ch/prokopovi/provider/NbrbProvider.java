@@ -1,23 +1,14 @@
 package ch.prokopovi.provider;
 
-import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
-
-import org.htmlcleaner.TagNode;
-import org.htmlcleaner.XPatherException;
-
 import android.util.Log;
-import ch.prokopovi.Util;
+
+import org.w3c.dom.Node;
+
+import java.util.*;
+
 import ch.prokopovi.api.struct.ProviderRate;
 import ch.prokopovi.err.WebUpdatingException;
-import ch.prokopovi.struct.Master.CurrencyCode;
-import ch.prokopovi.struct.Master.OperationType;
-import ch.prokopovi.struct.Master.ProviderCode;
-import ch.prokopovi.struct.Master.RateType;
+import ch.prokopovi.struct.Master.*;
 import ch.prokopovi.struct.ProviderRateBuilder;
 import ch.prokopovi.struct.ProviderRequirements;
 
@@ -88,26 +79,12 @@ public class NbrbProvider extends AbstractProvider {
 		return String.format(DATE_XPATH_FORMAT, date);
 	}
 
-	/**
-	 * extract rate value from root node by date
-	 * 
-	 * @param date
-	 * @param tagNode
-	 * @return
-	 * @throws XPatherException
-	 * @throws ParseException
-	 */
-	private static Double extractValue(Date date, TagNode tagNode)
-			throws XPatherException, ParseException {
-		Double res = null;
+	private static Double extractValue(Date date, Node node)
+			throws Exception {
 
 		String xpath = buildDateXpath(date);
-		Object[] nodes = tagNode.evaluateXPath(xpath);
-		if (nodes != null && nodes.length > 0) {
-			res = Util.parseDotDouble(nodes[0].toString());
-		}
 
-		return res;
+		return extractDotValue(node, xpath);
 	}
 
 	@Override
@@ -121,18 +98,18 @@ public class NbrbProvider extends AbstractProvider {
 		cal.add(Calendar.DATE, 1);
 		Date tomorrow = cal.getTime();
 
-		List<ProviderRate> res = new ArrayList<ProviderRate>();
+		List<ProviderRate> res = new ArrayList<>();
 
 		Set<CurrencyCode> currencyCodes = requirements.getCurrencyCodes();
 		for (CurrencyCode currencyCode : currencyCodes) {
 			String location = buildUrlString(currencyCode, now, tomorrow);
 
-			TagNode tagNode = ProviderUtils.load(location);
-
 			try {
 
-				Double tomorrowValue = extractValue(tomorrow, tagNode);
-				Double nowValue = extractValue(now, tagNode);
+				Node root = ProviderUtils.readFrom(location);
+
+				Double tomorrowValue = extractValue(tomorrow, root);
+				Double nowValue = extractValue(now, root);
 
 				res.add(builder.build(OperationType.BUY, currencyCode,
 						tomorrowValue));
@@ -142,8 +119,8 @@ public class NbrbProvider extends AbstractProvider {
 							nowValue));
 				}// now value should not be null
 			} catch (Exception e) {
-				Log.e(LOG_TAG, "error parsing", e);
-				throw new WebUpdatingException(e);
+				Log.e(LOG_TAG, "error loading/parsing: " + currencyCode, e);
+				continue;
 			}
 		}
 

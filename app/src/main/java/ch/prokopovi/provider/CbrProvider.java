@@ -94,7 +94,7 @@ public class CbrProvider extends AbstractProvider {
 
 		String xpath = buildDateXpath(date);
 		String strValue = ProviderUtils.evaluateXPath(xpath, root);
-		if (strValue != null) {
+		if (!Util.isBlank(strValue)) {
 			res = Util.parseCommaDouble(strValue);
 		}
 

@@ -93,19 +93,19 @@ public class AlfaProvider extends AbstractProvider {
 			ProviderRequirements requirements, Date now,
 			ProviderRateBuilder builder) throws WebUpdatingException {
 
-		List<ProviderRate> res = new ArrayList<ProviderRate>();
+		List<ProviderRate> res = new ArrayList<>();
+		try {
+			RateType rateType = requirements.getRateType();
+			AlfaRateType alfaRateType = AlfaRateType.get(rateType);
 
-		RateType rateType = requirements.getRateType();
-		AlfaRateType alfaRateType = AlfaRateType.get(rateType);
+			Node root = ProviderUtils.readFrom(URL);
 
-		Node root = ProviderUtils.readFrom(URL);
+			Set<CurrencyCode> currencyCodes = requirements.getCurrencyCodes();
+			for (CurrencyCode currencyCode : currencyCodes) {
+				AlfaCurrencyCode alfaCurrencyCode = AlfaCurrencyCode
+						.get(currencyCode);
 
-		Set<CurrencyCode> currencyCodes = requirements.getCurrencyCodes();
-		for (CurrencyCode currencyCode : currencyCodes) {
-			AlfaCurrencyCode alfaCurrencyCode = AlfaCurrencyCode
-					.get(currencyCode);
 
-			try {
 				String buyXpath = String.format(XPATH_BUY_FMT,
 						alfaRateType.getCode(), alfaCurrencyCode.getCode());
 				double buy = extractCommaValue(root, buyXpath);
@@ -118,10 +118,11 @@ public class AlfaProvider extends AbstractProvider {
 						currencyCode, buy, sell);
 
 				res.addAll(tmpRates);
-			} catch (Exception e) {
-				Log.e(LOG_TAG, "error on data loading", e);
-				throw new WebUpdatingException(e);
+
 			}
+		} catch (Exception e) {
+			Log.e(LOG_TAG, "error on data loading", e);
+			throw new WebUpdatingException(e);
 		}
 		return res;
 	}

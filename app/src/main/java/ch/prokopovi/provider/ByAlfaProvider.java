@@ -113,11 +113,11 @@ public class ByAlfaProvider extends AbstractProvider {
 
 				String buyXpath = String.format(Locale.US, XPATH_BUY_FMT,
 						baCode.code, baRateType.code);
-				double buy = extractDotValue(root, buyXpath);
+				Double buy = extractDotValue(root, buyXpath);
 
 				String sellXpath = String.format(Locale.US, XPATH_SELL_FMT,
 						baCode.code, baRateType.code);
-				double sell = extractDotValue(root, sellXpath);
+				Double sell = extractDotValue(root, sellXpath);
 
 				List<ProviderRate> tmpRates = assembleProviderRates(
 						builder, currencyCode, buy, sell);

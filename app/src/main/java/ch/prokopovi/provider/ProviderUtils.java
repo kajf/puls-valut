@@ -12,7 +12,6 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Date;
 
-import javax.net.ssl.*;
 import javax.xml.xpath.*;
 
 import ch.prokopovi.err.WebUpdatingException;
@@ -20,16 +19,6 @@ import ch.prokopovi.err.WebUpdatingException;
 public class ProviderUtils {
 
 	private static final String LOG_TAG = "ProviderUtils";
-
-	// avoid https verification
-	{
-		HttpsURLConnection.setDefaultHostnameVerifier(new HostnameVerifier() {
-			@Override
-			public boolean verify(String s, SSLSession sslSession) {
-				return true;
-			}
-		});
-	}
 
 	/**
 	 * get string response form url
@@ -73,36 +62,26 @@ public class ProviderUtils {
 		}
 	}
 
-	public static String readFrom(String location, String xpath) {
-		try {
-			URL url = new URL(location);
-			InputSource src = new InputSource(url.openStream());
+	public static String readFrom(String location, String xpath) throws Exception {
 
-			String s = (String) newXpath().evaluate(xpath, src, XPathConstants.STRING);
+		URL url = new URL(location);
+		InputSource src = new InputSource(url.openStream());
 
-			return s;
-		} catch (Exception e) {
-			Log.e(LOG_TAG, "load error", e);
-			e.printStackTrace();
-		}
+		String s = (String) newXpath().evaluate(xpath, src, XPathConstants.STRING);
 
-		return null;
+		return s;
+
 	}
 
-	public static Node readFrom(String location) {
-		try {
-			URL url = new URL(location);
-			InputSource src = new InputSource(url.openStream());
+	public static Node readFrom(String location) throws Exception {
 
-			Node root = (Node) newXpath().evaluate("/", src, XPathConstants.NODE);
+		URL url = new URL(location);
+		InputSource src = new InputSource(url.openStream());
 
-			return root;
-		} catch (Exception e) {
-			Log.e(LOG_TAG, "load error", e);
-			e.printStackTrace();
-		}
+		Node root = (Node) newXpath().evaluate("/", src, XPathConstants.NODE);
 
-		return null;
+		return root;
+
 	}
 
 	public static String evaluateXPath(String xpath, Node root) {

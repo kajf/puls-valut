@@ -17,6 +17,7 @@ import org.apache.http.message.BasicNameValuePair;
 import org.htmlcleaner.TagNode;
 import org.w3c.dom.Node;
 
+import android.support.annotation.Nullable;
 import android.util.Log;
 import ch.prokopovi.Util;
 import ch.prokopovi.api.provider.Provider;
@@ -128,24 +129,24 @@ abstract class AbstractProvider implements Provider {
 		return res;
 	}
 
-	protected double extractCommaValue(Node root, String path) throws Exception {
-		double res = -1;
+	protected @Nullable Double extractCommaValue(Node root, String path) throws Exception {
+		Double res = null;
 
 		String str = ProviderUtils.evaluateXPath(path, root);
 
-		if (str != null) {
+		if (!Util.isBlank(str)) {
 			res = Util.parseCommaDouble(str) ;
 		}
 
 		return res;
 	}
 
-	protected double extractDotValue(Node root, String path) throws Exception {
-		double res = -1;
+	protected static @Nullable Double extractDotValue(Node root, String path) throws Exception {
+		Double res = null;
 
 		String str = ProviderUtils.evaluateXPath(path, root);
 
-		if (str != null) {
+		if (!Util.isBlank(str)) {
 			res = Util.parseCommaDouble(str) ;
 		}
 
@@ -162,12 +163,17 @@ abstract class AbstractProvider implements Provider {
 	 * @return
 	 */
 	protected List<ProviderRate> assembleProviderRates(
-			ProviderRateBuilder builder, CurrencyCode currencyCode, double buy,
-			double sell) {
+			ProviderRateBuilder builder, CurrencyCode currencyCode, Double buy,
+			Double sell) {
 
 		if (builder == null || currencyCode == null) {
 			Log.d(LOG_TAG, "invalid input for assembleProviderRates");
 			return Collections.emptyList();
+		}
+
+		if (buy == null || sell == null) {
+			Log.d(LOG_TAG, "empty values for assembleProviderRates");
+			return Collections.emptyList(); // empty rate
 		}
 
 		if (buy < 0.00001 || sell < 0.00001) {
