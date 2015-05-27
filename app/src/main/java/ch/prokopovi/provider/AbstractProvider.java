@@ -130,7 +130,11 @@ abstract class AbstractProvider implements Provider {
 	}
 
 	protected @Nullable Double extractCommaValue(Node root, String path) throws Exception {
-		Double res = null;
+		return extractCommaValue(root, path, null);
+	}
+
+	protected @Nullable Double extractCommaValue(Node root, String path, Double defaultVal) throws Exception {
+		Double res = defaultVal;
 
 		String str = ProviderUtils.evaluateXPath(path, root);
 

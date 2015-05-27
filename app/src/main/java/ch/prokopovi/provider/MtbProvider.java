@@ -1,19 +1,14 @@
 package ch.prokopovi.provider;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
-import org.htmlcleaner.TagNode;
-
 import android.util.Log;
-import ch.prokopovi.Util;
+
+import org.w3c.dom.Node;
+
+import java.util.*;
+
 import ch.prokopovi.api.struct.ProviderRate;
 import ch.prokopovi.err.WebUpdatingException;
-import ch.prokopovi.struct.Master.CurrencyCode;
-import ch.prokopovi.struct.Master.OperationType;
-import ch.prokopovi.struct.Master.ProviderCode;
-import ch.prokopovi.struct.Master.RateType;
+import ch.prokopovi.struct.Master.*;
 import ch.prokopovi.struct.ProviderRateBuilder;
 import ch.prokopovi.struct.ProviderRequirements;
 
@@ -56,7 +51,7 @@ public class MtbProvider extends AbstractProvider {
 
 		String location = String.format(URL_FORMAT, date);
 
-		TagNode node = ProviderUtils.load(location);
+		Node root = ProviderUtils.readFrom(location);
 
 		MtbCurrencyCode[] mtbCurrencyCodes = MtbCurrencyCode.values();
 		for (MtbCurrencyCode mtbCurrencyCode : mtbCurrencyCodes) {
@@ -64,22 +59,8 @@ public class MtbProvider extends AbstractProvider {
 					"//currency[code/text()='%1$s'][codeTo/text()='BYR']",
 					mtbCurrencyCode.name());
 
-			double purchase = 0.0;
-			double sell = 0.0;
-
-			Object[] purchases = node.evaluateXPath(prefix + "/purchase");
-			if (purchases != null && purchases.length > 0) {
-				TagNode tmp = (TagNode) purchases[0];
-				purchase = Util.parseCommaDouble(tmp.getText().toString());
-				Log.d(LOG_TAG, "purchase " + purchase);
-			}
-
-			Object[] sales = node.evaluateXPath(prefix + "/sale");
-			if (sales != null && sales.length > 0) {
-				TagNode tmp = (TagNode) sales[0];
-				sell = Util.parseCommaDouble(tmp.getText().toString());
-				Log.d(LOG_TAG, "sell " + sell);
-			}
+			double purchase = extractCommaValue(root, prefix + "/purchase", 0.0);
+			double sell = extractCommaValue(root, prefix + "/sale", 0.0);
 
 			// !!! purchase and sell are shifted in xml so purchase = sell, sale
 			// = buy
