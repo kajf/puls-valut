@@ -1,20 +1,14 @@
 package ch.prokopovi.provider;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
-
-import org.htmlcleaner.TagNode;
-
 import android.util.Log;
-import ch.prokopovi.Util;
+
+import org.w3c.dom.Node;
+
+import java.util.*;
+
 import ch.prokopovi.api.struct.ProviderRate;
 import ch.prokopovi.err.WebUpdatingException;
-import ch.prokopovi.struct.Master.CurrencyCode;
-import ch.prokopovi.struct.Master.OperationType;
-import ch.prokopovi.struct.Master.ProviderCode;
-import ch.prokopovi.struct.Master.RateType;
+import ch.prokopovi.struct.Master.*;
 import ch.prokopovi.struct.ProviderRateBuilder;
 import ch.prokopovi.struct.ProviderRequirements;
 
@@ -96,41 +90,39 @@ public class NbuProvider extends AbstractProvider {
 			ProviderRequirements requirements, Date now,
 			ProviderRateBuilder builder) throws WebUpdatingException {
 
+		List<ProviderRate> res = new ArrayList<>();
 		String location = buildUrlString(now);
-		TagNode tagNode = ProviderUtils.load(location);
 
-		List<ProviderRate> res = new ArrayList<ProviderRate>();
+		try {
+			Node root = ProviderUtils.readFrom(location);
 
-		Set<CurrencyCode> currencyCodes = requirements.getCurrencyCodes();
-		for (CurrencyCode currencyCode : currencyCodes) {
+			Set<CurrencyCode> currencyCodes = requirements.getCurrencyCodes();
+			for (CurrencyCode currencyCode : currencyCodes) {
 
-			try {
+
 				NbuCurrencyCode nbuCurrencyCode = NbuCurrencyCode
 						.get(currencyCode);
 
 				String rateXpath = buildCurrencyXpath(nbuCurrencyCode);
-				Object[] rateNodes = tagNode.evaluateXPath(rateXpath);
+				Double rate = extractDotValue(root, rateXpath);
 
-				String changeXpath = buildChangeXpath(nbuCurrencyCode);
-				Object[] changeNodes = tagNode.evaluateXPath(changeXpath);
+				if (rate != null) {
+					res.add(builder.build(OperationType.BUY, currencyCode, rate));
 
-				if (rateNodes != null && rateNodes.length > 0) {
-					double val = Util.parseDotDouble(rateNodes[0].toString());
-					res.add(builder.build(OperationType.BUY, currencyCode, val));
+					String changeXpath = buildChangeXpath(nbuCurrencyCode);
+					Double change = extractDotValue(root, changeXpath);
 
-					if (changeNodes != null && changeNodes.length > 0) {
-						double change = Util.parseDotDouble(changeNodes[0]
-								.toString());
+					if (change != null) {
+
 						res.add(builder.build(OperationType.SELL, currencyCode,
-								val + change));
+								rate + change));
 					}
 				}
-
-				// Log.d(LOG_TAG, "rates are : " + Arrays.toString(res));
-			} catch (Exception e) {
-				Log.e(LOG_TAG, "error parsing", e);
-				throw new WebUpdatingException(e);
 			}
+
+		} catch (Exception e) {
+			Log.e(LOG_TAG, "error parsing", e);
+			throw new WebUpdatingException(e);
 		}
 
 		return res;

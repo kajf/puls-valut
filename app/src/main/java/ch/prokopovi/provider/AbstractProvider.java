@@ -151,7 +151,7 @@ abstract class AbstractProvider implements Provider {
 		String str = ProviderUtils.evaluateXPath(path, root);
 
 		if (!Util.isBlank(str)) {
-			res = Util.parseCommaDouble(str) ;
+			res = Util.parseDotDouble(str) ;
 		}
 
 		return res;
