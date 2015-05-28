@@ -3,8 +3,7 @@ package ch.prokopovi.ui.main;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 
-import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.*;
 
 import org.androidannotations.annotations.*;
 
