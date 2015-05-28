@@ -1,8 +1,5 @@
 package ch.prokopovi.provider;
 
-import android.util.Log;
-
-import org.htmlcleaner.*;
 import org.w3c.dom.Node;
 import org.xml.sax.InputSource;
 
@@ -10,11 +7,8 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.Date;
 
 import javax.xml.xpath.*;
-
-import ch.prokopovi.err.WebUpdatingException;
 
 public class ProviderUtils {
 
@@ -43,23 +37,6 @@ public class ProviderUtils {
 		in.close();
 
 		return response.toString();
-	}
-
-	@Deprecated
-	public static TagNode load(String location) throws WebUpdatingException {
-
-		try {
-			Log.d(LOG_TAG, "<<< GET " + location);
-			URL url = new URL(location);
-
-			HtmlCleaner cleaner = initHtmlCleaner();
-			TagNode node = cleaner.clean(url);
-
-			return node;
-		} catch (Exception e) {
-			Log.e(LOG_TAG, "load error", e);
-			throw new WebUpdatingException(e);
-		}
 	}
 
 	public static String readFrom(String location, String xpath) throws Exception {
@@ -94,22 +71,5 @@ public class ProviderUtils {
 
 	public static XPath newXpath() {
 		return XPathFactory.newInstance().newXPath();
-	}
-
-	@Deprecated
-	public static HtmlCleaner initHtmlCleaner() {
-		long start = new Date().getTime();
-
-		// this is where the HtmlCleaner comes in, I initialize it here
-		HtmlCleaner cleaner = new HtmlCleaner();
-		CleanerProperties props = cleaner.getProperties();
-		props.setAllowHtmlInsideAttributes(true);
-		props.setOmitComments(true);
-
-		Log.d(LOG_TAG,
-				"html cleaner initialized. spent: "
-						+ (new Date().getTime() - start));
-
-		return cleaner;
 	}
 }

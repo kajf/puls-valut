@@ -2,7 +2,8 @@ package ch.prokopovi.provider.places;
 
 import android.util.Log;
 
-import org.htmlcleaner.TagNode;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 import java.util.*;
 import java.util.Map.Entry;
@@ -74,31 +75,31 @@ public class MyfinPlacesProvider extends AbstractPlacesProvider {
 		String strUrl = String.format(URL_FORMAT, myfinRegion.getId());
 
 		try {
-			TagNode node = ProviderUtils.load(strUrl);
+			Node root = ProviderUtils.readFrom(strUrl);
 
 			long loadPoint = new Date().getTime();
 			Log.d(LOG_TAG, "load time spent: " + (loadPoint - start));
 
-			Object[] nodes = node.evaluateXPath("//root/*");
+			if (root == null)
+				return Collections.emptyList();
 
-			if (nodes != null) {
-				final List<Entry<Long, BestRatesRecord>> res = new ArrayList<Entry<Long, BestRatesRecord>>();
+			final List<Entry<Long, BestRatesRecord>> res = new ArrayList<>();
 
-				for (Object obj : nodes) {
-					TagNode tmp = (TagNode) obj;
+			NodeList placeNodes = root.getFirstChild().getChildNodes();
+			for (int i = 0; i < placeNodes.getLength(); i++) {
+				Node placeNode = placeNodes.item(i);
 
-					// Log.d(LOG_TAG, "string " + tmp.getText());
+				// Log.d(LOG_TAG, "string " + tmp.getText());
 
-					List<Entry<Long, BestRatesRecord>> placeRecords = parsePlace(tmp);
+				List<Entry<Long, BestRatesRecord>> placeRecords = parsePlace(placeNode);
 
-					res.addAll(placeRecords);
-				}
-
-				long parsePoint = new Date().getTime();
-				Log.d(LOG_TAG, "parse time spent: " + (parsePoint - loadPoint));
-
-				return res;
+				res.addAll(placeRecords);
 			}
+
+			long parsePoint = new Date().getTime();
+			Log.d(LOG_TAG, "parse time spent: " + (parsePoint - loadPoint));
+
+			return res;
 
 		} catch (Exception e) {
 			Log.d(LOG_TAG, "error during loading rates ", e);
@@ -107,7 +108,36 @@ public class MyfinPlacesProvider extends AbstractPlacesProvider {
 		return Collections.emptyList();
 	}
 
-	private static List<BestRatesRecord> parseRates(TagNode placeNode) {
+	static List<Entry<Long, BestRatesRecord>> parsePlace(Node placeNode) {
+
+		try {
+			List<Entry<Long, BestRatesRecord>> placeRecords = new ArrayList<>();
+
+			Node idNode = findChildByName(placeNode, "filialid");
+			if (idNode == null)
+				return placeRecords;
+
+			String strId = idNode.getTextContent().toString();
+			Long placeId = Long.valueOf(strId);
+
+			List<BestRatesRecord> placeRates = parseRates(placeNode);
+			for (BestRatesRecord record : placeRates) {
+
+				Entry<Long, BestRatesRecord> entry = createImmutableEntry(
+						placeId, record);
+
+				placeRecords.add(entry);
+			}
+
+			return placeRecords;
+
+		} catch (Exception e) {
+			Log.d(LOG_TAG, "error on parse place. Skipped.", e);
+			return Collections.emptyList();
+		}
+	}
+
+	private static List<BestRatesRecord> parseRates(Node placeNode) {
 
         Set<String> vauesToSkip = new HashSet<>(Arrays.asList("-", "1"));
 
@@ -119,9 +149,11 @@ public class MyfinPlacesProvider extends AbstractPlacesProvider {
 				String tag = mfc.getCode() + "_"
 						+ ot.name().toLowerCase(Locale.US);
 
-				TagNode placeTag = placeNode.findElementByName(tag, false);
-                String strValue = placeTag.getText()
-                        .toString();
+				Node placeTag = findChildByName(placeNode, tag);
+				if (placeTag == null)
+					continue;
+
+				String strValue = placeTag.getTextContent().toString();
 
                 if (vauesToSkip.contains(strValue))
                     continue;
@@ -149,33 +181,16 @@ public class MyfinPlacesProvider extends AbstractPlacesProvider {
 		return rates;
 	}
 
-	static List<Entry<Long, BestRatesRecord>> parsePlace(TagNode placeNode) {
+	private static Node findChildByName(Node parent, String childName) {
+		NodeList childNodes = parent.getChildNodes();
+		for (int i = 0; i < childNodes.getLength(); i++) {
+			Node child = childNodes.item(i);
 
-		try {
-			List<Entry<Long, BestRatesRecord>> placeRecords = new ArrayList<>();
-
-			TagNode idNode = placeNode.getElementsByName("filialid", false)[0];
-			String strId = idNode.getText().toString();
-
-			// String strId = placeNode.getName().substring(4);
-			// Log.d(LOG_TAG, "strId " + strId);
-
-			Long placeId = Long.valueOf(strId);
-
-			List<BestRatesRecord> placeRates = parseRates(placeNode);
-			for (BestRatesRecord record : placeRates) {
-
-				Entry<Long, BestRatesRecord> entry = createImmutableEntry(
-						placeId, record);
-
-				placeRecords.add(entry);
+			if (child.getNodeName().equals(childName)) {
+				return child;
 			}
-
-			return placeRecords;
-
-		} catch (Exception e) {
-			Log.d(LOG_TAG, "error on parse place. Skipped.", e);
-			return Collections.emptyList();
 		}
+
+		return null;
 	}
 }

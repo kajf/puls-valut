@@ -1,20 +1,14 @@
 package ch.prokopovi.provider;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
-
-import org.htmlcleaner.TagNode;
-
 import android.util.Log;
+
+import org.w3c.dom.Node;
+
+import java.util.*;
+
 import ch.prokopovi.api.struct.ProviderRate;
 import ch.prokopovi.err.WebUpdatingException;
-import ch.prokopovi.struct.Master.CurrencyCode;
-import ch.prokopovi.struct.Master.OperationType;
-import ch.prokopovi.struct.Master.ProviderCode;
-import ch.prokopovi.struct.Master.RateType;
+import ch.prokopovi.struct.Master.*;
 import ch.prokopovi.struct.ProviderRateBuilder;
 import ch.prokopovi.struct.ProviderRequirements;
 
@@ -46,7 +40,8 @@ public class PriorProvider extends AbstractProvider {
 		}
 	}
 
-	private static final String XPATH_RATE_VAL_FMT = "//RATE[ISO='%1$s']/%2$s/text()";
+	private static final String XPATH_PREFIX = "//R_DATE/LIST_E_CHANNEL/E_CHANNEL/LIST_RATE";
+	private static final String XPATH_RATE_VAL_FMT = "/RATE[ISO='%1$s']/%2$s/text()";
 
 	private static final String LOG_TAG = "PriorProvider";
 
@@ -98,41 +93,33 @@ public class PriorProvider extends AbstractProvider {
 			ProviderRequirements requirements, Date now,
 			ProviderRateBuilder builder) throws WebUpdatingException {
 
-		List<ProviderRate> res = new ArrayList<ProviderRate>();
+		List<ProviderRate> res = new ArrayList<>();
 
 		try {
-			TagNode node = null;
 
 			RateType rateType = requirements.getRateType();
 			Set<CurrencyCode> currencyCodes = requirements.getCurrencyCodes();
 			String location = buildUrlString(rateType, currencyCodes, now);
 
-			TagNode tmpNode = ProviderUtils.load(location);
-
-			Object[] dateNodes = tmpNode.evaluateXPath("//R_DATE");
-			if (dateNodes != null && dateNodes.length > 0) {
-				Log.d(LOG_TAG, "appropreate rates are found");
-				node = tmpNode;
-			}
-
-			if (node == null) {
+			Node root = ProviderUtils.readFrom(location);
+			if (root == null) {
 				Log.e(LOG_TAG, "can't found appropreate rates");
 				throw new WebUpdatingException();
 			}
 
-			Iterator<CurrencyCode> iter = currencyCodes.iterator();
-			while (iter.hasNext()) {
-				CurrencyCode currencyCode = iter.next();
+			for (CurrencyCode currencyCode : currencyCodes) {
+
 				PriorCurrencyCode priorCurrencyCode = PriorCurrencyCode
 						.get(currencyCode);
 
-				String buyPath = String.format(XPATH_RATE_VAL_FMT,
+				String buyPath = XPATH_PREFIX + String.format(XPATH_RATE_VAL_FMT,
 						priorCurrencyCode.name(), OperationType.BUY.name());
-				double buy = extractValue(node, buyPath, false);
+				Double buy = extractDotValue(root, buyPath);
 
-				String sellPath = String.format(XPATH_RATE_VAL_FMT,
+				String sellPath = XPATH_PREFIX + String.format(XPATH_RATE_VAL_FMT,
 						priorCurrencyCode.name(), OperationType.SELL.name());
-				double sell = extractValue(node, sellPath, false);
+
+				Double sell = extractDotValue(root, sellPath);
 
 				List<ProviderRate> tmpRates = assembleProviderRates(builder,
 						currencyCode, buy, sell);

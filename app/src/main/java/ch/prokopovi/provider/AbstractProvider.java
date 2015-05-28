@@ -1,11 +1,7 @@
 package ch.prokopovi.provider;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
+import android.support.annotation.Nullable;
+import android.util.Log;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -14,19 +10,17 @@ import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
-import org.htmlcleaner.TagNode;
 import org.w3c.dom.Node;
 
-import android.support.annotation.Nullable;
-import android.util.Log;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.util.*;
+
 import ch.prokopovi.Util;
 import ch.prokopovi.api.provider.Provider;
 import ch.prokopovi.api.struct.ProviderRate;
 import ch.prokopovi.err.WebUpdatingException;
-import ch.prokopovi.struct.Master.CurrencyCode;
-import ch.prokopovi.struct.Master.OperationType;
-import ch.prokopovi.struct.Master.ProviderCode;
-import ch.prokopovi.struct.Master.RateType;
+import ch.prokopovi.struct.Master.*;
 import ch.prokopovi.struct.ProviderRateBuilder;
 import ch.prokopovi.struct.ProviderRequirements;
 
@@ -107,23 +101,6 @@ abstract class AbstractProvider implements Provider {
 		for (int i = 0; i < values.length; i++) {
 			CurrencyCodable currencyCodable = values[i];
 			res[i] = currencyCodable.getCurrencyCode();
-		}
-
-		return res;
-	}
-
-	@Deprecated
-	protected double extractValue(TagNode root, String path,
-			boolean commaSepartor) throws Exception {
-		double res = -1;
-
-		Object[] val = root.evaluateXPath(path);
-
-		if (val != null && val.length > 0) {
-			String str = val[0].toString();
-			double dbl = commaSepartor ? Util.parseCommaDouble(str) : Util
-					.parseDotDouble(str);
-			res = dbl;
 		}
 
 		return res;
