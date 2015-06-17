@@ -33,7 +33,7 @@ public class SinglePaneResolver implements PaneResolver {
 
     @Override
     public void onOpen(LatLng latLng) {
-        OpenListener f = (OpenListener) UiHelper.showFragment(context, fragmentTag);
+        OpenListener f = UiHelper.showFragment(context, fragmentTag);
 
         f.onOpen(latLng);
     }

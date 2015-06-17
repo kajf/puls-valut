@@ -7,51 +7,24 @@ import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
 import android.util.SparseArray;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.LinearLayout;
+import android.view.*;
+import android.widget.*;
 import android.widget.LinearLayout.LayoutParams;
-import android.widget.TextView;
 
-import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.Projection;
-import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-import com.google.android.gms.maps.model.CameraPosition;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.maps.*;
+import com.google.android.gms.maps.model.*;
 import com.google.android.gms.maps.model.LatLngBounds.Builder;
-import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.maps.android.clustering.Cluster;
-import com.google.maps.android.clustering.ClusterItem;
-import com.google.maps.android.clustering.ClusterManager;
+import com.google.maps.android.clustering.*;
 import com.google.maps.android.clustering.view.DefaultClusterRenderer;
 import com.google.maps.android.ui.IconGenerator;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.PriorityQueue;
-import java.util.Set;
+import java.util.*;
 
 import ch.prokopovi.R;
-import ch.prokopovi.struct.Master.CurrencyCode;
-import ch.prokopovi.struct.Master.OperationType;
-import ch.prokopovi.struct.Master.Region;
+import ch.prokopovi.struct.Master.*;
 import ch.prokopovi.struct.best.RateItem;
 import ch.prokopovi.struct.best.RatePoint;
-import ch.prokopovi.ui.main.api.CurrencyOperationType;
-import ch.prokopovi.ui.main.api.OpenListener;
-import ch.prokopovi.ui.main.api.RegionListener;
-import ch.prokopovi.ui.main.api.UpdateListener;
-import ch.prokopovi.ui.main.api.Updater;
+import ch.prokopovi.ui.main.api.*;
 
 /**
  * near places map fragment
@@ -269,8 +242,12 @@ public class NearFragment extends SupportMapFragment implements
         Region positionRegion = TabsActivity.findRegion(position.latitude,
                 position.longitude);
         if (positionRegion == null) {
-            Log.w(LOG_TAG, "region for new position is not found");
-            // TODO show toast to user
+
+            Toast.makeText(
+                    getActivity(),
+                    R.string.lbl_region_too_far,
+                    Toast.LENGTH_LONG).show();
+
             return;
         }
 

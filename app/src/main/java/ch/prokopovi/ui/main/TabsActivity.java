@@ -528,23 +528,6 @@ public class TabsActivity extends ActionBarActivity implements
             } else if (mTitleNear.equals(selected)) {
                 Log.d(LOG_TAG, "open near rates");
 
-                if (myLastLocation != null) {
-
-                    Region myRegion = findRegion(
-                            myLastLocation.getLatitude(),
-                            myLastLocation.getLongitude());
-
-                    if (myRegion != null) {
-                        fireRegionUpdate(myRegion);
-                    } else {
-
-                        Toast toast = Toast.makeText(
-                                ctx, R.string.lbl_region_too_far, Toast.LENGTH_LONG);
-
-                        toast.show();
-                    }
-                }
-
                 UiHelper.showFragment(ctx, FragmentTag.NEAR);
             } else if (selected.contains(mTitleRegion)) {
 
