@@ -47,7 +47,7 @@ public class NearFragment extends SupportMapFragment implements
 
     private static final int DEFAULT_ZOOM = 15;
 
-    private static final int MAX_NON_CLUSTERED_SIZE = 6;
+    private static final int MAX_NON_CLUSTERED_SIZE = 4;
 
     private static final String LOG_TAG = "NearFragment";
 
@@ -377,6 +377,7 @@ public class NearFragment extends SupportMapFragment implements
             List<RateItem> list = NearFragment.this.updater.getRates(item.ratePoint.id);
 
             String text = "?";
+            iconFactory.setStyle(IconGenerator.STYLE_WHITE);
             for (RateItem rate : list) {
 
                 if (rate.currency.equals(filter.getCurrencyCode()) &&
@@ -386,6 +387,11 @@ public class NearFragment extends SupportMapFragment implements
                             rate.currency.getTitleRes());
 
                     text = title + " " + TabsActivity.FMT_RATE_VALUE.format(rate.value);
+
+                    Double diffVal = getDiffBestOrNull(rate);
+                    if (diffVal == null) {
+                        iconFactory.setStyle(IconGenerator.STYLE_GREEN);
+                    }
 
                     break;
                 }
@@ -460,16 +466,14 @@ public class NearFragment extends SupportMapFragment implements
                         OperationType operation = item.operationType;
 
                         Double rateVal = item.value;
-                        Double bestVal = NearFragment.this.bestRates.get(
-                                currency).get(operation);
 
-                        Double diffVal = bestVal - rateVal;
+                        Double diffVal = getDiffBestOrNull(item);
 
                         String value = TabsActivity.FMT_RATE_VALUE
                                 .format(rateVal);
 
                         String diff;
-                        if (diffVal > -0.0001 && diffVal < 0.0001) {
+                        if (diffVal == null) {
                             // zero diff
                             diff = getResources().getString(
                                     R.string.lbl_best);
@@ -531,6 +535,13 @@ public class NearFragment extends SupportMapFragment implements
 
     }
 
+    private Double getDiffBestOrNull(RateItem item) {
+        Double bestVal = bestRates.get(item.currency).get(item.operationType);
+
+        Double diffVal = bestVal - item.value;
+
+        return (diffVal > -0.0001 && diffVal < 0.0001) ? null : diffVal;
+    }
     // TODO handle case when same point have more then one marker (with and
     // without rates data)
     private Collection<NearPlace> getNearestPlaces(LatLng toPos, SparseArray<NearPlace> places) {
