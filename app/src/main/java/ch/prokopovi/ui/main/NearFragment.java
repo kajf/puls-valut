@@ -225,6 +225,7 @@ public class NearFragment extends SupportMapFragment implements
             return;
         }
 
+        selectedPosition = newRegion.getCoords();
         firstTimeOpen = true; // for showNearest...
         getMap().animateCamera(CameraUpdateFactory.newLatLngZoom(
                 newRegion.getCoords(), DEFAULT_ZOOM));
