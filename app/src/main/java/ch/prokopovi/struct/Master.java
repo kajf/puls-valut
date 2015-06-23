@@ -568,6 +568,15 @@ public final class Master {
 			return idMap.get(id);
 		}
 
+		public static Region findOrDefault(int id) {
+			Region region = get(id);
+			return region != null ? region : getDefault();
+		}
+
+		public static Region getDefault() {
+			return MINSK;
+		}
+
 		private final int id;
 		private final int titleRes;
 		private final LatLng coords;

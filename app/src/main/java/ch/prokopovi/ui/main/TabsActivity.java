@@ -472,9 +472,9 @@ public class TabsActivity extends ActionBarActivity implements
                 PrefsUtil.PREFS_NAME, Context.MODE_PRIVATE);
 
         int regionId = prefs.getInt(getString(R.string.pref_best_region),
-                Region.MINSK.getId());
+                Region.getDefault().getId());
 
-        Region region = Region.get(regionId);
+        Region region = Region.findOrDefault(regionId);
 
         updateRegionTitle(this, region);
 

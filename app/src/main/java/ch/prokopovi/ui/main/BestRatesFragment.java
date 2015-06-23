@@ -465,11 +465,11 @@ public class BestRatesFragment extends ListFragment implements
             int currId = prefs.getInt(getString(R.string.pref_best_curr),
                     CurrencyCode.USD.getId());
             int regionId = prefs.getInt(getString(R.string.pref_best_region),
-                    Region.MINSK.getId());
+                    Region.getDefault().getId());
 
             this.selectedExchangeType = OperationType.get(exTypeId);
             this.selectedCurrencyCode = CurrencyCode.get(currId);
-            this.selectedRegion = Region.get(regionId);
+            this.selectedRegion = Region.findOrDefault(regionId);
 
             Log.d(LOG_TAG, "restoring prev/initial selection: "
                     + this.selectedExchangeType + ", "
