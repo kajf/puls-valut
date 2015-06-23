@@ -59,8 +59,8 @@ public class MtbProvider extends AbstractProvider {
 					"//currency[code/text()='%1$s'][codeTo/text()='BYR']",
 					mtbCurrencyCode.name());
 
-			double purchase = extractCommaValue(root, prefix + "/purchase", 0.0);
-			double sell = extractCommaValue(root, prefix + "/sale", 0.0);
+			double purchase = extractDotValue(root, prefix + "/purchase", 0.0);
+			double sell = extractDotValue(root, prefix + "/sale", 0.0);
 
 			// !!! purchase and sell are shifted in xml so purchase = sell, sale
 			// = buy

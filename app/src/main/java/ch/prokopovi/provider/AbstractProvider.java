@@ -106,12 +106,8 @@ abstract class AbstractProvider implements Provider {
 		return res;
 	}
 
-	protected @Nullable Double extractCommaValue(Node root, String path) throws Exception {
-		return extractCommaValue(root, path, null);
-	}
-
-	protected @Nullable Double extractCommaValue(Node root, String path, Double defaultVal) throws Exception {
-		Double res = defaultVal;
+	protected static @Nullable Double extractCommaValue(Node root, String path, Double... defaultVal) throws Exception {
+		Double res = (defaultVal.length) > 0 ? defaultVal[0] : null;
 
 		String str = ProviderUtils.evaluateXPath(path, root);
 
@@ -122,8 +118,8 @@ abstract class AbstractProvider implements Provider {
 		return res;
 	}
 
-	protected static @Nullable Double extractDotValue(Node root, String path) throws Exception {
-		Double res = null;
+	protected static @Nullable Double extractDotValue(Node root, String path, Double... defaultVal) throws Exception {
+		Double res = (defaultVal.length) > 0 ? defaultVal[0] : null;
 
 		String str = ProviderUtils.evaluateXPath(path, root);
 

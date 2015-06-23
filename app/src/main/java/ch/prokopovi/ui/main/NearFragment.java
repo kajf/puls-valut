@@ -68,7 +68,7 @@ public class NearFragment extends SupportMapFragment implements
 
     private NearPlace selectedClusterItem;
 
-    private LatLng mapPosition;
+    private LatLng selectedPosition;
 
     class NearPlace implements ClusterItem {
 
@@ -155,9 +155,17 @@ public class NearFragment extends SupportMapFragment implements
     }
 
     @Override
+    public synchronized void onUpdate() {
+
+        Log.d(LOG_TAG, "onUpdate");
+
+        onOpen();
+    }
+
+    @Override
     public void onOpen(LatLng latLng) {
 
-        mapPosition = latLng;
+        selectedPosition = latLng;
 
         onOpen();
     }
@@ -266,7 +274,6 @@ public class NearFragment extends SupportMapFragment implements
                     .getBestRates(NearFragment.this.selectedRegion);
         }
     }
-
 
     @Override
     public void onCameraChange(CameraPosition position) {
@@ -397,10 +404,18 @@ public class NearFragment extends SupportMapFragment implements
                 }
             }
 
+            setStyleIfSelected(item);
+
             Bitmap bitmap = iconFactory.makeIcon(text);
 
             markerOptions
                     .icon(BitmapDescriptorFactory.fromBitmap(bitmap));
+        }
+
+        private void setStyleIfSelected(NearPlace item) {
+            if (item.getPosition().equals(selectedPosition)) {
+                iconFactory.setStyle(IconGenerator.STYLE_BLUE);
+            } // selected marker
         }
 
         @Override
@@ -584,32 +599,15 @@ public class NearFragment extends SupportMapFragment implements
         return Collections.emptyList();
     }
 
-    @Override
-    public synchronized void onUpdate() {
-
-        Log.d(LOG_TAG, "onUpdate");
-
-        if (isNotReady())
-            return;
-
-        updatePlaces(); // new currency / operation
-
-        LatLng pos = getMapPosition();
-
-        if (pos != null)
-            getMap().moveCamera(CameraUpdateFactory.newLatLng(
-                    pos));
-    }
-
     private LatLng getMapPosition() {
 
-        if (this.mapPosition == null && this.updater.getLocation() != null) {
+        if (this.selectedPosition == null && this.updater.getLocation() != null) {
 
-            this.mapPosition = new LatLng(this.updater.getLocation().getLatitude(),
+            this.selectedPosition = new LatLng(this.updater.getLocation().getLatitude(),
                     this.updater.getLocation().getLongitude());
         }
 
-        return this.mapPosition;
+        return this.selectedPosition;
     }
 
     private void showNearestWindow(LatLng currentPosition) {
