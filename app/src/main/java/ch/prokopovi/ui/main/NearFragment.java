@@ -384,17 +384,16 @@ public class NearFragment extends SupportMapFragment implements
             CurrencyOperationType filter = NearFragment.this.currencyOperationType;
             List<RateItem> list = NearFragment.this.updater.getRates(item.ratePoint.id);
 
-            String text = "?";
+            String text = getResources().getString(filter.getCurrencyCode().getTitleRes());
+
             iconFactory.setStyle(IconGenerator.STYLE_WHITE);
             for (RateItem rate : list) {
 
                 if (rate.currency.equals(filter.getCurrencyCode()) &&
                         rate.operationType.equals(filter.getOperationType())) {
 
-                    String title = getResources().getString(
-                            rate.currency.getTitleRes());
 
-                    text = title + " " + TabsActivity.FMT_RATE_VALUE.format(rate.value);
+                    text += " " + TabsActivity.FMT_RATE_VALUE.format(rate.value);
 
                     Double diffVal = getDiffBestOrNull(rate);
                     if (diffVal == null) {
