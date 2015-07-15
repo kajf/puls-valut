@@ -160,11 +160,11 @@ class Place {
 	static String cleanUpPhone(String phone) {
 		String[] prefixes = new String[] {
 				"15", "152", "154", "1545",
-				"16", "162", "163", "165", "1653",
+				"16", "162", "163", "1642", "165", "1653",
 				"17", "174", "176", "177", "1742", "1775", "1777", "1795",
 				"21", "212", "214", "216",
 				"22", "222", "225",
-				"23", "232", "2334", "2339", "2340", "2342", "236", "2363",
+				"23", "232", "2332", "2334", "2339", "2340", "2342", "236", "2363",
                 "25",
                 "29", "291",
 				"33",
@@ -178,7 +178,9 @@ class Place {
 		String res = commonCleanUp(phone);
 
 		String [] replaceArr = new String [] {//
-				"Контакт центр", "(круглосуточно)",
+				"Контакт центр", "контакт центр:",
+				"(круглосуточно)",
+				"– единый городской номер",
 				"(МТС, Life:), Velcom)", "(velcom, МТС и life)", "для абонентов velcom, МТС и life:)", "для velcom, МТС, life:)", //
 				"(МТС)", "МТС",
 				"(факс)", "факс:", "тел/факс", "Факс:",
@@ -203,19 +205,22 @@ class Place {
 						"") //
 				.replace(" (бесплатно со стационарного телефона)", "");
 
-        res = res.replace("+ ", "+");
-        res = res.replace("-", " ");
+        res = res
+				.replace("+ ", "+")
+        		.replace("-", " ")
+				.replace("8+375", "+375");
 
         for (String prefix : prefixes) {
 			res = res
                     .replace("(+375 " + prefix + ")", "+375 " + prefix)
                     .replace("+375 (0"+prefix+")", "+375 " + prefix)
-					.replace("(8 0"+prefix+")", "+375 " + prefix)
-                    .replace("8 0" + prefix + ")", "+375 " + prefix)
+					.replace("(+375 0"+prefix+")", "+375 " + prefix)
+					.replace("(8 0" + prefix + ")", "+375 " + prefix)
+                    .replace("8 0" + prefix, "+375 " + prefix)
                     .replace("(80" + prefix + ")", "+375 " + prefix)
                     .replace("8 (0"+prefix+")", "+375 " + prefix)
 					.replace("(0"+prefix+")", "+375 " + prefix)
-					.replace("("+prefix+")", prefix);
+					.replace("("+prefix+")", "+375 " +prefix);
 		}// un-brecket prefixes
 
 		res = commonCleanUp(res);
