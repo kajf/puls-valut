@@ -12,11 +12,9 @@ import ch.prokopovi.ui.main.api.OpenListener;
 
 public class DualPaneResolver implements PaneResolver {
     private FragmentActivity context;
-    private FragmentTag fragmentTag;
 
-    public DualPaneResolver(FragmentActivity context, FragmentTag fragmentTag) {
+    public DualPaneResolver(FragmentActivity context) {
         this.context = context;
-        this.fragmentTag = fragmentTag;
     }
 
     @Override
@@ -26,13 +24,14 @@ public class DualPaneResolver implements PaneResolver {
 
     @Override
     public void onCreate(FragmentTransaction ft) {
-        UiHelper.addOrAttachFragment(context, ft, fragmentTag);
+        UiHelper.addOrAttachFragment(context, ft, FragmentTag.BEST);
+        UiHelper.addOrAttachFragment(context, ft, FragmentTag.NEAR);
     }
 
     @Override
     public void onOpen(LatLng latLng) {
         FragmentManager fm = context.getSupportFragmentManager();
-        OpenListener f = (OpenListener) fm.findFragmentByTag(fragmentTag.tag);
+        OpenListener f = (OpenListener) fm.findFragmentByTag(FragmentTag.NEAR.tag);
         f.onOpen(latLng);
     }
 
@@ -47,5 +46,10 @@ public class DualPaneResolver implements PaneResolver {
 
     @Override
     public void showBest() {
+    }
+
+    @Override
+    public <T extends Fragment> T showNear() {
+        return null;
     }
 }

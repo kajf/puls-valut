@@ -133,9 +133,6 @@ public class NearFragment extends SupportMapFragment implements
 
         View v = super.onCreateView(inflater, container, savedInstanceState);
 
-        // We have a menu item to show in action bar.
-        setHasOptionsMenu(true);
-
         v.setLayoutParams(new LinearLayout.LayoutParams(0,
                 LayoutParams.MATCH_PARENT, 1 - TabsActivity.DUAL_PANE_RATIO));
 

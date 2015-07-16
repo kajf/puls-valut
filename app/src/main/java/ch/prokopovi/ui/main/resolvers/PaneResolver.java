@@ -1,5 +1,6 @@
 package ch.prokopovi.ui.main.resolvers;
 
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 
 import java.util.List;
@@ -16,4 +17,6 @@ public interface PaneResolver extends OpenListener {
     boolean isBestActive();
 
     void showBest();
+
+    <T extends Fragment> T showNear();
 }

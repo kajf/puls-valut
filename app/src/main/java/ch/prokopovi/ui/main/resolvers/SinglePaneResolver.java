@@ -13,13 +13,9 @@ import ch.prokopovi.ui.main.api.OpenListener;
 
 public class SinglePaneResolver implements PaneResolver {
     private FragmentActivity context;
-    private FragmentTag fragmentTag;
-    boolean adsOn = true;
 
-    public SinglePaneResolver(FragmentActivity context, FragmentTag fragmentTag, boolean adsOn) {
+    public SinglePaneResolver(FragmentActivity context) {
         this.context = context;
-        this.fragmentTag = fragmentTag;
-        this.adsOn = adsOn;
     }
 
     @Override
@@ -29,11 +25,12 @@ public class SinglePaneResolver implements PaneResolver {
 
     @Override
     public void onCreate(FragmentTransaction ft) {
+        UiHelper.addOrAttachFragment(context, ft, FragmentTag.BEST);
     }
 
     @Override
     public void onOpen(LatLng latLng) {
-        OpenListener f = UiHelper.showFragment(context, fragmentTag);
+        OpenListener f = showNear();
 
         f.onOpen(latLng);
     }
@@ -55,13 +52,15 @@ public class SinglePaneResolver implements PaneResolver {
 
     @Override
     public void showBest() {
+
         UiHelper.showFragment(context, FragmentTag.BEST);
+    }
 
-        if (adsOn) {
+    @Override
+    public <T extends Fragment> T showNear() {
 
-            FragmentTransaction ftBanner = context.getSupportFragmentManager().beginTransaction();
-            UiHelper.addOrAttachFragment(context, ftBanner, FragmentTag.BANNER);
-            ftBanner.commit();
-        }
+        T f = UiHelper.showFragment(context, FragmentTag.NEAR);
+
+        return f;
     }
 }

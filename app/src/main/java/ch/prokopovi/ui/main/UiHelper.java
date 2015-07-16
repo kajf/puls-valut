@@ -17,9 +17,8 @@ import ch.prokopovi.R;
 public final class UiHelper {
 
     public static <T extends Fragment> T showFragment(FragmentActivity ctx, FragmentTag ftag) {
-        FragmentManager fm = ctx.getSupportFragmentManager();
 
-        FragmentTransaction ft = fm.beginTransaction();
+        FragmentTransaction ft = ctx.getSupportFragmentManager().beginTransaction();
 
         ft.setCustomAnimations(R.anim.abc_slide_in_top, 0);
 
@@ -37,17 +36,16 @@ public final class UiHelper {
             FragmentTransaction ft,
             FragmentTag info) {
 
-        Fragment fragment = context.getSupportFragmentManager().findFragmentByTag(info.tag);
+        Fragment fragment = info.getFragment(context);
 
-        if (fragment == null) {
-
-            fragment = Fragment.instantiate(context, info.className);
-
-            ft.add(info.container, fragment, info.tag);
-        } else {
+        if (fragment.isAdded()) {
             if (fragment.isDetached()) {
                 ft.attach(fragment);
             }
+        } else {
+            fragment = Fragment.instantiate(context, info.className);
+
+            ft.add(info.container, fragment, info.tag);
         }
 
         return (T) fragment;
@@ -60,7 +58,13 @@ public final class UiHelper {
 
             if (f == null) continue;
 
-            if (skipTag != null && skipTag.equals(f.getTag())) continue;
+            FragmentTag fragmentTag = FragmentTag.byTag(f.getTag());
+
+            if (fragmentTag == null) continue;
+
+            if (!fragmentTag.isDetachable()) continue;
+
+            if (f.getTag().equals(skipTag)) continue;
 
             ft.detach(f);
         }

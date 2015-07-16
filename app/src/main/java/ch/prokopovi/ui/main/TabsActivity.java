@@ -1,26 +1,17 @@
 package ch.prokopovi.ui.main;
 
 import android.app.AlertDialog;
-import android.content.ComponentName;
-import android.content.Context;
-import android.content.DialogInterface;
-import android.content.Intent;
-import android.content.SharedPreferences;
+import android.content.*;
 import android.content.res.Configuration;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
+import android.location.*;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
+import android.support.v4.app.*;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.*;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.text.format.DateUtils;
 import android.util.Log;
@@ -33,44 +24,24 @@ import android.widget.*;
 import com.google.android.apps.analytics.GoogleAnalyticsTracker;
 import com.google.android.gms.maps.model.LatLng;
 
-import org.androidannotations.annotations.AfterViews;
-import org.androidannotations.annotations.Bean;
-import org.androidannotations.annotations.EActivity;
-import org.androidannotations.annotations.NonConfigurationInstance;
-import org.androidannotations.annotations.OptionsItem;
-import org.androidannotations.annotations.ViewById;
+import org.androidannotations.annotations.*;
 import org.androidannotations.annotations.res.StringRes;
 
 import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
-import ch.prokopovi.PrefsUtil;
-import ch.prokopovi.R;
-import ch.prokopovi.StatsHelper;
-import ch.prokopovi.VersionHelper;
+import ch.prokopovi.*;
 import ch.prokopovi.api.struct.Titled;
 import ch.prokopovi.db.BestRatesDbAdapter;
 import ch.prokopovi.db.BestRatesTable.ColumnBestRates;
 import ch.prokopovi.db.DbHelper;
-import ch.prokopovi.struct.Master.CurrencyCode;
-import ch.prokopovi.struct.Master.OperationType;
-import ch.prokopovi.struct.Master.Region;
+import ch.prokopovi.struct.Master.*;
 import ch.prokopovi.struct.best.RateItem;
 import ch.prokopovi.struct.best.RatePoint;
 import ch.prokopovi.ui.AbstractWidgetConfigure;
 import ch.prokopovi.ui.main.ConverterFragment.ConverterParams;
 import ch.prokopovi.ui.main.RateAppFragment.RateAppListener;
-import ch.prokopovi.ui.main.api.Closable;
-import ch.prokopovi.ui.main.api.Converter;
-import ch.prokopovi.ui.main.api.CurrencyOperationType;
-import ch.prokopovi.ui.main.api.OpenListener;
-import ch.prokopovi.ui.main.api.RegionListener;
-import ch.prokopovi.ui.main.api.UpdateListener;
-import ch.prokopovi.ui.main.api.Updater;
+import ch.prokopovi.ui.main.api.*;
 import ch.prokopovi.ui.main.resolvers.PaneResolver;
 import ch.prokopovi.ui.main.resolvers.PaneResolverFactory;
 
@@ -342,78 +313,88 @@ public class TabsActivity extends ActionBarActivity implements
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 
-		// skin
 		PrefsUtil.initSkin(this);
 
 		super.onCreate(savedInstanceState);
 
-        SharedPreferences prefs = getSharedPreferences(
-                PrefsUtil.PREFS_NAME, Context.MODE_PRIVATE);
+        prepareTracker();
 
-        boolean adsOn = prefs.getBoolean(this.prefAdsOn, true);
-        paneResolver = PaneResolverFactory.createPaneResolver(this, FragmentTag.NEAR, adsOn);
+        paneResolver = PaneResolverFactory.createPaneResolver(this);
 
-        ActionBar actionBar = getSupportActionBar();
-        actionBar.setHomeButtonEnabled(true);
-        actionBar.setDisplayShowTitleEnabled(paneResolver.isDisplayShowTitleEnabled());
-        actionBar.setDisplayHomeAsUpEnabled(true);
+        prepareActionBar(paneResolver.isDisplayShowTitleEnabled());
 
         FragmentTransaction ft = getSupportFragmentManager()
                 .beginTransaction();
 
-        UiHelper.addOrAttachFragment(this, ft, FragmentTag.BEST);
-
         paneResolver.onCreate(ft);
+
+        //
+
+        SharedPreferences prefs = getSharedPreferences(PrefsUtil.PREFS_NAME, Context.MODE_PRIVATE);
+        boolean adsOn = prefs.getBoolean(this.prefAdsOn, true);
+        if (!adsOn) {
+            this.tracker.trackPageView("/adsOff");
+        }
+
+        boolean rateMeNeeded = isRateMeNeeded(savedInstanceState, prefs);
+        if (rateMeNeeded) {
+            UiHelper.addOrAttachFragment(this, ft, FragmentTag.RATE);
+        } else if (adsOn) {
+            UiHelper.addOrAttachFragment(this, ft, FragmentTag.BANNER);
+        }
 
         ft.commit();
 
-		// DB ---
-		DbHelper dbHelper = DbHelper.getInstance(this);
-		SQLiteDatabase database = dbHelper.getDb();
-		this.dbAdapter = new BestRatesDbAdapter(database);
+        prepareDb();
 
-		// tracker
-		this.tracker = GoogleAnalyticsTracker.getInstance();
-		this.tracker.setAnonymizeIp(true);
+        // full screen
+        if (savedInstanceState == null) { // only freshly created activity
+            PrefsUtil.initFullscreen(this);
+        }
+    }
 
-		this.tracker.startNewSession(StatsHelper.PROPERTY_ID, this);
+    private void prepareTracker() {
+        this.tracker = GoogleAnalyticsTracker.getInstance();
+        this.tracker.setAnonymizeIp(true);
 
-		// rate me
-		if (savedInstanceState == null) { // only freshly created activity
+        this.tracker.startNewSession(StatsHelper.PROPERTY_ID, this);
+    }
 
-			// launches count
-			int launches = prefs.getInt(this.prefRateAppLaunches, 5);
-			Log.d(LOG_TAG, "rate app launches: " + launches);
+    private void prepareActionBar(boolean isDisplayShowTitleEnabled) {
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setHomeButtonEnabled(true);
+        actionBar.setDisplayShowTitleEnabled(isDisplayShowTitleEnabled);
+        actionBar.setDisplayHomeAsUpEnabled(true);
+    }
 
-			if (launches == 0) {
+    private void prepareDb() {
+        DbHelper dbHelper = DbHelper.getInstance(this);
+        SQLiteDatabase database = dbHelper.getDb();
+        this.dbAdapter = new BestRatesDbAdapter(database);
+    }
 
-				FragmentTransaction ftRate = getSupportFragmentManager().beginTransaction();
-                UiHelper.addOrAttachFragment(this, ftRate, FragmentTag.RATE);
-                ftRate.commit();
+    private boolean isRateMeNeeded(Bundle savedInstanceState, SharedPreferences prefs) {
 
-            } else {
+        if (savedInstanceState != null)  // only freshly created activity
+            return false;
 
-				if (launches > 0) {
-					prefs.edit().putInt(this.prefRateAppLaunches, launches - 1)
-                            .apply();
-                } // update count
+        int launches = prefs.getInt(this.prefRateAppLaunches, 5);
+        Log.d(LOG_TAG, "rate app launches: " + launches);
 
-                // ads if allowed
+        if (launches == 0) {
 
-                if (adsOn) {
+            return true;
 
-					FragmentTransaction ftBanner = getSupportFragmentManager().beginTransaction();
-                    UiHelper.addOrAttachFragment(this, ftBanner, FragmentTag.BANNER);
-                    ftBanner.commit();
-                } else {
-					this.tracker.trackPageView("/adsOff");
-				}
-			}
+        } else {
 
-			// full screen
-			PrefsUtil.initFullscreen(this);
-		}
-	}
+            if (launches > 0) {
+                prefs.edit().putInt(this.prefRateAppLaunches, launches - 1)
+                        .apply();
+            } // update count
+
+            return false;
+        }
+    }
 
     @AfterViews
     void initDrawer() {
@@ -528,7 +509,7 @@ public class TabsActivity extends ActionBarActivity implements
             } else if (mTitleNear.equals(selected)) {
                 Log.d(LOG_TAG, "open near rates");
 
-                UiHelper.showFragment(ctx, FragmentTag.NEAR);
+                paneResolver.showNear();
             } else if (selected.contains(mTitleRegion)) {
 
                 getTracker().trackPageView("/bestRegion");
