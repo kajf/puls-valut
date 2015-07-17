@@ -47,6 +47,31 @@ public class PlaceTest {
     }
 
     @Test
+         public void testPhoneNoDuplicatedPrefix() throws Exception {
+        // given
+        String p = "+375 (17) 292 42 84";
+
+
+        // when
+        String res = Place.cleanUpPhone(p);
+
+        // then
+        assertEquals("+375 17 292 42 84", res);
+    }
+
+    @Test
+    public void testPhoneNoDuplicatedPrefix2() throws Exception {
+        // given
+        String p = "+375(17) 218 84 31";
+
+        // when
+        String res = Place.cleanUpPhone(p);
+
+        // then
+        assertEquals("+375 17 218 84 31", res);
+    }
+
+    @Test
     public void testPhoneDashRemoved() throws Exception {
 
         String res = Place.cleanUpPhone("+375 29 123-45-67");

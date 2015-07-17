@@ -213,14 +213,17 @@ class Place {
         for (String prefix : prefixes) {
 			res = res
                     .replace("(+375 " + prefix + ")", "+375 " + prefix)
-                    .replace("+375 (0"+prefix+")", "+375 " + prefix)
-					.replace("(+375 0"+prefix+")", "+375 " + prefix)
+                    .replace("+375 (0" + prefix + ")", "+375 " + prefix)
+					.replace("(+375 0" + prefix + ")", "+375 " + prefix)
+					.replace("+375 ("+prefix + ")", "+375 " + prefix)
+					.replace("+375(" + prefix + ")", "+375 " + prefix)
+
 					.replace("(8 0" + prefix + ")", "+375 " + prefix)
                     .replace("8 0" + prefix, "+375 " + prefix)
                     .replace("(80" + prefix + ")", "+375 " + prefix)
-                    .replace("8 (0"+prefix+")", "+375 " + prefix)
-					.replace("(0"+prefix+")", "+375 " + prefix)
-					.replace("("+prefix+")", "+375 " +prefix);
+                    .replace("8 (0"+prefix + ")", "+375 " + prefix)
+
+					.replace("(0"+prefix+")", "+375 " + prefix);
 		}// un-brecket prefixes
 
 		res = commonCleanUp(res);
