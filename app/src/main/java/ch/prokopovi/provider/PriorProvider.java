@@ -46,46 +46,24 @@ public class PriorProvider extends AbstractProvider {
 	private static final String LOG_TAG = "PriorProvider";
 
 	private static final String DATA_URL_FORMAT = "http://www.priorbank.by/CurratesExportXml.axd?"
-			+ "channel=%1$s"
-			+ "&iso=%2$s"
-			+ "&from=%3$td.%3$tm.%3$tY"
-			+ "&to=%4$td.%4$tm.%4$tY";
+			+ "channel=%1$s&from=0";
 
 	/**
 	 * create service request line (period starting 'frame' days before today
 	 * and ending in 'date')
 	 * 
 	 * @param rateType
-	 * @param codes
-	 *            currency codes to request
-	 * @param date
-	 *            end of period
-	 * 
 	 * 
 	 * @return service request line
 	 */
-	private static String buildUrlString(RateType rateType,
-			Set<CurrencyCode> codes, Date date) {
-
-		String currStr = "";
-		Iterator<CurrencyCode> iterator = codes.iterator();
-		while (iterator.hasNext()) {
-			CurrencyCode code = iterator.next();
-
-			PriorCurrencyCode priorCurrencyCode = PriorCurrencyCode.get(code);
-
-			currStr += priorCurrencyCode.name();
-
-			if (iterator.hasNext())
-				currStr += ",";
-		}
+	private static String buildUrlString(RateType rateType) {
 
 		String type = RateType.CASH.name();
 		if (rateType != null) {
 			type = rateType.getCode();
 		}
 
-		return String.format(DATA_URL_FORMAT, type, currStr, date, date);
+		return String.format(DATA_URL_FORMAT, type);
 	}
 
 	@Override
@@ -96,10 +74,7 @@ public class PriorProvider extends AbstractProvider {
 		List<ProviderRate> res = new ArrayList<>();
 
 		try {
-
-			RateType rateType = requirements.getRateType();
-			Set<CurrencyCode> currencyCodes = requirements.getCurrencyCodes();
-			String location = buildUrlString(rateType, currencyCodes, now);
+			String location = buildUrlString(requirements.getRateType());
 
 			Node root = ProviderUtils.readFrom(location);
 			if (root == null) {
@@ -107,6 +82,7 @@ public class PriorProvider extends AbstractProvider {
 				throw new WebUpdatingException();
 			}
 
+			Set<CurrencyCode> currencyCodes = requirements.getCurrencyCodes();
 			for (CurrencyCode currencyCode : currencyCodes) {
 
 				PriorCurrencyCode priorCurrencyCode = PriorCurrencyCode
@@ -147,9 +123,6 @@ public class PriorProvider extends AbstractProvider {
 
 	@Override
 	CurrencyCodable[] getCurrencyCodables(RateType rt) {
-
-		return RateType.CASH.equals(rt) ? PriorCurrencyCode.values()
-				: new PriorCurrencyCode[] { PriorCurrencyCode.USD,
-						PriorCurrencyCode.EUR };
+		return PriorCurrencyCode.values();
 	}
 }

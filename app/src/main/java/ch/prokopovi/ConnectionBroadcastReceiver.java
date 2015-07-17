@@ -17,7 +17,7 @@ import android.util.Log;
  */
 public class ConnectionBroadcastReceiver extends BroadcastReceiver {
 
-	private static final String LOG_TAG = "ConnectionBroadcastReceiver";
+	private static final String LOG_TAG = "ConnectionBR";
 
 	private static Boolean previousOnline = null;
 

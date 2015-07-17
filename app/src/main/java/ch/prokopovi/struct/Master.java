@@ -320,7 +320,7 @@ public final class Master {
 		private final int thumbRes;
 		private final Class<?> clazz;
 
-		private ProviderCode(int id, CountryCode countryCode, int[] daysOff,
+		ProviderCode(int id, CountryCode countryCode, int[] daysOff,
 				int titleRes, int thumbRes, Class<?> clazz) {
 			this.id = id;
 			this.countryCode = countryCode;
