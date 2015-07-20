@@ -46,11 +46,10 @@ public class PriorProvider extends AbstractProvider {
 	private static final String LOG_TAG = "PriorProvider";
 
 	private static final String DATA_URL_FORMAT = "http://www.priorbank.by/CurratesExportXml.axd?"
-			+ "channel=%1$s&from=0";
+			+ "channel=%1$s";
 
 	/**
-	 * create service request line (period starting 'frame' days before today
-	 * and ending in 'date')
+	 * create service request line
 	 * 
 	 * @param rateType
 	 * 
@@ -58,9 +57,9 @@ public class PriorProvider extends AbstractProvider {
 	 */
 	private static String buildUrlString(RateType rateType) {
 
-		String type = RateType.CASH.name();
-		if (rateType != null) {
-			type = rateType.getCode();
+		String type = "3"; // cash [default]
+		if (RateType.CARD.equals(rateType)) {
+			type = "9";
 		}
 
 		return String.format(DATA_URL_FORMAT, type);
@@ -78,7 +77,7 @@ public class PriorProvider extends AbstractProvider {
 
 			Node root = ProviderUtils.readFrom(location);
 			if (root == null) {
-				Log.e(LOG_TAG, "can't found appropreate rates");
+				Log.e(LOG_TAG, "can't find appropriate rates");
 				throw new WebUpdatingException();
 			}
 

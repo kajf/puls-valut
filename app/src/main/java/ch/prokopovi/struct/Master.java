@@ -249,7 +249,7 @@ public final class Master {
 				R.drawable.nbrb_thumb, //
 				NbrbProvider.class), //
 		PRIOR(2, CountryCode.BY, //
-				new int[] { Calendar.SUNDAY }, //
+				new int[] { }, //
 				R.string.lbl_prior_provider, //
 				R.drawable.prior_thumb,//
 				PriorProvider.class), //
@@ -264,7 +264,7 @@ public final class Master {
 				R.drawable.mm_thumb,//
 				MmProvider.class), //
 		BY_ALFA(5, CountryCode.BY,//
-				new int[] { Calendar.SUNDAY }, //
+				new int[] { }, //
 				R.string.lbl_by_alfa_provider, //
 				R.drawable.alfa_thumb,//
 				ByAlfaProvider.class), //
@@ -280,7 +280,7 @@ public final class Master {
 				R.drawable.sbr_thumb,//
 				SbrProvider.class), //
 		ALFA(11, CountryCode.RU, //
-				new int[] { Calendar.SATURDAY, Calendar.SUNDAY }, //
+				new int[] { }, //
 				R.string.lbl_alfa_provider, //
 				R.drawable.alfa_thumb,//
 				AlfaProvider.class), //
@@ -431,8 +431,8 @@ public final class Master {
 	}
 
 	public enum RateType {
-		CARD(1, "9", R.string.lbl_card_type, R.string.lbl_card_type_short), //
-		CASH(2, "3", R.string.lbl_cash_type, R.string.lbl_cash_type_short);
+		CARD(1, R.string.lbl_card_type, R.string.lbl_card_type_short), //
+		CASH(2, R.string.lbl_cash_type, R.string.lbl_cash_type_short);
 
 		private static HashMap<String, RateType> map;
 
@@ -470,24 +470,18 @@ public final class Master {
 		}
 
 		private final int id;
-		private final String code;
 
 		private final int titleRes;
 		private final int shortTitleRes;
 
-		private RateType(int id, String code, int titleRes, int shortTitleRes) {
+		RateType(int id, int titleRes, int shortTitleRes) {
 			this.id = id;
-			this.code = code;
 			this.titleRes = titleRes;
 			this.shortTitleRes = shortTitleRes;
 		}
 
 		public int getId() {
 			return this.id;
-		}
-
-		public String getCode() {
-			return this.code;
 		}
 
 		public int getShortTitleRes() {

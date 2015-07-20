@@ -1,16 +1,13 @@
 package ch.prokopovi.ui.main;
 
+import android.util.Log;
+import android.widget.Toast;
+
+import org.androidannotations.annotations.*;
+
 import java.util.List;
 import java.util.Map.Entry;
 
-import org.androidannotations.annotations.Background;
-import org.androidannotations.annotations.EBean;
-import org.androidannotations.annotations.RootContext;
-import org.androidannotations.annotations.UiThread;
-
-import android.app.AlertDialog;
-import android.content.DialogInterface;
-import android.util.Log;
 import ch.prokopovi.R;
 import ch.prokopovi.api.provider.PlacesProvider;
 import ch.prokopovi.api.struct.BestRatesRecord;
@@ -75,18 +72,8 @@ public class UpdateTask {
 	void error() {
 		end();
 
-		new AlertDialog.Builder(this.activity)
-				// .setIcon(android.R.drawable.ic_dialog_alert)
-				.setMessage(R.string.err_update)
-				.setPositiveButton(android.R.string.ok,
-						new DialogInterface.OnClickListener() {
-							@Override
-							public void onClick(DialogInterface dialog,
-									int whichButton) {
-
-								/* User clicked OK so do some stuff */
-							}
-						}).create().show(); // unsuccessful update
+		Toast.makeText(this.activity, R.string.err_update, Toast.LENGTH_LONG).show();
+		// unsuccessful update
 	}
 
 	public boolean isInProgress() {

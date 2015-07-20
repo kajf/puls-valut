@@ -81,18 +81,16 @@ public class ByAlfaProvider extends AbstractProvider {
 			ProviderRequirements requirements, Date now,
 			ProviderRateBuilder builder) throws WebUpdatingException {
 
+		List<ProviderRate> res = new ArrayList<>();
+
 		RateType rateType = requirements.getRateType();
 
 		ByAlfaRateType baRateType = ByAlfaRateType.get(rateType);
 
-		if (baRateType == null) {
-			Log.e(LOG_TAG, "no rate type for " + rateType + " in provider");
-			throw new WebUpdatingException();
-		}
+		if (baRateType == null) return res;
 
 		Set<CurrencyCode> currencyCodes = requirements.getCurrencyCodes();
 
-		List<ProviderRate> res = new ArrayList<>();
 		try {
 			String cdataDescription = ProviderUtils.readFrom(DATA_URL, "//rss/channel/item/description");
 
@@ -110,6 +108,8 @@ public class ByAlfaProvider extends AbstractProvider {
 			for (CurrencyCode currencyCode : currencyCodes) {
 
 				ByAlfaCurrencyCode baCode = ByAlfaCurrencyCode.get(currencyCode);
+
+				if (baCode == null) continue;
 
 				String buyXpath = String.format(Locale.US, XPATH_BUY_FMT,
 						baCode.code, baRateType.code);

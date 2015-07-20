@@ -171,10 +171,12 @@ public class SbrProvider extends AbstractProvider {
 			ProviderRequirements requirements, Date now,
 			ProviderRateBuilder builder) throws WebUpdatingException {
 
-		List<ProviderRate> res = new ArrayList<ProviderRate>();
+		List<ProviderRate> res = new ArrayList<>();
+
+		if (requirements.getCurrencyCodes().size() == 0) return res;
 
 		// currencies
-		Set<SbrCurrencyCode> sbrCurrencyCodes = new HashSet<SbrCurrencyCode>();
+		Set<SbrCurrencyCode> sbrCurrencyCodes = new HashSet<>();
 		Iterator<CurrencyCode> iter = requirements.getCurrencyCodes()
 				.iterator();
 		while (iter.hasNext()) {

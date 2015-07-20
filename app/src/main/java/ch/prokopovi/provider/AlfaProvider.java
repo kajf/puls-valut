@@ -59,13 +59,9 @@ public class AlfaProvider extends AbstractProvider {
 		private final String code;
 		private final RateType rateType;
 
-		private AlfaRateType(String code, RateType rateType) {
+		AlfaRateType(String code, RateType rateType) {
 			this.code = code;
 			this.rateType = rateType;
-		}
-
-		public String getCode() {
-			return this.code;
 		}
 
 		public RateType getRateType() {
@@ -98,6 +94,8 @@ public class AlfaProvider extends AbstractProvider {
 			RateType rateType = requirements.getRateType();
 			AlfaRateType alfaRateType = AlfaRateType.get(rateType);
 
+			if (alfaRateType == null) return res;
+
 			Node root = ProviderUtils.readFrom(URL);
 
 			Set<CurrencyCode> currencyCodes = requirements.getCurrencyCodes();
@@ -105,14 +103,15 @@ public class AlfaProvider extends AbstractProvider {
 				AlfaCurrencyCode alfaCurrencyCode = AlfaCurrencyCode
 						.get(currencyCode);
 
+				if (alfaCurrencyCode == null) continue;
 
 				String buyXpath = String.format(XPATH_BUY_FMT,
-						alfaRateType.getCode(), alfaCurrencyCode.getCode());
-				double buy = extractCommaValue(root, buyXpath);
+						alfaRateType.code, alfaCurrencyCode.getCode());
+				Double buy = extractCommaValue(root, buyXpath);
 
 				String sellXpath = String.format(XPATH_SELL_FMT,
-						alfaRateType.getCode(), alfaCurrencyCode.getCode());
-				double sell = extractCommaValue(root, sellXpath);
+						alfaRateType.code, alfaCurrencyCode.getCode());
+				Double sell = extractCommaValue(root, sellXpath);
 
 				List<ProviderRate> tmpRates = assembleProviderRates(builder,
 						currencyCode, buy, sell);

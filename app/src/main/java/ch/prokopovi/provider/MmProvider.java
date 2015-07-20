@@ -57,13 +57,9 @@ public class MmProvider extends AbstractProvider {
 		private final String code;
 		private final RateType rateType;
 
-		private MmRateType(String code, RateType rateType) {
+		MmRateType(String code, RateType rateType) {
 			this.code = code;
 			this.rateType = rateType;
-		}
-
-		public String getCode() {
-			return this.code;
 		}
 
 		public RateType getRateType() {
@@ -86,10 +82,12 @@ public class MmProvider extends AbstractProvider {
 			ProviderRequirements requirements, Date now,
 			ProviderRateBuilder builder) throws WebUpdatingException {
 
+		List<ProviderRate> res = new ArrayList<>();
+
 		RateType rateType = requirements.getRateType();
 		MmRateType mmRateType = MmRateType.get(rateType);
 
-		List<ProviderRate> res = new ArrayList<ProviderRate>();
+		if (mmRateType == null) return res;
 
 		// TODO move xpath creation here
 		Set<CurrencyCode> currencyCodes = requirements.getCurrencyCodes();
@@ -105,7 +103,7 @@ public class MmProvider extends AbstractProvider {
 
 				// end period date is not included in result
 				String location = String.format(URL_FORMAT, 25,
-						mmCurrencyCode.getCode(), mmRateType.getCode(), now,
+						mmCurrencyCode.getCode(), mmRateType.code, now,
 						tomorrow);
 
 				Node root = ProviderUtils.readFrom(location);
