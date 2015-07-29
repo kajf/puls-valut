@@ -2,10 +2,7 @@ package ch.prokopovi.ui.main;
 
 import android.content.Context;
 import android.graphics.Typeface;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
+import android.support.v4.app.*;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -38,10 +35,8 @@ public final class UiHelper {
 
         Fragment fragment = info.getFragment(context);
 
-        if (fragment.isAdded()) {
-            if (fragment.isDetached()) {
-                ft.attach(fragment);
-            }
+        if (fragment.isDetached()) {
+            ft.attach(fragment);
         } else {
             fragment = Fragment.instantiate(context, info.className);
 
