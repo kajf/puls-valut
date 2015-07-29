@@ -104,6 +104,7 @@ public class MyFinCollectorBot extends AbstractCollectorBot {
 
         List<Place> res = new ArrayList<>();
 
+        int svcCnt = 0;
         for (MyfinRegion city : MyfinRegion.values()) {
 
             System.out.printf("%s, \n", city.name());
@@ -151,10 +152,10 @@ public class MyFinCollectorBot extends AbstractCollectorBot {
             }
 
             // update phones
-            updateFromService(res, city);
+            svcCnt += updateFromService(res, city);
         }
 
-        System.out.printf("%s loaded. ", res.size());
+        System.out.printf("--- Places in service %d of %d loaded (%d percent) \n", svcCnt, res.size(), svcCnt*100/res.size());
 
         return res;
     }
@@ -166,7 +167,9 @@ public class MyFinCollectorBot extends AbstractCollectorBot {
                 {"Mapobject[filial_type_id][]", "1"},
                 {"Mapobject[filial_type_id][]", "3"},
                 //{"Mapobject[filial_type_id][]", "4"},
-                {"Mapobject[filial_type_id][]", "5"},};
+                {"Mapobject[filial_type_id][]", "5"},
+                {"all", "on"},
+        };
 
         return params;
     }
@@ -215,10 +218,10 @@ public class MyFinCollectorBot extends AbstractCollectorBot {
         return src.split("<p>")[3].split("</p>")[0].replace("<br>", "").replace("<br />", "");
     }
 
-    private static void updateFromService(Iterable<Place> places, MyfinRegion city) throws Exception {
+    private static int updateFromService(Iterable<Place> places, MyfinRegion city) throws Exception {
 
         // using map to search by id
-        HashMap<Integer, Place> map = new HashMap<>();
+        Map<Integer, Place> map = new HashMap<>();
         for (Place place : places) {
             map.put(place.getId(), place);
         }
@@ -232,6 +235,7 @@ public class MyFinCollectorBot extends AbstractCollectorBot {
         Document doc = builder.parse(is);
         NodeList banks = doc.getElementsByTagName("bank");
 
+        int cnt = 0;
         for (int i = 0; i < banks.getLength(); i++) {
 
             Node node = banks.item(i);
@@ -274,6 +278,7 @@ public class MyFinCollectorBot extends AbstractCollectorBot {
                 System.out.printf("!!! place: %d is not found list but exists in service xml.\n", filialId);
                 continue;
             }
+            cnt++;
 
             if (place.getBank() == null) {
                 String bankName = bank.getElementsByTagName("bankname").item(0).getTextContent();
@@ -293,6 +298,8 @@ public class MyFinCollectorBot extends AbstractCollectorBot {
                 place.updatePhoneWith(phone);
             }
         }
+
+        return cnt;
     }
 
     private static Place find(Place p, Iterable<Place> list) {
