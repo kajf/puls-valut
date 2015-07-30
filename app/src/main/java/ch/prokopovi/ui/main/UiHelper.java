@@ -35,7 +35,9 @@ public final class UiHelper {
 
         Fragment fragment = info.getFragment(context);
 
-        if (fragment.isDetached()) {
+        if (fragment.isAdded()) {
+            // do nothing
+        } else if (fragment.isDetached()) {
             ft.attach(fragment);
         } else {
             fragment = Fragment.instantiate(context, info.className);
