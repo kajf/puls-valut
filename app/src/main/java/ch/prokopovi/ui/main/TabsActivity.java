@@ -7,6 +7,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.location.*;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.*;
 import android.support.v4.view.GravityCompat;
@@ -127,6 +128,9 @@ public class TabsActivity extends ActionBarActivity implements
     String mTitleAbout;
 
     PaneResolver paneResolver;
+
+    @ViewById(R.id.content_frame)
+    FrameLayout frame;
 
     @ViewById(R.id.left_drawer)
     ListView mDrawerList;
@@ -431,13 +435,21 @@ public class TabsActivity extends ActionBarActivity implements
         mDrawerToggle = new ActionBarDrawerToggle(
                 this, mDrawerLayout, R.string.drawer_open, R.string.drawer_close) {
             public void onDrawerClosed(View view) {
-                //getActionBar().setTitle(mTitle);
                 invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
             }
 
             public void onDrawerOpened(View drawerView) {
-                //getActionBar().setTitle(mDrawerTitle);
                 invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
+            }
+
+            public void onDrawerSlide(View drawerView, float slideOffset) {
+                float moveFactor = (mDrawerList.getWidth() * slideOffset);
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+                    frame.setTranslationX(moveFactor); // push content right
+                } else {
+                    super.onDrawerSlide(drawerView, slideOffset);
+                }
             }
         };
         mDrawerToggle.syncState();
