@@ -24,5 +24,12 @@ public class BannerFragment extends Fragment {
         AdRequest adRequest = new AdRequest.Builder().build();
         mAdView.loadAd(adRequest);
 
+        mAdView.setAdListener(new AdListener() {
+            @Override
+            public void onAdFailedToLoad(int errorCode) {
+                Fragment f = FragmentTag.BANNER.getFragment(getActivity());
+                getActivity().getSupportFragmentManager().beginTransaction().hide(f).commit();
+            }
+        });
     }
 }
