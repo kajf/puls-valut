@@ -5,6 +5,7 @@ import android.content.*;
 import android.content.res.Configuration;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Color;
 import android.location.*;
 import android.net.Uri;
 import android.os.Build;
@@ -405,6 +406,9 @@ public class TabsActivity extends ActionBarActivity implements
 
         // set a custom shadow that overlays the main content when the drawer opens
         mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
+
+        // main content color when drawer is opened (less transparent then default 0x99000000)
+        mDrawerLayout.setScrimColor(Color.argb(64, 0, 0, 0));
 
         Region region = loadSelectedRegion();
         String regionTitle = formatRegionTitle(this, region);
