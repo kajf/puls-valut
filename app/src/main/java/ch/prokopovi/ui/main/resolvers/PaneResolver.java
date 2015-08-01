@@ -19,4 +19,6 @@ public interface PaneResolver extends OpenListener {
     void showBest();
 
     <T extends Fragment> T showNear();
+
+    void showAbout();
 }

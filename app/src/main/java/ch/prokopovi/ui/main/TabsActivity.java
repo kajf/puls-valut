@@ -508,7 +508,7 @@ public class TabsActivity extends ActionBarActivity implements
             } else if (mTitleAbout.equals(selected)) {
                 ctx.tracker.trackPageView("/info");
 
-                UiHelper.showFragment(ctx, FragmentTag.ABOUT);
+                paneResolver.showAbout();
 
             } else if (mTitleRateApp.equals(selected)) {
                 ctx.tracker.trackPageView("/menuRateApp");

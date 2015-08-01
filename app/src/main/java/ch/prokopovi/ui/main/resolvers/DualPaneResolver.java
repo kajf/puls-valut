@@ -52,4 +52,10 @@ public class DualPaneResolver implements PaneResolver {
     public <T extends Fragment> T showNear() {
         return null;
     }
+
+    @Override
+    public void showAbout() {
+        DialogFragment df = FragmentTag.ABOUT.getFragment(context);
+        df.show(context.getSupportFragmentManager(), FragmentTag.ABOUT.tag);
+    }
 }

@@ -2,7 +2,8 @@ package ch.prokopovi.ui.main;
 
 import android.app.AlertDialog;
 import android.content.Context;
-import android.support.v4.app.Fragment;
+import android.os.Bundle;
+import android.support.v4.app.DialogFragment;
 
 import com.google.android.gms.common.GooglePlayServicesUtil;
 
@@ -11,11 +12,14 @@ import org.androidannotations.annotations.EFragment;
 
 import ch.prokopovi.R;
 
-/**
- * Created by pavel_letsiaha on 29-Jan-15.
- */
 @EFragment(R.layout.about_layout)
-public class AboutFragment extends Fragment {
+public class AboutFragment extends DialogFragment {
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setStyle(DialogFragment.STYLE_NO_TITLE, getTheme());
+    }
 
     @Click(R.id.bAboutNotice)
     void noticeClick() {

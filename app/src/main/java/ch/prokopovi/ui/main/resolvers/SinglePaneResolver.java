@@ -63,4 +63,10 @@ public class SinglePaneResolver implements PaneResolver {
 
         return f;
     }
+
+    @Override
+    public void showAbout() {
+
+        UiHelper.showFragment(context, FragmentTag.ABOUT);
+    }
 }
