@@ -544,6 +544,8 @@ public class TabsActivity extends ActionBarActivity implements
                                 Region region = REGIONS[which];
 
                                 fireRegionUpdate(region);
+
+                                paneResolver.showBest();
                             }
                         }).show();
             }
@@ -558,7 +560,7 @@ public class TabsActivity extends ActionBarActivity implements
     private void fireRegionUpdate(Region region) {
 
         Collection<RegionListener> regListeners =
-                getListeners(FragmentTag.BEST, FragmentTag.NEAR);
+                getListeners(FragmentTag.BEST);
         for (RegionListener regListener : regListeners) {
             regListener.onRegionChange(region);
         }

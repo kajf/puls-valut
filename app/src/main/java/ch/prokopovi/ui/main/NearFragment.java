@@ -37,7 +37,6 @@ import ch.prokopovi.ui.main.api.*;
  */
 public class NearFragment extends SupportMapFragment implements
         UpdateListener,
-        RegionListener,
         OpenListener,
         ClusterManager.OnClusterClickListener<NearFragment.NearPlace>,
         ClusterManager.OnClusterInfoWindowClickListener<NearFragment.NearPlace>,
@@ -212,21 +211,6 @@ public class NearFragment extends SupportMapFragment implements
             return true;
         }
         return false;
-    }
-
-    @Override
-    public void onRegionChange(Region newRegion) {
-
-        if (newRegion == null) {
-            Log.e(LOG_TAG, "new region should not be null");
-            return;
-        }
-
-        selectedPosition = newRegion.getCoords();
-        firstTimeOpen = true; // for showNearest...
-        getMap().animateCamera(CameraUpdateFactory.newLatLngZoom(
-                newRegion.getCoords(), DEFAULT_ZOOM));
-
     }
 
     /**
