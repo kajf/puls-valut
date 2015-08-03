@@ -1,30 +1,25 @@
 package ch.prokopovi.provider;
 
-import android.util.Log;
-
-import org.w3c.dom.Node;
+import org.w3c.dom.*;
 
 import java.util.*;
 
-import javax.xml.xpath.XPathExpression;
+import javax.xml.xpath.*;
 
-import ch.prokopovi.Util;
-import ch.prokopovi.api.struct.ProviderRate;
-import ch.prokopovi.err.WebUpdatingException;
+import ch.prokopovi.*;
+import ch.prokopovi.api.struct.*;
+import ch.prokopovi.err.*;
 import ch.prokopovi.struct.Master.*;
-import ch.prokopovi.struct.ProviderRateBuilder;
-import ch.prokopovi.struct.ProviderRequirements;
+import ch.prokopovi.struct.*;
 
 public abstract class AbstractSravnibankUaProvider extends AbstractProvider {
-
-	private static final String LOG_TAG = "AbSravnibankUaProvider";
 
 	private static final String DATA_URL_FORMAT = "http://www.sravnibank.com.ua/kursy-valut/cash_xml/?id=chprokopovipl-023711&currency=%1$s&bank=%2$s&date=%3$tY-%3$tm-%3$td";
 
 	private static final String BUY_RATE_XPATH = "//Bank/Buy/text()";
 	private static final String SALE_RATE_XPATH = "//Bank/Sale/text()";
 
-	private enum SravnibankUaCurrencyCode implements CurrencyCodable {
+	enum SravnibankUaCurrencyCode implements CurrencyCodable {
 		USD(CurrencyCode.USD), EUR(CurrencyCode.EUR), RUB(CurrencyCode.RUR), GBP(
 				CurrencyCode.GBP), CHF(CurrencyCode.CHF);
 
