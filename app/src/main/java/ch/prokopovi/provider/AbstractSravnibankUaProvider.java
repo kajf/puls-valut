@@ -104,8 +104,7 @@ public abstract class AbstractSravnibankUaProvider extends AbstractProvider {
 			}
 
 		} catch (Exception e) {
-			Log.e(LOG_TAG, "error parsing", e);
-			throw new WebUpdatingException(e);
+			throw new WebUpdatingException(getProviderCode() + " error parsing", e);
 		}
 
 		return res;

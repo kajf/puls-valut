@@ -103,8 +103,7 @@ public class PriorProvider extends AbstractProvider {
 			}
 
 		} catch (Exception e) {
-			Log.e(LOG_TAG, "error on prior data loading", e);
-			throw new WebUpdatingException(e);
+			throw new WebUpdatingException("error on prior data loading", e);
 		}
 
 		return res;

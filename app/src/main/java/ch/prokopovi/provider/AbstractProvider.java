@@ -70,8 +70,7 @@ abstract class AbstractProvider implements Provider {
 			return builder.toString();
 
 		} catch (Exception e) {
-			Log.e(LOG_TAG, "web load error");
-			throw new WebUpdatingException(e);
+			throw new WebUpdatingException("web load error", e);
 		}
 	}
 
