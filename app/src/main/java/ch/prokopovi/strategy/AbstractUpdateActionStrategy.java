@@ -28,7 +28,7 @@ import ch.prokopovi.struct.Master.RateType;
 import ch.prokopovi.struct.ProviderRequirements;
 
 public abstract class AbstractUpdateActionStrategy implements Strategy {
-	private static final String LOG_TAG = "AbstractUpdateActionStrategy";
+	private static final String LOG_TAG = "AbsUpdateActionStrategy";
 
 	protected Context context;
 

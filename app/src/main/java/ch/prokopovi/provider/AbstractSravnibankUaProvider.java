@@ -20,8 +20,7 @@ public abstract class AbstractSravnibankUaProvider extends AbstractProvider {
 	private static final String SALE_RATE_XPATH = "//Bank/Sale/text()";
 
 	enum SravnibankUaCurrencyCode implements CurrencyCodable {
-		USD(CurrencyCode.USD), EUR(CurrencyCode.EUR), RUB(CurrencyCode.RUR), GBP(
-				CurrencyCode.GBP), CHF(CurrencyCode.CHF);
+		USD(CurrencyCode.USD), EUR(CurrencyCode.EUR), RUB(CurrencyCode.RUR);
 
 		private final CurrencyCode currencyCode;
 
@@ -80,6 +79,9 @@ public abstract class AbstractSravnibankUaProvider extends AbstractProvider {
 			for (CurrencyCode currencyCode : currencyCodes) {
 				SravnibankUaCurrencyCode sbCurr = SravnibankUaCurrencyCode
 						.get(currencyCode);
+
+				if (sbCurr == null) continue;
+
 				String location = buildUrlString(sbCurr, getBankCode(), now);
 
 				Node root = ProviderUtils.readFrom(location);
