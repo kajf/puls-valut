@@ -44,7 +44,7 @@ public class NearFragment extends SupportMapFragment implements
         ClusterManager.OnClusterItemInfoWindowClickListener<NearFragment.NearPlace>,
         GoogleMap.OnCameraChangeListener {
 
-    private static final int DEFAULT_ZOOM = 15;
+    private static final int DEFAULT_ZOOM = 19;
 
     private static final int MAX_NON_CLUSTERED_SIZE = 4;
 
@@ -145,9 +145,7 @@ public class NearFragment extends SupportMapFragment implements
 
         super.onResume();
 
-        this.adjustWindow = true;
-
-        onOpen();
+        onOpen(true);
     }
 
     @Override
@@ -155,7 +153,7 @@ public class NearFragment extends SupportMapFragment implements
 
         Log.d(LOG_TAG, "onUpdate");
 
-        onOpen();
+        onOpen(false);
     }
 
     @Override
@@ -163,17 +161,17 @@ public class NearFragment extends SupportMapFragment implements
 
         selectedPosition = latLng;
 
-        onOpen();
+        onOpen(true);
     }
 
-    private void onOpen() {
+    private void onOpen(boolean adjustWindow) {
 
         updatePlaces(); // new currency / operation
 
         final LatLng pos = getMapPosition();
 
         if (pos != null) {
-            adjustWindow = true;
+            this.adjustWindow = adjustWindow;
 
             getMapAsync(new OnMapReadyCallback() {
                 @Override

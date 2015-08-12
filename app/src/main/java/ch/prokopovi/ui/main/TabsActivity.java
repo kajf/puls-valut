@@ -1,51 +1,49 @@
 package ch.prokopovi.ui.main;
 
-import android.app.AlertDialog;
+import android.app.*;
 import android.content.*;
-import android.content.res.Configuration;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
-import android.graphics.Color;
+import android.content.res.*;
+import android.database.*;
+import android.database.sqlite.*;
+import android.graphics.*;
 import android.location.*;
-import android.net.Uri;
-import android.os.Build;
-import android.os.Bundle;
-import android.support.v4.app.*;
-import android.support.v4.view.GravityCompat;
-import android.support.v4.widget.DrawerLayout;
+import android.net.*;
+import android.os.*;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v4.view.*;
+import android.support.v4.widget.*;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.*;
 import android.support.v7.app.ActionBarDrawerToggle;
-import android.text.format.DateUtils;
-import android.util.Log;
-import android.util.SparseArray;
-import android.view.MenuItem;
-import android.view.View;
-import android.view.inputmethod.InputMethodManager;
+import android.text.format.*;
+import android.util.*;
+import android.view.*;
+import android.view.inputmethod.*;
 import android.widget.*;
 
-import com.google.android.apps.analytics.GoogleAnalyticsTracker;
-import com.google.android.gms.maps.model.LatLng;
+import com.google.android.apps.analytics.*;
+import com.google.android.gms.maps.model.*;
 
 import org.androidannotations.annotations.*;
-import org.androidannotations.annotations.res.StringRes;
+import org.androidannotations.annotations.res.*;
 
-import java.text.DecimalFormat;
+import java.text.*;
 import java.util.*;
 
 import ch.prokopovi.*;
-import ch.prokopovi.api.struct.Titled;
-import ch.prokopovi.db.BestRatesDbAdapter;
-import ch.prokopovi.db.BestRatesTable.ColumnBestRates;
-import ch.prokopovi.db.DbHelper;
+import ch.prokopovi.api.struct.*;
+import ch.prokopovi.db.*;
+import ch.prokopovi.db.BestRatesTable.*;
 import ch.prokopovi.struct.Master.*;
-import ch.prokopovi.struct.best.RateItem;
-import ch.prokopovi.struct.best.RatePoint;
-import ch.prokopovi.ui.AbstractWidgetConfigure;
-import ch.prokopovi.ui.main.ConverterFragment.ConverterParams;
-import ch.prokopovi.ui.main.RateAppFragment.RateAppListener;
+import ch.prokopovi.struct.Master.Region;
+import ch.prokopovi.struct.best.*;
+import ch.prokopovi.ui.*;
+import ch.prokopovi.ui.main.ConverterFragment.*;
+import ch.prokopovi.ui.main.RateAppFragment.*;
 import ch.prokopovi.ui.main.api.*;
-import ch.prokopovi.ui.main.resolvers.PaneResolver;
-import ch.prokopovi.ui.main.resolvers.PaneResolverFactory;
+import ch.prokopovi.ui.main.resolvers.*;
 
 @EActivity(R.layout.fragment_tabs)
 public class TabsActivity extends ActionBarActivity implements
@@ -318,7 +316,7 @@ public class TabsActivity extends ActionBarActivity implements
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 
-		PrefsUtil.initSkin(this);
+        PrefsUtil.initSkin(this);
 
 		super.onCreate(savedInstanceState);
 
@@ -576,7 +574,7 @@ public class TabsActivity extends ActionBarActivity implements
             Fragment f = getSupportFragmentManager()
                     .findFragmentByTag(ftag.tag);
 
-            if (f == null)
+            if (f == null || !f.isAdded())
                 continue;
 
             res.add((T) f);
