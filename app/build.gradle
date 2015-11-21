@@ -4,7 +4,7 @@ buildscript {
     }
     dependencies {
         // replace with the current version of the Android plugin
-        classpath 'com.android.tools.build:gradle:1.0.0'
+        classpath 'com.android.tools.build:gradle:1.5.0'
         // replace with the current version of the android-apt plugin
         classpath 'com.neenbedankt.gradle.plugins:android-apt:1.4'
     }
@@ -17,7 +17,7 @@ repositories {
 
 apply plugin: 'com.android.application'
 apply plugin: 'android-apt'
-def AAVersion = '3.2'
+def AAVersion = '3.3.2'
 
 apt {
     arguments {
@@ -71,13 +71,11 @@ dependencies {
     compile 'com.android.support:appcompat-v7:21.0.3'
 
     // http://developer.android.com/google/play-services/setup.html
-    compile 'com.google.android.gms:play-services-location:7.0.+'
-    compile 'com.google.android.gms:play-services-maps:7.0.+'
-    compile 'com.google.android.gms:play-services-base:7.0.+'
-    compile 'com.google.android.gms:play-services-ads:7.0.+'
-
-
-    compile 'com.google.maps.android:android-maps-utils:0.3+'
+    compile 'com.google.android.gms:play-services-location:8.3.0'
+    compile 'com.google.android.gms:play-services-maps:8.3.0'
+    compile 'com.google.android.gms:play-services-base:8.3.0'
+    compile 'com.google.android.gms:play-services-ads:8.3.0'
+    compile 'com.google.maps.android:android-maps-utils:0.4'
     // maps extensions
     //compile 'com.androidmapsextensions:android-maps-extensions:2.2.0'
     //compile 'com.google.android.gms:play-services-maps:6.5.87'
