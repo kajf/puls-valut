@@ -1,28 +1,20 @@
 package ch.prokopovi.provider;
 
-import android.support.annotation.Nullable;
-import android.util.Log;
+import android.support.annotation.*;
+import android.util.*;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.message.BasicNameValuePair;
-import org.w3c.dom.Node;
+import org.w3c.dom.*;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
+import java.io.*;
+import java.net.*;
 import java.util.*;
 
-import ch.prokopovi.Util;
-import ch.prokopovi.api.provider.Provider;
-import ch.prokopovi.api.struct.ProviderRate;
-import ch.prokopovi.err.WebUpdatingException;
+import ch.prokopovi.*;
+import ch.prokopovi.api.provider.*;
+import ch.prokopovi.api.struct.*;
+import ch.prokopovi.err.*;
 import ch.prokopovi.struct.Master.*;
-import ch.prokopovi.struct.ProviderRateBuilder;
-import ch.prokopovi.struct.ProviderRequirements;
+import ch.prokopovi.struct.*;
 
 abstract class AbstractProvider implements Provider {
 
@@ -41,33 +33,43 @@ abstract class AbstractProvider implements Provider {
 
 		Log.d(LOG_TAG, "<<< POST " + url);
 
-		HttpClient httpclient = new DefaultHttpClient();
-		HttpPost httppost = new HttpPost(url);
-
 		try {
-			// Add your data
-			List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
+			URLConnection urlConn = new URL(url).openConnection();
+			urlConn.setDoInput(true);
+			urlConn.setDoOutput(true);
+
+			DataOutputStream wr = new DataOutputStream(urlConn.getOutputStream());
+
+			// Add data
 			for (int i = 0; i < params.length; i++) {
-				nameValuePairs.add(new BasicNameValuePair(params[i][0],
-						params[i][1]));
-				Log.d(LOG_TAG, "<<< PARAM " + params[i][0] + " " + params[i][1]);
+
+				String str = params[i][0] + "=" + params[i][1];
+				if (i != params.length - 1) {
+					str += "&";
+				}
+
+				wr.writeBytes(str);
+
+				Log.d(LOG_TAG, "<<< PARAM " + str);
 			}
 
-			httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
+			wr.flush();
+			wr.close();
 
-			// Execute HTTP Post Request
-			HttpResponse response = httpclient.execute(httppost);
+			BufferedReader in = new BufferedReader(
+					new InputStreamReader(urlConn.getInputStream()));
 
-			BufferedReader reader = new BufferedReader(new InputStreamReader(
-					response.getEntity().getContent(), "UTF-8"));
-			StringBuilder builder = new StringBuilder();
-			for (String line = null; (line = reader.readLine()) != null;) {
-				builder.append(line);
+			StringBuilder response = new StringBuilder();
+
+			String inputLine;
+			while ((inputLine = in.readLine()) != null) {
+				response.append(inputLine);
 			}
+			in.close();
 
-			Log.d(LOG_TAG, "response data: " + builder);
+			Log.d(LOG_TAG, "response data: " + response);
 
-			return builder.toString();
+			return response.toString();
 
 		} catch (Exception e) {
 			throw new WebUpdatingException("web load error", e);
@@ -193,8 +195,6 @@ abstract class AbstractProvider implements Provider {
 
 	/**
 	 * provider of particular implementation
-	 * 
-	 * @return
 	 */
 	protected abstract ProviderCode getProviderCode();
 

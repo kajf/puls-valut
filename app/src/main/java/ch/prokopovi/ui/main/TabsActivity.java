@@ -17,6 +17,7 @@ import android.support.v4.widget.*;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.*;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AlertDialog;
 import android.text.format.*;
 import android.util.*;
 import android.view.*;
@@ -719,15 +720,20 @@ public class TabsActivity extends ActionBarActivity implements
 
 		List<String> providers = locationManager.getAllProviders();
 		for (String provider : providers) {
-			Location loc = locationManager.getLastKnownLocation(provider);
-			Log.d(LOG_TAG, "last known location, provider: " + provider
-					+ ", location: " + loc);
+            try {
+                Location loc = locationManager.getLastKnownLocation(provider);
+                Log.d(LOG_TAG, "last known location, provider: " + provider
+                        + ", location: " + loc);
 
-			boolean betterLocation = isBetterLocation(loc, bestLocation);
-			if (betterLocation) {
-				bestLocation = loc;
-			}
-		}
+                boolean betterLocation = isBetterLocation(loc, bestLocation);
+                if (betterLocation) {
+                    bestLocation = loc;
+                }
+            } catch (SecurityException e) {
+                // continue
+                // user did not provide permission
+            }
+        }
 
 		Log.d(LOG_TAG, "best last known location: " + bestLocation);
 

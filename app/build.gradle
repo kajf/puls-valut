@@ -36,23 +36,29 @@ apt {
 }
 
 android {
-    compileSdkVersion 21
-    buildToolsVersion "21.1.2"
-
+    compileSdkVersion 23
+    buildToolsVersion '23.0.2'
     defaultConfig {
         applicationId "ch.prokopovi"
         minSdkVersion 9
-        targetSdkVersion 21
+        targetSdkVersion 23
         versionCode 120
         versionName "9.21"
     }
     buildTypes {
         release {
             minifyEnabled true
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            proguardFile getDefaultProguardFile('proguard-android.txt')
         }
     }
 
+    productFlavors {
+        flavor1 {
+        }
+        flavor2 {
+            proguardFile 'proguard-rules.pro'
+        }
+    }
     // This is only needed if you project structure doesn't fit the one found here
     // http://tools.android.com/tech-docs/new-build-system/user-guide#TOC-Project-Structure
     sourceSets {
@@ -68,8 +74,7 @@ android {
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile 'com.android.support:appcompat-v7:21.0.3'
-
+    compile 'com.android.support:appcompat-v7:23.1.1'
     // http://developer.android.com/google/play-services/setup.html
     compile 'com.google.android.gms:play-services-location:8.3.0'
     compile 'com.google.android.gms:play-services-maps:8.3.0'
@@ -80,11 +85,9 @@ dependencies {
     //compile 'com.androidmapsextensions:android-maps-extensions:2.2.0'
     //compile 'com.google.android.gms:play-services-maps:6.5.87'
     //
-
     // analytics
     //compile 'com.google.apis:google-api-services-analytics:v3-rev108-1.19.0'
     //
-
     apt "org.androidannotations:androidannotations:$AAVersion"
     compile "org.androidannotations:androidannotations-api:$AAVersion"
 }
