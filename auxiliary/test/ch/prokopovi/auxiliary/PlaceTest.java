@@ -92,6 +92,18 @@ public class PlaceTest {
     }
 
     @Test
+    public void updatePhoneNoDuplicatesAddedEvenNoSpaces() throws Exception {
+        String dupPhone = "+375 17 111 11 11";
+        String phone = "+375 29 1234567, " + dupPhone;
+
+        Place stub = new Place(-1, -1, null, null, null, null, null, null, phone);
+
+        stub.updatePhoneWith(dupPhone.replaceAll(" ", "").replace("+", ""));
+
+        assertEquals(phone, stub.getPhone());
+    }
+
+    @Test
     public void testPlaceWithNullParams() throws Exception {
 
         Place stub = new Place(-1, -1, null, null, null, null, null, null, null);
@@ -105,7 +117,7 @@ public class PlaceTest {
     }
 
     @Test
-    public void testWorkDaysWithDashes() throws Exception {
+    public void workDaysWithDashes() throws Exception {
         CharSequence dash = "-";
 
         for (String day : WEEK_DAYS) {
@@ -128,5 +140,66 @@ public class PlaceTest {
             assertTrue(shortenedDashLeft, shortenedDashLeft.contains(suffix));
         }
 
+    }
+
+    @Test
+    public void phoneRemovesLetters() {
+        // given
+        String inPhone = "+375 17 306 20 40, Единый номер Call центр 1234";
+
+        // when
+        String res = Place.cleanUpPhone(inPhone);
+
+        // then
+        assertEquals("+375 17 306 20 40, 1234", res);
+    }
+
+    @Test
+    public void phoneDoesNotRemoveSemicolon() {
+        // given
+        String inPhone = "+375 17 306 20 40; 1234";
+
+        // when
+        String res = Place.cleanUpPhone(inPhone);
+
+        // then
+        assertEquals("+375 17 306 20 40, 1234", res);
+    }
+
+    @Test
+    public void phoneRemovesEmptyBreckets() {
+        // given
+        String inPhone = "+375 17 306 20 40, () 1234 ( )";
+
+        // when
+        String res = Place.cleanUpPhone(inPhone);
+
+        // then
+        assertEquals("+375 17 306 20 40, 1234", res);
+    }
+
+    @Test
+    public void phoneRemovesEmptyCommaBreckets() {
+        // given
+        String inPhone = "+375 165 32 33 50, 205 (, ), ), +375 17 209 29 44";
+
+        // when
+        String res = Place.cleanUpPhone(inPhone);
+
+        // then
+        assertEquals("+375 165 32 33 50, 205, +375 17 209 29 44", res);
+    }
+
+    @Test
+    public void removeDuplicates() {
+        // given
+        String inPhone = "7555, +375 17 306 33 14, +375 17 306 33 15, +375 17306 33 14, +375 17 3063315, 7555";
+        //"+375 29 309 7 309, +375 33 309 7 309, +375 17 309 7 309, +375 33 309 7 309";
+
+        // when
+        //String res = Place.removeDupes(inPhone);
+
+        // then
+        //assertEquals("7555, +375 17 306 33 14, +375 17 306 33 15", res);
     }
 }

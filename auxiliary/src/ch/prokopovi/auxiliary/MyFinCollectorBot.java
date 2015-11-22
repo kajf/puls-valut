@@ -37,13 +37,25 @@ public class MyFinCollectorBot extends AbstractCollectorBot {
         System.out.println();
 
         StringBuilder script = new StringBuilder();
-        for (Place place : uniqList) {
+        for (int i = 0; i < uniqList.size(); i++) {
+
+            Place place = uniqList.get(i);
+
             if (place.getRegionId() == null || "".equals(place.getPhone())) {
                 System.out.println("!!! NO MATCH " + place);
             }
 
-            script.append(getInsert(place));
+            if (i%500 == 0) {
+                script.append(";").append(getInsert()).append("\n")
+                        .append("           ");
+            } else {
+                script
+                        .append(" union all ");
+            }
+
+            script.append(getSelect(place));
         }
+        script.append(";");
 
     /*System.out.println();
     System.out.println("--- script begin ---");

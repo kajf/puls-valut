@@ -1,20 +1,12 @@
 package ch.prokopovi.auxiliary;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.DataOutputStream;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.net.URLEncoder;
-import java.text.DecimalFormat;
-import java.util.Comparator;
+import java.io.*;
+import java.net.*;
+import java.text.*;
+import java.util.*;
 
-import ch.prokopovi.exported.RatesPlacesTable;
-import ch.prokopovi.exported.RatesPlacesTable.ColumnRatesPlaces;
+import ch.prokopovi.exported.*;
+import ch.prokopovi.exported.RatesPlacesTable.*;
 
 public class AbstractCollectorBot {
 
@@ -32,7 +24,7 @@ public class AbstractCollectorBot {
 		return -th < d && d < th;
 	}
 
-	protected static String getInsert(Place place) {
+	protected static String getInsert() {
 		StringBuilder script = new StringBuilder();
 		
 		script //
@@ -56,7 +48,15 @@ public class AbstractCollectorBot {
 				.append(ColumnRatesPlaces.WORK_HOURS)
 				.append(", ")
 				.append(ColumnRatesPlaces.PHONE)
-				.append(") values (")
+				.append(") ");
+
+		return script.toString();
+	}
+
+	protected static String getSelect(Place place) {
+		StringBuilder script = new StringBuilder();
+
+		script.append("select ")
 				.append(place.getId())
 				.append(", ")
 				.append(place.getRegionId())
@@ -64,17 +64,17 @@ public class AbstractCollectorBot {
 				.append(place.getBank() != null ? place.getBank().getId()
 						: null)
 				.append(", ")
-				// local
-				// masterId
-				// id (not
-				// providers)
+						// local
+						// masterId
+						// id (not
+						// providers)
 				.append(COORD_FMT.format(place.getX())).append(", ").append(COORD_FMT.format(place.getY()))
 				.append(", ").append("'").append(place.getName()).append("', ")
 				.append("'")
 				.append(place.getAddr()).append("', ").append("'")
 				.append(place.getWh()).append("', ")
 				.append("'").append(place.getPhone()).append("'")
-				.append(");\n");
+				.append("\n");
 
 		return script.toString();
 	}

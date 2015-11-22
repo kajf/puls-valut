@@ -1,5 +1,9 @@
 package ch.prokopovi.auxiliary;
 
+import org.hamcrest.*;
+
+import java.util.*;
+
 import ch.prokopovi.exported.PureConst.Bank;
 
 
@@ -177,19 +181,7 @@ class Place {
 
 		String res = commonCleanUp(phone);
 
-		String [] replaceArr = new String [] {//
-				"Контакт центр", "контакт центр:",
-				"(круглосуточно)",
-				"– единый городской номер",
-				"(МТС, Life:), Velcom)", "(velcom, МТС и life)", "для абонентов velcom, МТС и life:)", "для velcom, МТС, life:)", //
-				"(МТС)", "МТС",
-				"(факс)", "факс:", "тел/факс", "Факс:",
-				"(Минск)"};
-		for (String s : replaceArr) {
-			res = res.replace(s, "");
-		}
-
-        String[] brs = new String[] {"<br>", "<br />", "<br/>", "</br>", "&lt;br&gt;", "&lt;br /&gt;", "&lt;/br&gt;"};
+        String[] brs = new String[] {"<br>", "<br />", "<br/>", "</br>", "&lt;br&gt;", "&lt;br /&gt;", "&lt;/br&gt;", "; "};
 
         for (String br : brs) {
           res = res.replace(br, comma);
@@ -198,6 +190,13 @@ class Place {
 		if (res.endsWith(comma)) {
 			res = res.substring(0, res.length() - comma.length());
 		} // remove trailing comma
+
+		res = res.replaceAll("[^\\d\\+, ();-]", ""); // remove all except digits, +, comma, brackets, semicolon, -
+		res = res
+				.replace(" (, ), )", "")
+				.replace(" (, )", "")
+				.replace("( )", "")
+				.replace("()", "");
 
 		res = res //
 				.replace(
@@ -295,8 +294,15 @@ class Place {
 
         if (phone == null) {
             phone = newPhone;
-        } else if (!phone.contains(newPhone)) {
-            phone = newPhone + ", " + phone;
+        } else {
+
+			String phoneDigits = phone.replaceAll("[^\\d+,]", "");
+			String newPhoneDigits = newPhone.replaceAll("[^\\d+,]", "");
+
+			if (!phoneDigits.contains(newPhoneDigits)) {
+				phone = newPhone + ", " + phone;
+			}
+
         }
 
         this.phone = cleanUpPhone(phone);
