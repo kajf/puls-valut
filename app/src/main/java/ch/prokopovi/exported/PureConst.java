@@ -35,7 +35,7 @@ public class PureConst {
 		// belarus
 		ABSOLUT(1001, "Абсолютбанк"), //
 		ALFA(1002, "Альфа-Банк"), //
-		BBMB(1003, "Белорусский Банк Малого Бизнеса"), //
+		BBMB(true, 1003, "Белорусский Банк Малого Бизнеса"), //
 		BEL_VEB(1004, "БелВЭБ"), //
 		VTB(1005, "Банк ВТБ"), //
 		MM(1006, "Банк Москва-Минск"), //
@@ -44,15 +44,15 @@ public class PureConst {
 		BEL_GAZPROM(1009, "Белгазпромбанк"), //
 		BEL_INVEST(1010, "Белинвестбанк"), //
 		BEL_SWISS(1011, "БелСвиссБанк", "БСБ Банк"), //
-		BIT(1012, "БИТ-Банк"), //
+		BIT(true, 1012, "БИТ-Банк"), //
 		BNB(1013, "БНБ-Банк"), //
 		BPS(1014, "БПС-Сбербанк"), //
 		BTA(1015, "БТА Банк"), //
-		DELTA(1016, "Дельта Банк"), //
-		EVRO(1017, "Евробанк"), //
+		DELTA(true, 1016, "Дельта Банк"), //
+		EVRO(true, 1017, "Евробанк"), //
 		EVROTORGINVEST(1018, "Евроторгинвестабанк", "Евроторгинвестбанк"), //
 		IDEA(1019, "Идея Банк"), //
-		INTER_PAY(1020, "ИнтерПэйБанк"), //
+		INTER_PAY(true, 1020, "ИнтерПэйБанк"), //
 		MTB(1021, "МТБанк", "МТБ Банк"), //
 		NORD_EUROPEAN(1022, "Норд Европеан Банк"), //
 		PARITET(1023, "Паритетбанк"), //
@@ -68,14 +68,20 @@ public class PureConst {
 
 		private final int id;
 		private final Set<String> titleSet;
+		public final boolean deprecated;
 
-		private Bank(int id, String... titles) {
+		Bank(int id, String... titles) {
+			this(false, id, titles);
+		}
+
+		Bank(boolean deprecated, int id, String... titles) {
 
 			this.id = id;
-			this.titleSet = new HashSet<String>();
+			this.titleSet = new HashSet<>();
 			for (String title : titles) {
 				this.titleSet.add(title.toLowerCase(Locale.US));
 			}
+			this.deprecated = deprecated;
 		}
 
 		/**

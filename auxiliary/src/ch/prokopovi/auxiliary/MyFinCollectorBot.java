@@ -47,10 +47,10 @@ public class MyFinCollectorBot extends AbstractCollectorBot {
 
             if (i%500 == 0) {
                 script.append(";").append(getInsert()).append("\n")
-                        .append("           ");
+                        .append("          ");
             } else {
                 script
-                        .append(" union all ");
+                        .append("union all ");
             }
 
             script.append(getSelect(place));
@@ -212,6 +212,9 @@ public class MyFinCollectorBot extends AbstractCollectorBot {
         adr = adr.trim();
 
         Bank bank = Bank.getByPart(name);
+
+        if (bank != null && bank.deprecated)
+            return null;
 
         Place p = new Place(uid, bank, name, cx, cy, adr, wh);
 
