@@ -72,7 +72,7 @@ public final class Master {
 	public enum CurrencyCode implements Parcelable, ThumbedTitle {
 		USD(1, R.string.lbl_usd, 0), //
 		EUR(2, R.string.lbl_eur, 0), //
-		RUR(3, R.string.lbl_rur, 0), //
+		RUB(3, R.string.lbl_rub, 0), //
 		UAH(4, R.string.lbl_uah, 0), //
 		PLN(5, R.string.lbl_pln, 0), //
 		GBP(6, R.string.lbl_gbp, 0), //
@@ -221,7 +221,7 @@ public final class Master {
 
 	public enum CountryCode implements Thumbed {
 		BY(R.drawable.by_flag, CurrencyCode.BYR), RU(R.drawable.ru_flag,
-				CurrencyCode.RUR), UA(R.drawable.ua_flag, CurrencyCode.UAH);
+				CurrencyCode.RUB), UA(R.drawable.ua_flag, CurrencyCode.UAH);
 
 		private final int thumbRes;
 

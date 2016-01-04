@@ -1,7 +1,5 @@
 package ch.prokopovi.provider;
 
-import android.util.Log;
-
 import org.w3c.dom.Element;
 
 import java.io.ByteArrayInputStream;
@@ -49,7 +47,7 @@ public class ByAlfaProvider extends AbstractProvider {
 	private enum ByAlfaCurrencyCode implements CurrencyCodable {
 		USD("Доллар США", CurrencyCode.USD), //
 		EUR("Евро", CurrencyCode.EUR), //
-		RUB("Российский рубль", CurrencyCode.RUR), //
+		RUB("Российский рубль", CurrencyCode.RUB), //
 		;
 
 		private final String code;

@@ -1,7 +1,5 @@
 package ch.prokopovi.provider;
 
-import android.util.Log;
-
 import org.w3c.dom.Node;
 
 import java.util.*;
@@ -21,7 +19,7 @@ public class MmProvider extends AbstractProvider {
 
 	private enum MmCurrencyCode implements CurrencyCodable {
 		USD("usd", CurrencyCode.USD), EUR("eur", CurrencyCode.EUR), RUB("rur",
-				CurrencyCode.RUR);
+				CurrencyCode.RUB);
 
 		private final String code;
 		private final CurrencyCode currencyCode;

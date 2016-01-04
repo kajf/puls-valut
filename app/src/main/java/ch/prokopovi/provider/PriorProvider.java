@@ -15,7 +15,7 @@ import ch.prokopovi.struct.ProviderRequirements;
 public class PriorProvider extends AbstractProvider {
 
 	private enum PriorCurrencyCode implements CurrencyCodable {
-		USD(CurrencyCode.USD), EUR(CurrencyCode.EUR), RUB(CurrencyCode.RUR);
+		USD(CurrencyCode.USD), EUR(CurrencyCode.EUR), RUB(CurrencyCode.RUB);
 
 		private final CurrencyCode code;
 

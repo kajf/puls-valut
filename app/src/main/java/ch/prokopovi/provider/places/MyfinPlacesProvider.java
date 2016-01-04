@@ -24,7 +24,7 @@ public class MyfinPlacesProvider extends AbstractPlacesProvider {
 	public enum MyfinCurrency {
 		USD("usd", CurrencyCode.USD), //
 		EUR("eur", CurrencyCode.EUR), //
-		RUR("rur", CurrencyCode.RUR), //
+		RUR("rur", CurrencyCode.RUB), //
 		PLN("pln", CurrencyCode.PLN), //
 		UAH("uah", CurrencyCode.UAH), //
 		EUR_USD("eurusd", CurrencyCode.EUR_USD);

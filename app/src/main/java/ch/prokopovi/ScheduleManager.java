@@ -129,7 +129,7 @@ public final class ScheduleManager {
 	 * @param calendar
 	 *            calendar shared between alarms (for adding days if needed)
 	 * @param tzCorrection
-	 *            time zone coorection in minutes
+	 *            time zone correction in minutes
 	 */
 	private static void scheduleAlarm(Context context,
 			ScheduledIntentCode code,

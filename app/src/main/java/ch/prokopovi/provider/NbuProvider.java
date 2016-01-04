@@ -1,7 +1,5 @@
 package ch.prokopovi.provider;
 
-import android.util.Log;
-
 import org.w3c.dom.Node;
 
 import java.util.*;
@@ -24,7 +22,7 @@ public class NbuProvider extends AbstractProvider {
 	private enum NbuCurrencyCode implements CurrencyCodable {
 		USD(CurrencyCode.USD), //
 		EUR(CurrencyCode.EUR), //
-		RUB(CurrencyCode.RUR), //
+		RUB(CurrencyCode.RUB), //
 
 		PLN(CurrencyCode.PLN), //
 		GBP(CurrencyCode.GBP), //
