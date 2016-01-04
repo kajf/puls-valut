@@ -49,7 +49,7 @@ public final class Master {
 		private final Class<?> configurator;
 		private final Class<?> clazz;
 
-		private WidgetSize(Class<?> configurator, Class<?> clazz) {
+		WidgetSize(Class<?> configurator, Class<?> clazz) {
 			this.configurator = configurator;
 			this.clazz = clazz;
 		}
@@ -72,7 +72,7 @@ public final class Master {
 	public enum CurrencyCode implements Parcelable, ThumbedTitle {
 		USD(1, R.string.lbl_usd, 0), //
 		EUR(2, R.string.lbl_eur, 0), //
-		RUB(3, R.string.lbl_rub, 0), //
+		RUR(3, R.string.lbl_rub, 0), //
 		UAH(4, R.string.lbl_uah, 0), //
 		PLN(5, R.string.lbl_pln, 0), //
 		GBP(6, R.string.lbl_gbp, 0), //
@@ -221,13 +221,13 @@ public final class Master {
 
 	public enum CountryCode implements Thumbed {
 		BY(R.drawable.by_flag, CurrencyCode.BYR), RU(R.drawable.ru_flag,
-				CurrencyCode.RUB), UA(R.drawable.ua_flag, CurrencyCode.UAH);
+				CurrencyCode.RUR), UA(R.drawable.ua_flag, CurrencyCode.UAH);
 
 		private final int thumbRes;
 
 		private final CurrencyCode currency;
 
-		private CountryCode(int thumbRes, CurrencyCode currency) {
+		CountryCode(int thumbRes, CurrencyCode currency) {
 			this.thumbRes = thumbRes;
 			this.currency = currency;
 		}
@@ -576,7 +576,7 @@ public final class Master {
 		private final LatLng coords;
 		private final CountryCode countryCode;
 
-		private Region(int id, int titleRes, LatLng coords,
+		Region(int id, int titleRes, LatLng coords,
 				CountryCode countryCode) {
 			this.id = id;
 			this.titleRes = titleRes;
@@ -628,7 +628,7 @@ public final class Master {
 		private final long period;
 		private final int titleRes;
 
-		private EtaUnit(long period, int titleRes) {
+		EtaUnit(long period, int titleRes) {
 			this.period = period;
 			this.titleRes = titleRes;
 		}

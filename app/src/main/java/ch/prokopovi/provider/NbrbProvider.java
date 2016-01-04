@@ -21,7 +21,7 @@ public class NbrbProvider extends AbstractProvider {
 	private enum NbrbCurrencyCode implements CurrencyCodable {
 		USD("145", CurrencyCode.USD), //
 		EUR("19", CurrencyCode.EUR), //
-		RUR("190", CurrencyCode.RUB), //
+		RUR("190", CurrencyCode.RUR), //
 
 		PLN("219", CurrencyCode.PLN), //
 		UAH("224", CurrencyCode.UAH), //
@@ -32,7 +32,7 @@ public class NbrbProvider extends AbstractProvider {
 		private final String code;
 		private final CurrencyCode currencyCode;
 
-		private NbrbCurrencyCode(String code, CurrencyCode currencyCode) {
+		NbrbCurrencyCode(String code, CurrencyCode currencyCode) {
 			this.code = code;
 			this.currencyCode = currencyCode;
 		}

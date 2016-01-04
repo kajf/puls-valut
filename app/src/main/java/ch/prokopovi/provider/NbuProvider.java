@@ -22,7 +22,7 @@ public class NbuProvider extends AbstractProvider {
 	private enum NbuCurrencyCode implements CurrencyCodable {
 		USD(CurrencyCode.USD), //
 		EUR(CurrencyCode.EUR), //
-		RUB(CurrencyCode.RUB), //
+		RUB(CurrencyCode.RUR), //
 
 		PLN(CurrencyCode.PLN), //
 		GBP(CurrencyCode.GBP), //
@@ -32,7 +32,7 @@ public class NbuProvider extends AbstractProvider {
 
 		private final CurrencyCode currencyCode;
 
-		private NbuCurrencyCode(CurrencyCode currencyCode) {
+		NbuCurrencyCode(CurrencyCode currencyCode) {
 			this.currencyCode = currencyCode;
 		}
 

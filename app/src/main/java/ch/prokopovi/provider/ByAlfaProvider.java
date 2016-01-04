@@ -47,7 +47,7 @@ public class ByAlfaProvider extends AbstractProvider {
 	private enum ByAlfaCurrencyCode implements CurrencyCodable {
 		USD("Доллар США", CurrencyCode.USD), //
 		EUR("Евро", CurrencyCode.EUR), //
-		RUB("Российский рубль", CurrencyCode.RUB), //
+		RUB("Российский рубль", CurrencyCode.RUR), //
 		;
 
 		private final String code;

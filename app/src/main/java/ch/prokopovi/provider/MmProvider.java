@@ -19,7 +19,7 @@ public class MmProvider extends AbstractProvider {
 
 	private enum MmCurrencyCode implements CurrencyCodable {
 		USD("usd", CurrencyCode.USD), EUR("eur", CurrencyCode.EUR), RUB("rur",
-				CurrencyCode.RUB);
+				CurrencyCode.RUR);
 
 		private final String code;
 		private final CurrencyCode currencyCode;

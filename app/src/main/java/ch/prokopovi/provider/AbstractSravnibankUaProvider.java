@@ -20,7 +20,7 @@ public abstract class AbstractSravnibankUaProvider extends AbstractProvider {
 	private static final String SALE_RATE_XPATH = "//Bank/Sale/text()";
 
 	enum SravnibankUaCurrencyCode implements CurrencyCodable {
-		USD(CurrencyCode.USD), EUR(CurrencyCode.EUR), RUB(CurrencyCode.RUB);
+		USD(CurrencyCode.USD), EUR(CurrencyCode.EUR), RUB(CurrencyCode.RUR);
 
 		private final CurrencyCode currencyCode;
 
