@@ -117,6 +117,8 @@ class Place {
 
         String res = commonCleanUp(wh);
 
+		res = replaceBrs(res, " ");
+
         String[] days = new String[] {"Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс"};
 
         // (?ui) case insensitive pattern modifier
@@ -181,11 +183,7 @@ class Place {
 
 		String res = commonCleanUp(phone);
 
-        String[] brs = new String[] {"<br>", "<br />", "<br/>", "</br>", "&lt;br&gt;", "&lt;br /&gt;", "&lt;/br&gt;", "; "};
-
-        for (String br : brs) {
-          res = res.replace(br, comma);
-        }
+		res = replaceBrs(res, comma);
 
 		if (res.endsWith(comma)) {
 			res = res.substring(0, res.length() - comma.length());
@@ -227,6 +225,15 @@ class Place {
 
 		res = commonCleanUp(res);
 
+		return res;
+	}
+
+	private static String replaceBrs(String res, String comma) {
+		String[] brs = new String[] {"<br>", "<br />", "<br/>", "</br>", "&lt;br&gt;", "&lt;br /&gt;", "&lt;/br&gt;", "; "};
+
+		for (String br : brs) {
+          res = res.replace(br, comma);
+        }
 		return res;
 	}
 

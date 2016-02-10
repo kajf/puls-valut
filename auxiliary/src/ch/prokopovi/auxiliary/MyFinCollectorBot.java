@@ -19,8 +19,8 @@ import java.util.*;
 public class MyFinCollectorBot extends AbstractCollectorBot {
 
     private static final String OUT_FILE = "output.sql";
-    private static String URL_POISK = "http://myfin.by/banki/poisk";
-    private static String URL_SERVICE_FMT = "http://myfin.by/scripts/xml_new/work/banks_city_%d.xml";
+    private static final String URL_POISK = "http://myfin.by/banki/poisk";
+    private static final String URL_SERVICE_FMT = "http://myfin.by/scripts/xml_new/work/banks_city_%d.xml";
 
     public static void main(String[] args) throws Throwable {
 
@@ -29,7 +29,7 @@ public class MyFinCollectorBot extends AbstractCollectorBot {
 
         List<Place> res = loadAndParse();
 
-        List<Place> uniqList = clenaupCopies(res);
+        List<Place> uniqList = cleanupCopies(res);
 
         // sort
         Collections.sort(uniqList, new PlaceIdComparator());
@@ -88,7 +88,7 @@ public class MyFinCollectorBot extends AbstractCollectorBot {
         return true;
     }
 
-    private static List<Place> clenaupCopies(List<Place> res) {
+    private static List<Place> cleanupCopies(List<Place> res) {
 
         System.out.println("### removing copies ...");
 
@@ -131,18 +131,26 @@ public class MyFinCollectorBot extends AbstractCollectorBot {
             for (int i = 0; i < placesPoisk.length(); i++) {
                 JSONObject placePoisk = placesPoisk.getJSONObject(i);
 
-                //				{
-                //					coords: [53.926849,27.589382],
-                //					adr: 'г. Минск, ул. Сурганова, 43',
-                //					show_icon: '0',
-                //					main: '<p><a href="/bank/alfabank"><img src="/images/bank_logos/alfabank.png" width="100px"/></a></p>
-                // 								 <p>Время работы:</p><p>юр. лицам: пн-чт: 09:00 - 17:00, пт: 09:00 - 16:00 сб, вс: выходной</p>
-                //                 <a href="/bank/alfabank/department/15">Подробнее</a>',
-                //					name: 'Головной офис ЗАО «Альфа-Банк»',
-                //					type: 'Главное отделение',
-                //					phone: '198 (круглосуточно)<br>+375 (44,29,25) 733 33 32',
-                // 					icon: ''
-                //				}
+//                {       coords: [53.908738,27.576159],
+//                        coords2: '["53.908738","27.576159"]',
+//                        id: '7598',
+//                        icon_b: 'homecredit-bank',
+//                        adr: 'г. Минск, пр-т Независимости, 40',
+//                        show_icon: '1',
+//                        header: '<div class="map-descr"><div class="b-logo"><a href="/bank/homecredit-bank"><center><img src="/images/bank_logos/hcb.png" height="35px"/></center></a></div><div class="b-name"><a href="/bank/homecredit-bank/department/7598">ЦБУ №702 ОАО "Хоум Кредит Банк"</a><div class="descr">Филиал</div></div>',
+//                        main: '<div class="b-address">г. Минск, пр-т Независимости, 40</div><div class="b-time">Пн-Пт: 09:00-19:00,<br />Сб: 10:00-17:00,<br />Вс: 10:00-15:00</div><div class="b-time-active text-success"><div class="text-success">До закрытия 4 мин.</div></div><div class="b-tel">+375 (17) 229 89 89</div>',
+//                        finalTime: '<div class="text-success">До закрытия 4 мин.</div>',
+//                        footer: '<a class="link-more" href="/bank/homecredit-bank/department/7598">Подробнее</a></div>',
+//                        link: '<a href="/bank/homecredit-bank/department/7598">Подробнее</a>',
+//                        url: '/bank/homecredit-bank/department/7598',
+//                        name: 'ЦБУ №702 ОАО "Хоум Кредит Банк"',
+//                        work_time: 'Пн-Пт: 09:00-19:00,<br />Сб: 10:00-17:00,<br />Вс: 10:00-15:00',
+//                        type: 'Филиал',
+//                        phone: '+375 (17) 229 89 89',
+//                        icon: ''
+//              },
+
+
 
                 Place parsedPlace = parse(placePoisk);
                 if (!isFilterPassed(parsedPlace))
@@ -200,13 +208,8 @@ public class MyFinCollectorBot extends AbstractCollectorBot {
         if (isZero(cx) && isZero(cy))
             return null;
 
-        String main = place.getString("main");
-
-        // department/15">Подробнее
-        String strUid = extract(main, "department/", "\">Подробнее");
-        int uid = Integer.valueOf(strUid);
-
-        String wh = extractWh(main);
+        int uid = place.getInt("id");
+        final String wh = place.getString("work_time");
 
         name = name.trim();
         adr = adr.trim();
@@ -227,10 +230,6 @@ public class MyFinCollectorBot extends AbstractCollectorBot {
         int toIndex = src.indexOf(to);
 
         return src.substring(fromIndex, toIndex).trim();
-    }
-
-    private static String extractWh(String src) {
-        return src.split("<p>")[3].split("</p>")[0].replace("<br>", "").replace("<br />", "");
     }
 
     private static int updateFromService(Iterable<Place> places, MyfinRegion city) throws Exception {
