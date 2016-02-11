@@ -51,6 +51,14 @@
     <string name="lbl_re4ica">Речица</string>
     <string name="lbl_sluck">Слуцк</string>
     <string name="lbl_zodino">Жодино</string>
+
+    <string name="lbl_dzerzinsk">Дзержинск</string>
+    <string name="lbl_kalinkovi4i">Калинковичи</string>
+    <string name="lbl_roga4ev">Рогачев</string>
+    <string name="lbl_kobrin">Кобрин</string>
+    <string name="lbl_bereza">Береза</string>
+    <string name="lbl_slonim">Слоним</string>
+    <string name="lbl_volkovysk">Волковыск</string>
     
     <string name="lbl_nbrb_provider">НБРБ</string>
     <string name="lbl_prior_provider">Приорбанк</string>

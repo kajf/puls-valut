@@ -1,42 +1,19 @@
 package ch.prokopovi.struct;
 
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
+import android.content.*;
+import android.os.*;
+import android.text.format.*;
+import android.util.*;
 
-import android.content.Context;
-import android.os.Parcel;
-import android.os.Parcelable;
-import android.text.format.DateUtils;
-import android.util.SparseArray;
-import ch.prokopovi.R;
-import ch.prokopovi.api.struct.Thumbed;
-import ch.prokopovi.api.struct.ThumbedTitle;
-import ch.prokopovi.api.struct.Titled;
-import ch.prokopovi.exported.PureConst;
-import ch.prokopovi.provider.AlfaProvider;
-import ch.prokopovi.provider.ByAlfaProvider;
-import ch.prokopovi.provider.CbrProvider;
-import ch.prokopovi.provider.DeltaSravnibankUaProvider;
-import ch.prokopovi.provider.MmProvider;
-import ch.prokopovi.provider.MtbProvider;
-import ch.prokopovi.provider.NbrbProvider;
-import ch.prokopovi.provider.NbuProvider;
-import ch.prokopovi.provider.OschadSravnibankUaProvider;
-import ch.prokopovi.provider.PriorProvider;
-import ch.prokopovi.provider.PrivatSravnibankUaProvider;
-import ch.prokopovi.provider.SbrProvider;
-import ch.prokopovi.provider.UnicreditSravnibankUaProvider;
-import ch.prokopovi.ui.MiniWidgetConfigure;
-import ch.prokopovi.ui.MiniWidgetProvider;
-import ch.prokopovi.ui.MultiWidgetConfigure;
-import ch.prokopovi.ui.MultiWidgetProvider;
-import ch.prokopovi.ui.WideWidgetConfigure;
-import ch.prokopovi.ui.WideWidgetProvider;
-import ch.prokopovi.ui.WidgetConfigure;
-import ch.prokopovi.ui.WidgetProvider;
+import com.google.android.gms.maps.model.*;
 
-import com.google.android.gms.maps.model.LatLng;
+import java.util.*;
+
+import ch.prokopovi.*;
+import ch.prokopovi.api.struct.*;
+import ch.prokopovi.exported.*;
+import ch.prokopovi.provider.*;
+import ch.prokopovi.ui.*;
 
 public final class Master {
 
@@ -500,54 +477,41 @@ public final class Master {
 
 		// Belarus 0 - 999
 
-		MINSK(PureConst.MINSK_ID, R.string.lbl_minsk, new LatLng(53.9,
-				27.566667), CountryCode.BY), //
-		GRODNO(PureConst.GRODNO_ID, R.string.lbl_grodno, new LatLng(53.666667,
-				23.833333), CountryCode.BY), //
-		BREST(PureConst.BREST_ID, R.string.lbl_brest, new LatLng(52.133333,
-				23.666667), CountryCode.BY), //
-		VITEBSK(PureConst.VITEBSK_ID, R.string.lbl_vitebsk, new LatLng(
-				55.183333, 30.166667), CountryCode.BY), //
-		GOMEL(PureConst.GOMEL_ID, R.string.lbl_gomel, new LatLng(52.445278,
-				30.984167), CountryCode.BY), //
-		MOGILEV(PureConst.MOGILEV_ID, R.string.lbl_mogilev, new LatLng(53.9,
-				30.333333), CountryCode.BY), //
+		MINSK(PureConst.MINSK_ID, R.string.lbl_minsk, new LatLng(53.9, 27.566667), CountryCode.BY), //
+		GRODNO(PureConst.GRODNO_ID, R.string.lbl_grodno, new LatLng(53.666667, 23.833333), CountryCode.BY), //
+		BREST(PureConst.BREST_ID, R.string.lbl_brest, new LatLng(52.133333, 23.666667), CountryCode.BY), //
+		VITEBSK(PureConst.VITEBSK_ID, R.string.lbl_vitebsk, new LatLng(55.183333, 30.166667), CountryCode.BY), //
+		GOMEL(PureConst.GOMEL_ID, R.string.lbl_gomel, new LatLng(52.445278, 30.984167), CountryCode.BY), //
+		MOGILEV(PureConst.MOGILEV_ID, R.string.lbl_mogilev, new LatLng(53.9, 30.333333), CountryCode.BY), //
 
-		BARANOVICHI(PureConst.BARANOVICHI_ID, R.string.lbl_baranovichi,
-				new LatLng(53.133333, 26.016667), CountryCode.BY), //
-		BOBRUISK(PureConst.BOBRUISK_ID, R.string.lbl_bobruisk, new LatLng(
-				53.15, 29.233333), CountryCode.BY), //
-		BORISOV(PureConst.BORISOV_ID, R.string.lbl_borisov, new LatLng(
-				54.233333, 28.5), CountryCode.BY), //
-		LIDA(PureConst.LIDA_ID, R.string.lbl_lida, new LatLng(53.883333, 25.3),
-				CountryCode.BY), //
-		MOZIR(PureConst.MOZIR_ID, R.string.lbl_mozir, new LatLng(52.05, 29.25),
-				CountryCode.BY), //
-		NOVOPOLOCK(PureConst.NOVOPOLOCK_ID, R.string.lbl_novopolock,
-				new LatLng(55.533333, 28.65), CountryCode.BY), //
-		ORSHA(PureConst.ORSHA_ID, R.string.lbl_orsha, new LatLng(54.509167,
-				30.425833), CountryCode.BY), //
-		PINSK(PureConst.PINSK_ID, R.string.lbl_pinsk, new LatLng(52.116667,
-				26.1), CountryCode.BY), //
-		POLOCK(PureConst.POLOCK_ID, R.string.lbl_polock, new LatLng(55.483333,
-				28.8), CountryCode.BY), //
-		SOLIGORSK(PureConst.SOLIGORSK_ID, R.string.lbl_soligorsk, new LatLng(
-				52.8, 27.533333), CountryCode.BY), //
+		BARANOVICHI(PureConst.BARANOVICHI_ID, R.string.lbl_baranovichi, new LatLng(53.133333, 26.016667), CountryCode.BY), //
+		BOBRUISK(PureConst.BOBRUISK_ID, R.string.lbl_bobruisk, new LatLng(53.15, 29.233333), CountryCode.BY), //
+		BORISOV(PureConst.BORISOV_ID, R.string.lbl_borisov, new LatLng(54.233333, 28.5), CountryCode.BY), //
+		LIDA(PureConst.LIDA_ID, R.string.lbl_lida, new LatLng(53.883333, 25.3), CountryCode.BY), //
+		MOZIR(PureConst.MOZIR_ID, R.string.lbl_mozir, new LatLng(52.05, 29.25), CountryCode.BY), //
+		NOVOPOLOCK(PureConst.NOVOPOLOCK_ID, R.string.lbl_novopolock, new LatLng(55.533333, 28.65), CountryCode.BY), //
+		ORSHA(PureConst.ORSHA_ID, R.string.lbl_orsha, new LatLng(54.509167, 30.425833), CountryCode.BY), //
+		PINSK(PureConst.PINSK_ID, R.string.lbl_pinsk, new LatLng(52.116667, 26.1), CountryCode.BY), //
+		POLOCK(PureConst.POLOCK_ID, R.string.lbl_polock, new LatLng(55.483333, 28.8), CountryCode.BY), //
+		SOLIGORSK(PureConst.SOLIGORSK_ID, R.string.lbl_soligorsk, new LatLng(52.8, 27.533333), CountryCode.BY), //
 
-		MOLODZE4NO(PureConst.MOLODZE4NO_ID, R.string.lbl_molodze4no,
-				new LatLng(54.31223616098262, 26.856765849999988),
-				CountryCode.BY), //
-		SVETLOGORSK(PureConst.SVETLOGORSK_ID, R.string.lbl_svetlogorsk,
-				new LatLng(52.621392732902684, 29.73638535000009),
-				CountryCode.BY), //
-		ZLOBIN(PureConst.ZLOBIN_ID, R.string.lbl_zlobin, new LatLng(
-				52.87965901034043, 30.008533050000096), CountryCode.BY), //
-		RE4ICA(PureConst.RE4ICA_ID, R.string.lbl_re4ica, new LatLng(
-				52.36071560832841, 30.39135944999998), CountryCode.BY), //
-		SLUCK(PureConst.SLUCK_ID, R.string.lbl_sluck, new LatLng(
-				53.02211499712371, 27.54504195000004), CountryCode.BY), //
-		ZODINO(PureConst.ZODINO_ID, R.string.lbl_zodino, new LatLng(
-				54.10266511033568, 28.33700184999998), CountryCode.BY), //
+		MOLODZE4NO(PureConst.MOLODZE4NO_ID, R.string.lbl_molodze4no, new LatLng(54.312236, 26.856766), CountryCode.BY), //
+		SVETLOGORSK(PureConst.SVETLOGORSK_ID, R.string.lbl_svetlogorsk, new LatLng(52.621393, 29.736385), CountryCode.BY), //
+		ZLOBIN(PureConst.ZLOBIN_ID, R.string.lbl_zlobin, new LatLng(52.879659, 30.008533), CountryCode.BY), //
+		RE4ICA(PureConst.RE4ICA_ID, R.string.lbl_re4ica, new LatLng(52.360716, 30.391359), CountryCode.BY), //
+		SLUCK(PureConst.SLUCK_ID, R.string.lbl_sluck, new LatLng(53.022115, 27.545042), CountryCode.BY), //
+		ZODINO(PureConst.ZODINO_ID, R.string.lbl_zodino, new LatLng(54.102665, 28.337002), CountryCode.BY), //
+
+		DZERZINSK(PureConst.DZERZINSK_ID, R.string.lbl_dzerzinsk, new LatLng(53.684985, 27.132556), CountryCode.BY),//
+
+		KALINKOVI4Y(PureConst.KALINKOVI4Y_ID, R.string.lbl_kalinkovi4i, new LatLng(52.125390, 29.329763), CountryCode.BY),//
+		ROGA4EV(PureConst.ROGA4EV_ID, R.string.lbl_roga4ev, new LatLng(53.091855, 30.050398), CountryCode.BY),//
+		KOBRIN(PureConst.KOBRIN_ID, R.string.lbl_kobrin, new LatLng(52.214111, 24.358179), CountryCode.BY),//
+		BEREZA(PureConst.BEREZA_ID, R.string.lbl_bereza, new LatLng(52.537312, 24.978857), CountryCode.BY),//
+
+		SLONIM(PureConst.SLONIM_ID, R.string.lbl_slonim, new LatLng(53.087513, 25.308719), CountryCode.BY),//
+
+		VOLKOVYSK(PureConst.VOLKOVYSK_ID, R.string.lbl_volkovysk, new LatLng(53.151642, 24.442203), CountryCode.BY)//
 		;
 
 		private static SparseArray<Region> idMap;

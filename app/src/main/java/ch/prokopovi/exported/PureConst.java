@@ -30,6 +30,16 @@ public class PureConst {
 	public static final int SLUCK_ID = 34;
 	public static final int ZODINO_ID = 35;
 
+	public static final int DZERZINSK_ID = 37;
+
+	public static final int KALINKOVI4Y_ID = 42;
+	public static final int ROGA4EV_ID = 43;
+	public static final int KOBRIN_ID = 44;
+	public static final int BEREZA_ID = 45;
+
+	public static final int SLONIM_ID = 48;
+	public static final int VOLKOVYSK_ID = 49;
+
 
 	public enum Bank {
 		// belarus
@@ -168,27 +178,16 @@ public class PureConst {
 		SLUCK(34, SLUCK_ID), //
 		ZODINO(35, ZODINO_ID), //
 
+		DZERZINSK (37, DZERZINSK_ID),//
 
-        // TODO
-//        36">Вилейка
-//        37">Дзержинск
-//        38">Марьина Горка
-//        39">Горки
-//
-//        40">Осиповичи
-//        41">Кричев
-//        42">Калинковичи
-//        43">Рогачев
-//        44">Кобрин
-//        45">Береза
-//        46">Лунинец
-//        47">Ивацевичи
-//        48">Слоним
-//        49">Волковыск
-//
-//        50">Сморгонь
-//        51">Новогрудок
+		KALINKOVI4Y (42, KALINKOVI4Y_ID),//
+		ROGA4EV(43, ROGA4EV_ID),//
+		KOBRIN(44, KOBRIN_ID),//
+		BEREZA(45, BEREZA_ID),//
 
+		SLONIM (48, SLONIM_ID),//
+
+		VOLKOVYSK (49, VOLKOVYSK_ID)//
 		;
 
 		private final int id;
