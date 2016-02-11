@@ -86,6 +86,14 @@ public class TabsActivity extends ActionBarActivity implements
             Region.RE4ICA, //
             Region.SLUCK, //
             Region.ZODINO, //
+
+            Region.DZERZINSK, //
+            Region.KALINKOVI4Y, //
+            Region.ROGA4EV, //
+            Region.KOBRIN, //
+            Region.BEREZA, //
+            Region.SLONIM, //
+            Region.VOLKOVYSK, //
     };
 
     private static final String LOG_TAG = "TabsActivity";
