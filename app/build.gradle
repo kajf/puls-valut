@@ -18,6 +18,7 @@ repositories {
 apply plugin: 'com.android.application'
 apply plugin: 'android-apt'
 def AAVersion = '3.3.2'
+def PSVersion = '8.4.0'
 
 apt {
     arguments {
@@ -76,18 +77,12 @@ dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile 'com.android.support:appcompat-v7:23.1.1'
     // http://developer.android.com/google/play-services/setup.html
-    compile 'com.google.android.gms:play-services-location:8.3.0'
-    compile 'com.google.android.gms:play-services-maps:8.3.0'
-    compile 'com.google.android.gms:play-services-base:8.3.0'
-    compile 'com.google.android.gms:play-services-ads:8.3.0'
-    compile 'com.google.maps.android:android-maps-utils:0.4'
-    // maps extensions
-    //compile 'com.androidmapsextensions:android-maps-extensions:2.2.0'
-    //compile 'com.google.android.gms:play-services-maps:6.5.87'
-    //
-    // analytics
-    //compile 'com.google.apis:google-api-services-analytics:v3-rev108-1.19.0'
-    //
+    compile "com.google.android.gms:play-services-location:$PSVersion"
+    compile "com.google.android.gms:play-services-maps:$PSVersion"
+    compile "com.google.android.gms:play-services-base:$PSVersion"
+    compile "com.google.android.gms:play-services-ads:$PSVersion"
+    compile "com.google.maps.android:android-maps-utils:0.4"
+
     apt "org.androidannotations:androidannotations:$AAVersion"
     compile "org.androidannotations:androidannotations-api:$AAVersion"
 }

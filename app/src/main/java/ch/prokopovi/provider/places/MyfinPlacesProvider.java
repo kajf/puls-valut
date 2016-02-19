@@ -117,7 +117,7 @@ public class MyfinPlacesProvider extends AbstractPlacesProvider {
 			if (idNode == null)
 				return placeRecords;
 
-			String strId = idNode.getTextContent().toString();
+			String strId = idNode.getTextContent();
 			Long placeId = Long.valueOf(strId);
 
 			List<BestRatesRecord> placeRates = parseRates(placeNode);
@@ -153,7 +153,7 @@ public class MyfinPlacesProvider extends AbstractPlacesProvider {
 				if (placeTag == null)
 					continue;
 
-				String strValue = placeTag.getTextContent().toString();
+				String strValue = placeTag.getTextContent();
 
                 if (vauesToSkip.contains(strValue))
                     continue;

@@ -2,8 +2,7 @@ package ch.prokopovi;
 
 import android.test.AndroidTestCase;
 
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import ch.prokopovi.api.provider.Provider;
 import ch.prokopovi.api.struct.ProviderRate;
@@ -62,9 +61,7 @@ public class ProviderSanityTest extends AndroidTestCase {
 
             ProviderRequirements requirements = new ProviderRequirements(code, null);
             Set<CurrencyCode> currencySet = requirements.getCurrencyCodes();
-            for (int i = 0; i < currCodes.length; i++) {
-                currencySet.add(currCodes[i]);
-            }
+            Collections.addAll(currencySet, currCodes);
 
             // when
             List<ProviderRate> list = p.update(requirements);
@@ -87,9 +84,7 @@ public class ProviderSanityTest extends AndroidTestCase {
 
                 ProviderRequirements requirements = new ProviderRequirements(code, rateType);
                 Set<CurrencyCode> currencySet = requirements.getCurrencyCodes();
-                for (int i = 0; i < currCodes.length; i++) {
-                    currencySet.add(currCodes[i]);
-                }
+                Collections.addAll(currencySet, currCodes);
 
                 int expectedSize = currCodes.length;
 
@@ -105,19 +100,19 @@ public class ProviderSanityTest extends AndroidTestCase {
     private void check(Provider p, List<ProviderRate> list, int minExpectedSize, RateType rt, Set<CurrencyCode> ccs) {
         String prefix = "checking provider: " + p + "type: " + rt;
 
-        assertNotNull(prefix + "result is null", list);
+        assertNotNull(prefix + " result is null", list);
         assertTrue(prefix + " result has wrong size: " + list.size() + ", expected: " + minExpectedSize, list.size() >= minExpectedSize);
 
         for (ProviderRate providerRate : list) {
             RateType rateType = providerRate.getRateType();
             CurrencyCode currencyCode = providerRate.getCurrencyCode();
 
-            assertTrue(prefix + "alien rate type: " + providerRate, rt.equals(rateType));
-            assertTrue(prefix + "alien currency: " + providerRate, ccs.contains(currencyCode));
+            assertTrue(prefix + " alien rate type: " + providerRate, rt.equals(rateType));
+            assertTrue(prefix + " alien currency: " + providerRate, ccs.contains(currencyCode));
 
             Double value = providerRate.getValue();
             if (value != null)
-                assertFalse(prefix + "zero rate value " + providerRate, Util.isZero(value));
+                assertFalse(prefix + " zero rate value " + providerRate, Util.isZero(value));
         }
     }
 

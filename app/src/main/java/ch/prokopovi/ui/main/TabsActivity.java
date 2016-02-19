@@ -1,6 +1,5 @@
 package ch.prokopovi.ui.main;
 
-import android.app.*;
 import android.content.*;
 import android.content.res.*;
 import android.database.*;
@@ -9,15 +8,11 @@ import android.graphics.*;
 import android.location.*;
 import android.net.*;
 import android.os.*;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
+import android.support.v4.app.*;
 import android.support.v4.view.*;
 import android.support.v4.widget.*;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.*;
 import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AlertDialog;
 import android.text.format.*;
 import android.util.*;
 import android.view.*;
@@ -47,7 +42,7 @@ import ch.prokopovi.ui.main.api.*;
 import ch.prokopovi.ui.main.resolvers.*;
 
 @EActivity(R.layout.fragment_tabs)
-public class TabsActivity extends ActionBarActivity implements
+public class TabsActivity extends AppCompatActivity implements
         Updater,
         CurrencyOperationType,
         OpenListener,
@@ -55,12 +50,12 @@ public class TabsActivity extends ActionBarActivity implements
         Closable {
 
     private static final long EXPIRATION_PERIOD = 10 * DateUtils.HOUR_IN_MILLIS;
-	private static final int REGION_NEAR_THRESHOLD = 16 * 1000; // meters
-	static final float DUAL_PANE_RATIO = 0.4f;
+    private static final int REGION_NEAR_THRESHOLD = 16 * 1000; // meters
+    static final float DUAL_PANE_RATIO = 0.4f;
 
-	private static final long LOCATION_FRESH_PERIOD = DateUtils.MINUTE_IN_MILLIS * 2;
-	private static final long LOCATION_UPDATE_PERIOD = DateUtils.SECOND_IN_MILLIS * 5;
-	private static final long LOCATION_UPDATE_RANGE = 10; // meters
+    private static final long LOCATION_FRESH_PERIOD = DateUtils.MINUTE_IN_MILLIS * 2;
+    private static final long LOCATION_UPDATE_PERIOD = DateUtils.SECOND_IN_MILLIS * 5;
+    private static final long LOCATION_UPDATE_RANGE = 10; // meters
 
     private static final Region[] REGIONS = new Region[]{
 
@@ -98,21 +93,21 @@ public class TabsActivity extends ActionBarActivity implements
 
     private static final String LOG_TAG = "TabsActivity";
 
-	static final DecimalFormat FMT_RATE_VALUE = new DecimalFormat("#.####");
+    static final DecimalFormat FMT_RATE_VALUE = new DecimalFormat("#.####");
 
-	private BestRatesDbAdapter dbAdapter;
+    private BestRatesDbAdapter dbAdapter;
 
-	private GoogleAnalyticsTracker tracker;
+    private GoogleAnalyticsTracker tracker;
 
-	private Location myLastLocation;
+    private Location myLastLocation;
 
-	private boolean regionByLocationIsSet = false;
+    private boolean regionByLocationIsSet = false;
 
     @StringRes(R.string.pref_rate_app_launches)
-	String prefRateAppLaunches;
+    String prefRateAppLaunches;
 
-	@StringRes(R.string.pref_ads_on)
-	String prefAdsOn;
+    @StringRes(R.string.pref_ads_on)
+    String prefAdsOn;
 
     @StringRes(R.string.btn_region)
     String mTitleRegion;
@@ -154,9 +149,9 @@ public class TabsActivity extends ActionBarActivity implements
      * Using @NonConfigurationInstance on a @Bean will automatically update the
 	 * context ref on configuration changes, if the bean is not a singleton
 	 */
-	@NonConfigurationInstance
-	@Bean
-	UpdateTask task;
+    @NonConfigurationInstance
+    @Bean
+    UpdateTask task;
 
     @Override
     public CurrencyCode getCurrencyCode() {
@@ -182,30 +177,30 @@ public class TabsActivity extends ActionBarActivity implements
         return null;
     }
 
-	@Override
-	public void onStatusChanged(String provider, int status, Bundle extras) {
-	}
+    @Override
+    public void onStatusChanged(String provider, int status, Bundle extras) {
+    }
 
-	@Override
-	public void onProviderEnabled(String provider) {
-	}
+    @Override
+    public void onProviderEnabled(String provider) {
+    }
 
-	@Override
-	public void onProviderDisabled(String provider) {
-	}
+    @Override
+    public void onProviderDisabled(String provider) {
+    }
 
-	@Override
-	public void onLocationChanged(Location location) {
-		Log.d(LOG_TAG, "--- location update: " + location);
+    @Override
+    public void onLocationChanged(Location location) {
+        Log.d(LOG_TAG, "--- location update: " + location);
 
         TabsActivity ctx = TabsActivity.this;
         boolean newLocationIsBetter = isBetterLocation(location,
                 ctx.myLastLocation);
 
         if (!newLocationIsBetter) {
-			Log.d(LOG_TAG, "new location is not better. skip");
-			return;
-		}
+            Log.d(LOG_TAG, "new location is not better. skip");
+            return;
+        }
 
         ctx.myLastLocation = location;
 
@@ -215,119 +210,113 @@ public class TabsActivity extends ActionBarActivity implements
                     location.getLongitude());
 
             if (region != null) {
-				Log.d(LOG_TAG, "setting region by location: " + region);
+                Log.d(LOG_TAG, "setting region by location: " + region);
 
                 fireRegionUpdate(region);
 
                 ctx.regionByLocationIsSet = true;
 
                 read(region, false);
-			}
-		} // set first time region (but do not update after first)
+            }
+        } // set first time region (but do not update after first)
 
-		// update data-location calculations in best rates tab
+        // update data-location calculations in best rates tab
         BestRatesFragment brf = (BestRatesFragment) getSupportFragmentManager()
                 .findFragmentByTag(FragmentTag.BEST.tag);
         if (brf != null && brf.isVisible()) {
-			brf.updateListViewData();
-		}
-	}
+            brf.updateListViewData();
+        }
+    }
 
-	/**
-	 * Determines whether one Location reading is better than the current
-	 * Location fix
-	 * 
-	 * @param location
-	 *            The new Location that you want to evaluate
-	 * @param currentBestLocation
-	 *            The current Location fix, to which you want to compare the new
-	 *            one
-	 */
-	protected boolean isBetterLocation(Location location,
-			Location currentBestLocation) {
+    /**
+     * Determines whether one Location reading is better than the current
+     * Location fix
+     *
+     * @param location            The new Location that you want to evaluate
+     * @param currentBestLocation The current Location fix, to which you want to compare the new
+     *                            one
+     */
+    protected boolean isBetterLocation(Location location,
+                                       Location currentBestLocation) {
 
-		if (location == null) {
-			// A null new location is always worser any other
-			return false;
-		}
+        if (location == null) {
+            // A null new location is always worse than any other
+            return false;
+        }
 
-		if (currentBestLocation == null) {
-			// A new location is always better than no location
-			return true;
-		}
+        if (currentBestLocation == null) {
+            // A new location is always better than no location
+            return true;
+        }
 
-		// Check whether the new location fix is newer or older
-		long timeDelta = location.getTime() - currentBestLocation.getTime();
-		boolean isSignificantlyNewer = timeDelta > LOCATION_FRESH_PERIOD;
-		boolean isSignificantlyOlder = timeDelta < -LOCATION_FRESH_PERIOD;
-		boolean isNewer = timeDelta > 0;
+        // Check whether the new location fix is newer or older
+        long timeDelta = location.getTime() - currentBestLocation.getTime();
+        boolean isSignificantlyNewer = timeDelta > LOCATION_FRESH_PERIOD;
+        boolean isSignificantlyOlder = timeDelta < -LOCATION_FRESH_PERIOD;
+        boolean isNewer = timeDelta > 0;
 
-		// If it's been more than two minutes since the current location, use
-		// the new location
-		// because the user has likely moved
-		if (isSignificantlyNewer) {
-			return true;
-			// If the new location is more than two minutes older, it must be
-			// worse
-		} else if (isSignificantlyOlder) {
-			return false;
-		}
+        // If it's been more than two minutes since the current location, use
+        // the new location
+        // because the user has likely moved
+        if (isSignificantlyNewer) {
+            return true;
+            // If the new location is more than two minutes older, it must be
+            // worse
+        } else if (isSignificantlyOlder) {
+            return false;
+        }
 
-		// Check whether the new location fix is more or less accurate
-		int accuracyDelta = (int) (location.getAccuracy() - currentBestLocation
-				.getAccuracy());
-		boolean isLessAccurate = accuracyDelta > 0;
-		boolean isMoreAccurate = accuracyDelta < 0;
-		boolean isSignificantlyLessAccurate = accuracyDelta > 200;
+        // Check whether the new location fix is more or less accurate
+        int accuracyDelta = (int) (location.getAccuracy() - currentBestLocation
+                .getAccuracy());
+        boolean isLessAccurate = accuracyDelta > 0;
+        boolean isMoreAccurate = accuracyDelta < 0;
+        boolean isSignificantlyLessAccurate = accuracyDelta > 200;
 
-		// Check if the old and new location are from the same provider
-		boolean isFromSameProvider = isSameProvider(location.getProvider(),
-				currentBestLocation.getProvider());
+        // Check if the old and new location are from the same provider
+        boolean isFromSameProvider = isSameProvider(location.getProvider(),
+                currentBestLocation.getProvider());
 
-		// Determine location quality using a combination of timeliness and
-		// accuracy
-		if (isMoreAccurate) {
-			return true;
-		} else if (isNewer && !isLessAccurate) {
-			return true;
-		} else if (isNewer && !isSignificantlyLessAccurate
-				&& isFromSameProvider) {
-			return true;
-		}
-		return false;
-	}
+        // Determine location quality using a combination of timeliness and
+        // accuracy
+        if (isMoreAccurate) {
+            return true;
+        } else if (isNewer && !isLessAccurate) {
+            return true;
+        } else if (isNewer && !isSignificantlyLessAccurate
+                && isFromSameProvider) {
+            return true;
+        }
+        return false;
+    }
 
-	/** Checks whether two providers are the same */
-	private boolean isSameProvider(String provider1, String provider2) {
-		if (provider1 == null) {
-			return provider2 == null;
-		}
-		return provider1.equals(provider2);
-	}
+    /**
+     * Checks whether two providers are the same
+     */
+    private boolean isSameProvider(String provider1, String provider2) {
+        if (provider1 == null) {
+            return provider2 == null;
+        }
+        return provider1.equals(provider2);
+    }
 
-	/**
-	 * create intent to launch main activity like from app launcher
-	 * 
-	 * @param c
-	 * @return
-	 */
-	public static Intent getLauncherIntent(Context c) {
+    public static Intent getLauncherIntent(Context c) {
 
-		Intent intent = new Intent(Intent.ACTION_MAIN);
-		intent.setComponent(new ComponentName(c, TabsActivity_.class));
-		intent.addCategory(Intent.CATEGORY_LAUNCHER);
-		intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-		intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        Intent intent = new Intent(Intent.ACTION_MAIN);
+        intent.setComponent(new ComponentName(c, TabsActivity_.class));
+        intent.addCategory(Intent.CATEGORY_LAUNCHER);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
-		return intent;
-	}
+        return intent;
+    }
 
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
 
         PrefsUtil.initSkin(this);
 
-		super.onCreate(savedInstanceState);
+        super.onCreate(savedInstanceState);
 
         prepareTracker();
 
@@ -645,7 +634,7 @@ public class TabsActivity extends ActionBarActivity implements
      */
     private boolean askLocationIsOn() {
 
-		final Context context = this;
+        final Context context = this;
 
         final List<String> enabledProviders = getLocationManager().getProviders(true);
         enabledProviders.remove(LocationManager.PASSIVE_PROVIDER); // not enough
@@ -654,93 +643,85 @@ public class TabsActivity extends ActionBarActivity implements
 
         if (!locationIsOn) {
 
-			final SharedPreferences prefs = getSharedPreferences(
-					PrefsUtil.PREFS_NAME, Context.MODE_PRIVATE);
+            final SharedPreferences prefs = getSharedPreferences(
+                    PrefsUtil.PREFS_NAME, Context.MODE_PRIVATE);
 
-			boolean isAskLocationAllowed = prefs.getBoolean(
-					getString(R.string.pref_ask_location), true);
+            boolean isAskLocationAllowed = prefs.getBoolean(
+                    getString(R.string.pref_ask_location), true);
 
-			Log.d(LOG_TAG, "ask location allowed: " + isAskLocationAllowed);
-			if (isAskLocationAllowed) {
+            Log.d(LOG_TAG, "ask location allowed: " + isAskLocationAllowed);
+            if (isAskLocationAllowed) {
 
-				new AlertDialog.Builder(context)
-						.setTitle(R.string.no_location_svc_title)
-						.setMessage(R.string.no_location_svc_msg)
-						.setPositiveButton(R.string.yes,
-								new DialogInterface.OnClickListener() {
-									@Override
-									public void onClick(DialogInterface dialog,
-											int i) {
+                new AlertDialog.Builder(context)
+                        .setTitle(R.string.no_location_svc_title)
+                        .setMessage(R.string.no_location_svc_msg)
+                        .setPositiveButton(R.string.yes,
+                                new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog,
+                                                        int i) {
 
-										context.startActivity(new Intent(
-												android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS));
+                                        context.startActivity(new Intent(
+                                                android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS));
 
-										dialog.dismiss();
-									}
-								})
-						.setNeutralButton(R.string.no,
-								new DialogInterface.OnClickListener() {
-									@Override
-									public void onClick(DialogInterface dialog,
-											int which) {
+                                        dialog.dismiss();
+                                    }
+                                })
+                        .setNeutralButton(R.string.no,
+                                new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog,
+                                                        int which) {
 
-										dialog.dismiss();
-									}
-								})
-						.setNegativeButton(R.string.btn_do_not_ask,
-								new DialogInterface.OnClickListener() {
+                                        dialog.dismiss();
+                                    }
+                                })
+                        .setNegativeButton(R.string.btn_do_not_ask,
+                                new DialogInterface.OnClickListener() {
 
-									@Override
-									public void onClick(DialogInterface dialog,
-											int which) {
+                                    @Override
+                                    public void onClick(DialogInterface dialog,
+                                                        int which) {
 
-										// do not ask any more
-										prefs.edit()
-												.putBoolean(
-														getString(R.string.pref_ask_location),
-														false).commit();
+                                        // do not ask any more
+                                        prefs.edit()
+                                                .putBoolean(
+                                                        getString(R.string.pref_ask_location),
+                                                        false).commit();
 
-										dialog.dismiss();
-									}
-								}).create().show();
-			}
-		}
+                                        dialog.dismiss();
+                                    }
+                                }).create().show();
+            }
+        }
 
-		return locationIsOn;
-	}
+        return locationIsOn;
+    }
 
-	private LocationManager getLocationManager() {
+    private LocationManager getLocationManager() {
 
-		LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 
-		return locationManager;
-	}
+        return locationManager;
+    }
 
-	/**
-	 * search best last known location between all providers
-	 * 
-	 * @return
-	 */
-	private Location getLastKnownLocation() {
-		LocationManager locationManager = getLocationManager();
+    private Location getLastKnownLocation() {
 
-		Location bestLocation = null;
+        LocationManager locationManager = getLocationManager();
 
-		List<String> providers = locationManager.getAllProviders();
-		for (String provider : providers) {
-            try {
-                Location loc = locationManager.getLastKnownLocation(provider);
-                Log.d(LOG_TAG, "last known location, provider: " + provider
+        Location bestLocation = null;
+
+        List<String> providers = locationManager.getAllProviders();
+        for (String provider : providers) {
+            Location loc = locationManager.getLastKnownLocation(provider);
+            Log.d(LOG_TAG, "last known location, provider: " + provider
                         + ", location: " + loc);
 
                 boolean betterLocation = isBetterLocation(loc, bestLocation);
                 if (betterLocation) {
                     bestLocation = loc;
                 }
-            } catch (SecurityException e) {
-                // continue
-                // user did not provide permission
-            }
+
         }
 
 		Log.d(LOG_TAG, "best last known location: " + bestLocation);
@@ -752,9 +733,9 @@ public class TabsActivity extends ActionBarActivity implements
 
 	/**
 	 * find nearest region by location
-	 * 
-	 * @param inLat
-	 *            latitude
+     *
+     * @param inLat
+     *            latitude
      * @param inLng
      *            longitude
      *
@@ -790,7 +771,8 @@ public class TabsActivity extends ActionBarActivity implements
 	}
 
 	private void initLocation() {
-		boolean locationIsOn = askLocationIsOn();
+
+        boolean locationIsOn = askLocationIsOn();
 
 		if (locationIsOn) {
 
@@ -893,14 +875,6 @@ public class TabsActivity extends ActionBarActivity implements
 		ft.commit();
 	}
 
-	/**
-	 * check if rates fore region are expired (based on maxAge)
-	 * 
-	 * @param region
-	 * @param maxAge
-	 * 
-	 * @return true - if update needed, false - otherwise
-	 */
 	private boolean isExpired(Region region, Long maxAge) {
 
 		Long now = new Date().getTime();
@@ -967,12 +941,6 @@ public class TabsActivity extends ActionBarActivity implements
                 pointId);
     }
 
-	/**
-	 * fragment detach-if-exists
-	 * 
-	 * @param ft
-	 * @param tag
-	 */
 	private void detachFragment(FragmentTransaction ft, String tag) {
 		FragmentManager fm = getSupportFragmentManager();
 		Fragment fragment = fm.findFragmentByTag(tag);
@@ -982,11 +950,6 @@ public class TabsActivity extends ActionBarActivity implements
 		}
 	}
 
-	/**
-	 * fragment remove-if-exists in separate transaction
-	 * 
-	 * @param fTag
-	 */
 	private void removeFragment(FragmentTag fTag) {
 		FragmentManager fm = getSupportFragmentManager();
 		Fragment rateFragment = fm.findFragmentByTag(fTag.tag);
@@ -1051,9 +1014,9 @@ public class TabsActivity extends ActionBarActivity implements
 		getSharedPreferences(PrefsUtil.PREFS_NAME, Context.MODE_PRIVATE).edit()
 				.putInt(this.prefRateAppLaunches, launches).commit();
 
-		// swith off dialog if exists
-		removeFragment(FragmentTag.RATE);
-	}
+        // switch off dialog if exists
+        removeFragment(FragmentTag.RATE);
+    }
 
 	@Override
 	public void onRate(int buttonId) {
