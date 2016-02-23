@@ -1,6 +1,7 @@
 package ch.prokopovi.ui.main;
 
 import android.content.*;
+import android.content.pm.*;
 import android.content.res.*;
 import android.database.*;
 import android.database.sqlite.*;
@@ -8,7 +9,9 @@ import android.graphics.*;
 import android.location.*;
 import android.net.*;
 import android.os.*;
+import android.support.annotation.*;
 import android.support.v4.app.*;
+import android.support.v4.content.*;
 import android.support.v4.view.*;
 import android.support.v4.widget.*;
 import android.support.v7.app.*;
@@ -23,7 +26,7 @@ import com.google.android.apps.analytics.*;
 import com.google.android.gms.maps.model.*;
 
 import org.androidannotations.annotations.*;
-import org.androidannotations.annotations.res.*;
+import org.androidannotations.annotations.res.StringRes;
 
 import java.text.*;
 import java.util.*;
@@ -41,6 +44,8 @@ import ch.prokopovi.ui.main.RateAppFragment.*;
 import ch.prokopovi.ui.main.api.*;
 import ch.prokopovi.ui.main.resolvers.*;
 
+import static android.Manifest.permission.*;
+
 @EActivity(R.layout.fragment_tabs)
 public class TabsActivity extends AppCompatActivity implements
         Updater,
@@ -52,6 +57,8 @@ public class TabsActivity extends AppCompatActivity implements
     private static final long EXPIRATION_PERIOD = 10 * DateUtils.HOUR_IN_MILLIS;
     private static final int REGION_NEAR_THRESHOLD = 16 * 1000; // meters
     static final float DUAL_PANE_RATIO = 0.4f;
+
+    private static final int REQUEST_LOCATION = 0;
 
     private static final long LOCATION_FRESH_PERIOD = DateUtils.MINUTE_IN_MILLIS * 2;
     private static final long LOCATION_UPDATE_PERIOD = DateUtils.SECOND_IN_MILLIS * 5;
@@ -352,6 +359,8 @@ public class TabsActivity extends AppCompatActivity implements
         if (savedInstanceState == null) { // only freshly created activity
             PrefsUtil.initFullscreen(this);
         }
+
+        ensureLocationPermissions();
     }
 
     private void prepareTracker() {
@@ -707,6 +716,12 @@ public class TabsActivity extends AppCompatActivity implements
 
     private Location getLastKnownLocation() {
 
+        if (ContextCompat.checkSelfPermission(this, ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                && ContextCompat.checkSelfPermission(this, ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            Log.d(LOG_TAG, "No Location permission");
+            return null;
+        }
+
         LocationManager locationManager = getLocationManager();
 
         Location bestLocation = null;
@@ -715,24 +730,23 @@ public class TabsActivity extends AppCompatActivity implements
         for (String provider : providers) {
             Location loc = locationManager.getLastKnownLocation(provider);
             Log.d(LOG_TAG, "last known location, provider: " + provider
-                        + ", location: " + loc);
+                    + ", location: " + loc);
 
-                boolean betterLocation = isBetterLocation(loc, bestLocation);
-                if (betterLocation) {
-                    bestLocation = loc;
-                }
+            boolean betterLocation = isBetterLocation(loc, bestLocation);
+            if (betterLocation) {
+                bestLocation = loc;
+            }
 
         }
 
-		Log.d(LOG_TAG, "best last known location: " + bestLocation);
+        Log.d(LOG_TAG, "best last known location: " + bestLocation);
 
-		return bestLocation;
-	}
+        return bestLocation;
+    }
 
 
-
-	/**
-	 * find nearest region by location
+    /**
+     * find nearest region by location
      *
      * @param inLat
      *            latitude
@@ -740,66 +754,135 @@ public class TabsActivity extends AppCompatActivity implements
      *            longitude
      *
      * @return nearest region or null, if no regions in some radius
-	 */
-	static Region findRegion(double inLat, double inLng) {
-		Region myRegion = null;
+     */
+    static Region findRegion(double inLat, double inLng) {
+        Region myRegion = null;
 
-		float[] result = new float[1];
+        float[] result = new float[1];
 
-		float smallest = REGION_NEAR_THRESHOLD; // meters
-		for (Region region : Region.values()) {
+        float smallest = REGION_NEAR_THRESHOLD; // meters
+        for (Region region : Region.values()) {
 
-			double lat = region.getCoords().latitude;
-			double lng = region.getCoords().longitude;
+            double lat = region.getCoords().latitude;
+            double lng = region.getCoords().longitude;
 
-			Location.distanceBetween(inLat, inLng, lat, lng, result);
+            Location.distanceBetween(inLat, inLng, lat, lng, result);
 
-			// Log.d(LOG_TAG, "result: " + result[0]);
-			if (smallest > result[0]) {
-				smallest = result[0];
-				myRegion = region;
-				Log.d(LOG_TAG, "near region: " + region + ", dist: " + smallest);
-			}
-		}
+            // Log.d(LOG_TAG, "result: " + result[0]);
+            if (smallest > result[0]) {
+                smallest = result[0];
+                myRegion = region;
+                Log.d(LOG_TAG, "near region: " + region + ", dist: " + smallest);
+            }
+        }
 
-		return myRegion;
-	}
+        return myRegion;
+    }
 
-	@Override
-	protected void onSaveInstanceState(Bundle outState) {
-		super.onSaveInstanceState(outState);
-	}
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+    }
 
-	private void initLocation() {
+    private void initLocation() {
+        Log.d(LOG_TAG, "init location");
+
+        if (ContextCompat.checkSelfPermission(this, ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                && ContextCompat.checkSelfPermission(this, ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            Log.d(LOG_TAG, "No Location permission");
+            return;
+        }
 
         boolean locationIsOn = askLocationIsOn();
 
-		if (locationIsOn) {
+        if (locationIsOn) {
 
-			if (this.myLastLocation == null) {
-				Location lastKnownLocation = getLastKnownLocation();
-				onLocationChanged(lastKnownLocation); // initial fast update
-			}
+            if (this.myLastLocation == null) {
 
-			LocationManager lm = getLocationManager();
-			List<String> providers = lm.getProviders(true);
-			for (String provider : providers) {
-				lm.requestLocationUpdates(provider, LOCATION_UPDATE_PERIOD,
-						LOCATION_UPDATE_RANGE, this);
-				Log.d(LOG_TAG, provider + " provider listener registered");
-			}
-		}
-	}
+                Location lastKnownLocation = getLastKnownLocation();
+                onLocationChanged(lastKnownLocation); // initial fast update
+            }
 
-	@Override
-	protected void onResume() {
+            LocationManager lm = getLocationManager();
+            List<String> providers = lm.getProviders(true);
+            for (String provider : providers) {
+                lm.requestLocationUpdates(provider, LOCATION_UPDATE_PERIOD,
+                        LOCATION_UPDATE_RANGE, this);
+                Log.d(LOG_TAG, provider + " provider listener registered");
+            }
+        }
+    }
+
+    private void ensureLocationPermissions() {
+        if (ContextCompat.checkSelfPermission(this, ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                && ContextCompat.checkSelfPermission(this, ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            requestLocationPermissions();
+        }
+    }
+
+    private void requestLocationPermissions() {
+        Log.d(LOG_TAG, "Requesting Location permission");
+
+        final String[] locationPermissions = {ACCESS_COARSE_LOCATION, ACCESS_FINE_LOCATION};
+
+        if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+                ACCESS_COARSE_LOCATION)
+                || ActivityCompat.shouldShowRequestPermissionRationale(this,
+                ACCESS_FINE_LOCATION)) {
+
+            Log.d(LOG_TAG,
+                    "Displaying contacts permission rationale to provide additional context");
+            new android.app.AlertDialog.Builder(this)
+                    .setMessage(R.string.msg_permission_location_rationale)
+                    .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            ActivityCompat.requestPermissions(TabsActivity.this,
+                                    locationPermissions,
+                                    REQUEST_LOCATION);
+                        }
+                    })
+                    .create().show();
+
+        } else {
+
+            // Location permission has not been granted yet. Request it directly.
+            ActivityCompat.requestPermissions(this,
+                    locationPermissions,
+                    REQUEST_LOCATION);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if (requestCode == REQUEST_LOCATION) {
+
+            // Received permission result for camera permission.
+            Log.d(LOG_TAG, "Received response for Location permission request.");
+
+            // Check if the only required permission has been granted
+            if (grantResults.length == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                // permission has been granted, preview can be displayed
+                Log.d(LOG_TAG, "Location permission has now been granted. ");
+                //initLocation();
+            } else {
+                Log.d(LOG_TAG, "Location permission was NOT granted.");
+            }
+
+        } else {
+            super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        }
+    }
+
+    @Override
+    protected void onResume() {
 
 		Log.d(LOG_TAG, "onResume");
 
 		super.onResume();
 
-		initLocation(); // location on/off
-	}
+        initLocation();
+    }
 
 	@Override
 	protected void onPause() {
@@ -807,8 +890,13 @@ public class TabsActivity extends AppCompatActivity implements
 
 		super.onPause();
 
-		getLocationManager().removeUpdates(this);
-	}
+        if (ContextCompat.checkSelfPermission(this, ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                && ContextCompat.checkSelfPermission(this, ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            return;
+        }
+
+        getLocationManager().removeUpdates(this);
+    }
 
 	@Override
 	public void onDestroy() {

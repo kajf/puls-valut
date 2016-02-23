@@ -143,6 +143,8 @@
         <a href="http://sravnibank.com.ua">sravnibank.com.ua</a>\n\n
         <a href="mailto:sergei.rumas@gmail.com">sergei.rumas@gmail.com</a>       
     </string>
+
+    <string name="msg_permission_location_rationale">Данные о местоположении необходимы для поиска ближайших обменников</string>
                     
     <string name="err_offline">нет соединения с интернетом :(</string>
     <string name="err_nodata">Извините. Нет информации о курсах :(</string>
