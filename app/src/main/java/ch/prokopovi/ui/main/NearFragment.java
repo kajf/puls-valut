@@ -1,30 +1,33 @@
 package ch.prokopovi.ui.main;
 
-import android.app.Activity;
-import android.content.Context;
-import android.graphics.Bitmap;
-import android.location.Location;
-import android.os.Bundle;
-import android.util.Log;
-import android.util.SparseArray;
+import android.app.*;
+import android.content.*;
+import android.content.pm.*;
+import android.graphics.*;
+import android.location.*;
+import android.os.*;
+import android.support.v4.content.*;
+import android.util.*;
 import android.view.*;
 import android.widget.*;
-import android.widget.LinearLayout.LayoutParams;
+import android.widget.LinearLayout.*;
 
 import com.google.android.gms.maps.*;
 import com.google.android.gms.maps.model.*;
-import com.google.android.gms.maps.model.LatLngBounds.Builder;
+import com.google.android.gms.maps.model.LatLngBounds.*;
 import com.google.maps.android.clustering.*;
-import com.google.maps.android.clustering.view.DefaultClusterRenderer;
-import com.google.maps.android.ui.IconGenerator;
+import com.google.maps.android.clustering.view.*;
+import com.google.maps.android.ui.*;
 
 import java.util.*;
 
 import ch.prokopovi.R;
 import ch.prokopovi.struct.Master.*;
-import ch.prokopovi.struct.best.RateItem;
-import ch.prokopovi.struct.best.RatePoint;
+import ch.prokopovi.struct.Master.Region;
+import ch.prokopovi.struct.best.*;
 import ch.prokopovi.ui.main.api.*;
+
+import static android.Manifest.permission.*;
 
 /**
  * near places map fragment
@@ -97,7 +100,11 @@ public class NearFragment extends SupportMapFragment implements
         getMapAsync(new OnMapReadyCallback() {
             @Override
             public void onMapReady(GoogleMap googleMap) {
-                googleMap.setMyLocationEnabled(true);
+                if (ContextCompat.checkSelfPermission(NearFragment.this.getContext(), ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
+                        || ContextCompat.checkSelfPermission(NearFragment.this.getContext(), ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                    googleMap.setMyLocationEnabled(true);
+                }
+
                 googleMap.getUiSettings().setZoomControlsEnabled(true);
 
                 if (mClusterManager == null) {

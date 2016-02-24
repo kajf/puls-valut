@@ -137,7 +137,7 @@ public class TabsActivity extends AppCompatActivity implements
     @StringRes(R.string.about_title)
     String mTitleAbout;
 
-    PaneResolver paneResolver;
+    private PaneResolver paneResolver;
 
     @ViewById(R.id.content_frame)
     FrameLayout frame;
@@ -148,7 +148,7 @@ public class TabsActivity extends AppCompatActivity implements
     @ViewById(R.id.drawer_layout)
     DrawerLayout mDrawerLayout;
 
-    ActionBarDrawerToggle mDrawerToggle;
+    private ActionBarDrawerToggle mDrawerToggle;
 
     private final List<String> drawerItems = new ArrayList<>();
 
@@ -243,8 +243,8 @@ public class TabsActivity extends AppCompatActivity implements
      * @param currentBestLocation The current Location fix, to which you want to compare the new
      *                            one
      */
-    protected boolean isBetterLocation(Location location,
-                                       Location currentBestLocation) {
+    private boolean isBetterLocation(Location location,
+                                     Location currentBestLocation) {
 
         if (location == null) {
             // A null new location is always worse than any other
@@ -593,9 +593,8 @@ public class TabsActivity extends AppCompatActivity implements
     private String formatRegionTitle(Context context, Titled region) {
         String regionTitle =
                 context.getResources().getString(region.getTitleRes());
-        String title = mTitleRegion + ": " + regionTitle;
 
-        return title;
+        return mTitleRegion + ": " + regionTitle;
     }
 
     private void updateRegionTitle(Context context, Titled region) {
@@ -696,7 +695,7 @@ public class TabsActivity extends AppCompatActivity implements
                                         prefs.edit()
                                                 .putBoolean(
                                                         getString(R.string.pref_ask_location),
-                                                        false).commit();
+                                                        false).apply();
 
                                         dialog.dismiss();
                                     }
@@ -709,9 +708,7 @@ public class TabsActivity extends AppCompatActivity implements
 
     private LocationManager getLocationManager() {
 
-        LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-
-        return locationManager;
+        return (LocationManager) getSystemService(Context.LOCATION_SERVICE);
     }
 
     private Location getLastKnownLocation() {
@@ -777,11 +774,6 @@ public class TabsActivity extends AppCompatActivity implements
         }
 
         return myRegion;
-    }
-
-    @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
     }
 
     private void initLocation() {
@@ -963,20 +955,20 @@ public class TabsActivity extends AppCompatActivity implements
 		ft.commit();
 	}
 
-	private boolean isExpired(Region region, Long maxAge) {
+	private boolean isExpired(Region region) {
 
 		Long now = new Date().getTime();
 		Long lastUpdateTime = this.dbAdapter.fetchLastUpdateTime(region);
 
 		Long age = now - lastUpdateTime;
 
-		return (age > maxAge);
+		return (age > (Long) EXPIRATION_PERIOD);
 	}
 
 	@Override
 	public void read(Region region, boolean now) {
 
-		boolean expired = isExpired(region, EXPIRATION_PERIOD);
+		boolean expired = isExpired(region);
 		if (now || expired) {
 
 			if (!this.task.isInProgress()) {
