@@ -14,7 +14,7 @@ import ch.prokopovi.struct.ProviderRequirements;
 class RoutineUpdateActionStrategy extends AbstractUpdateActionStrategy
 		implements Strategy {
 
-	private static final String LOG_TAG = "RoutineUpdateActionStrategy";
+	private static final String LOG_TAG = "RoutineUpdateStrategy";
 
 	private final CurrencyCode[] requestedCurrencies;
 

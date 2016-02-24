@@ -19,7 +19,7 @@ import ch.prokopovi.struct.ProviderRequirements;
 class ExpiredUpdateActionStrategy extends AbstractUpdateActionStrategy
 		implements Strategy {
 
-	private static final String LOG_TAG = "ExpiredUpdateActionStrategy";
+	private static final String LOG_TAG = "ExpiredUpdateStrategy";
 
 	ExpiredUpdateActionStrategy(Context context,
 			ProviderRequirements requirements) {

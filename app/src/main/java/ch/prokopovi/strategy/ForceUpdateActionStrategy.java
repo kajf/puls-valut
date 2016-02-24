@@ -13,7 +13,7 @@ import ch.prokopovi.struct.ProviderRequirements;
 
 class ForceUpdateActionStrategy extends AbstractUpdateActionStrategy {
 
-	private static final String LOG_TAG = "ForceUpdateActionStrategy";
+	private static final String LOG_TAG = "ForceUpdateStrategy";
 
 	ForceUpdateActionStrategy(Context context, ProviderRequirements requirements) {
 		super(context, requirements);
