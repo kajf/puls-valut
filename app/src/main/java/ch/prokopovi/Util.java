@@ -78,7 +78,7 @@ public final class Util {
 	 * 
 	 * @return
 	 */
-	public static final boolean isInSameDay(long t1, long t2) {
+	public static boolean isInSameDay(long t1, long t2) {
 
 		Calendar cal1 = Calendar.getInstance();
 		cal1.setTime(new Date(t1));

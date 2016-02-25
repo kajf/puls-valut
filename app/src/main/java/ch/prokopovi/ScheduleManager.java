@@ -13,11 +13,11 @@ import android.util.Log;
 public final class ScheduleManager {
 
 	public enum ScheduledIntentCode {
-		MORNING(9 * 60 + 30), AFTERNOON(12 * 60 + 30), EVENING(16 * 60);
+		MORNING(9 * 60 + 30), AFTERNOON(13 * 60), EVENING(16 * 60);
 
 		private int minutesFromMidnight = 0;
 
-		private ScheduledIntentCode(int minutesFromMidnight) {
+		ScheduledIntentCode(int minutesFromMidnight) {
 			this.minutesFromMidnight = minutesFromMidnight;
 		}
 
@@ -105,7 +105,7 @@ public final class ScheduleManager {
 	private static Map<ScheduledIntentCode, PendingIntent> prepareSenders(
 			Context context) {
 
-		Map<ScheduledIntentCode, PendingIntent> res = new HashMap<ScheduleManager.ScheduledIntentCode, PendingIntent>();
+		Map<ScheduledIntentCode, PendingIntent> res = new HashMap<>();
 
 		ScheduledIntentCode[] intentCodes = ScheduledIntentCode.values();
 		for (ScheduledIntentCode code : intentCodes) {

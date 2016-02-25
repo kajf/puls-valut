@@ -18,8 +18,7 @@
     
     <dimen name="wide_widget_min_width">294dp</dimen>
     <dimen name="wide_widget_min_height">78dp</dimen>    
-    
-    <dimen name="text_size">15dp</dimen>
+
     <dimen name="padding">66dp</dimen>    
 
 </resources>

@@ -41,7 +41,7 @@ android {
     buildToolsVersion '23.0.2'
     defaultConfig {
         applicationId "ch.prokopovi"
-        minSdkVersion 9
+        minSdkVersion 10
         targetSdkVersion 23
         versionCode 120
         versionName "9.21"

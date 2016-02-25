@@ -1,16 +1,13 @@
 package ch.prokopovi.provider;
 
-import android.util.Log;
-
-import org.w3c.dom.Node;
+import org.w3c.dom.*;
 
 import java.util.*;
 
-import ch.prokopovi.api.struct.ProviderRate;
-import ch.prokopovi.err.WebUpdatingException;
+import ch.prokopovi.api.struct.*;
+import ch.prokopovi.err.*;
 import ch.prokopovi.struct.Master.*;
-import ch.prokopovi.struct.ProviderRateBuilder;
-import ch.prokopovi.struct.ProviderRequirements;
+import ch.prokopovi.struct.*;
 
 public class AlfaProvider extends AbstractProvider {
 

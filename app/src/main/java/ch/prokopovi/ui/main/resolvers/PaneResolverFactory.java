@@ -1,15 +1,13 @@
 package ch.prokopovi.ui.main.resolvers;
 
-import android.content.Context;
-import android.content.res.Configuration;
-import android.support.v4.app.FragmentActivity;
-import android.util.Log;
+import android.content.*;
+import android.content.res.*;
+import android.support.v4.app.*;
+import android.util.*;
 
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GooglePlayServicesUtil;
+import com.google.android.gms.common.*;
 
-import ch.prokopovi.VersionHelper;
-import ch.prokopovi.ui.main.FragmentTag;
+import ch.prokopovi.*;
 
 public class PaneResolverFactory {
     private static final String LOG_TAG = "PaneResolverFactory";
