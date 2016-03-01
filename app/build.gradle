@@ -43,8 +43,8 @@ android {
         applicationId "ch.prokopovi"
         minSdkVersion 10
         targetSdkVersion 23
-        versionCode 120
-        versionName "9.21"
+        versionCode 121
+        versionName "9.3"
     }
     buildTypes {
         release {
