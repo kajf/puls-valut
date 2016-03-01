@@ -136,18 +136,15 @@ public class MyFinCollectorBot extends AbstractCollectorBot {
 //                        id: '7598',
 //                        icon_b: 'homecredit-bank',
 //                        adr: 'г. Минск, пр-т Независимости, 40',
-//                        show_icon: '1',
 //                        header: '<div class="map-descr"><div class="b-logo"><a href="/bank/homecredit-bank"><center><img src="/images/bank_logos/hcb.png" height="35px"/></center></a></div><div class="b-name"><a href="/bank/homecredit-bank/department/7598">ЦБУ №702 ОАО "Хоум Кредит Банк"</a><div class="descr">Филиал</div></div>',
 //                        main: '<div class="b-address">г. Минск, пр-т Независимости, 40</div><div class="b-time">Пн-Пт: 09:00-19:00,<br />Сб: 10:00-17:00,<br />Вс: 10:00-15:00</div><div class="b-time-active text-success"><div class="text-success">До закрытия 4 мин.</div></div><div class="b-tel">+375 (17) 229 89 89</div>',
 //                        finalTime: '<div class="text-success">До закрытия 4 мин.</div>',
 //                        footer: '<a class="link-more" href="/bank/homecredit-bank/department/7598">Подробнее</a></div>',
-//                        link: '<a href="/bank/homecredit-bank/department/7598">Подробнее</a>',
 //                        url: '/bank/homecredit-bank/department/7598',
 //                        name: 'ЦБУ №702 ОАО "Хоум Кредит Банк"',
 //                        work_time: 'Пн-Пт: 09:00-19:00,<br />Сб: 10:00-17:00,<br />Вс: 10:00-15:00',
 //                        type: 'Филиал',
-//                        phone: '+375 (17) 229 89 89',
-//                        icon: ''
+//                        phone: '+375 (17) 229 89 89'
 //              },
 
 
