@@ -49,17 +49,10 @@ android {
     buildTypes {
         release {
             minifyEnabled true
-            proguardFile getDefaultProguardFile('proguard-android.txt')
+            proguardFiles getDefaultProguardFile('proguard-android.txt'),'proguard-rules.pro'
         }
     }
 
-    productFlavors {
-        flavor1 {
-        }
-        flavor2 {
-            proguardFile 'proguard-rules.pro'
-        }
-    }
     // This is only needed if you project structure doesn't fit the one found here
     // http://tools.android.com/tech-docs/new-build-system/user-guide#TOC-Project-Structure
     sourceSets {
