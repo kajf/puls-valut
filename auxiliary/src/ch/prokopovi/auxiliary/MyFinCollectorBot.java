@@ -1,5 +1,6 @@
 package ch.prokopovi.auxiliary;
 
+import ch.prokopovi.exported.*;
 import ch.prokopovi.exported.PureConst.Bank;
 import ch.prokopovi.exported.PureConst.MyfinRegion;
 import org.json.JSONArray;
@@ -123,7 +124,7 @@ public class MyFinCollectorBot extends AbstractCollectorBot {
 
             // poisk page
             String[][] poiskParams = buildPoiskParams(city.getId());
-            String postPoisk = post(URL_POISK, poiskParams);
+            String postPoisk = post(getPoiskUrl(city), poiskParams);
 
             String strJsonPoisk = extract(postPoisk, "myPoints = ", "myPoints.forEach(function (point)");
 
@@ -175,6 +176,16 @@ public class MyFinCollectorBot extends AbstractCollectorBot {
         System.out.printf("--- Places in service %d of %d loaded (%d percent) \n", svcCnt, res.size(), svcCnt*100/res.size());
 
         return res;
+    }
+
+    private static String getPoiskUrl(PureConst.MyfinRegion city) {
+        String url = URL_POISK;
+
+        if (!MyfinRegion.MINSK.equals(city)) {
+            url += "/" +city.name().toLowerCase();
+        }
+
+        return url;
     }
 
     private static String[][] buildPoiskParams(int cityId) {
