@@ -19,7 +19,7 @@ public class MyfinPlacesProvider extends AbstractPlacesProvider {
 
 	private static final String LOG_TAG = "myfin.by provider";
 
-	private static final String URL_FORMAT = "http://myfin.by/scripts/xml_new/work/banks_city_%1$s.xml";
+	private static final String URL_FORMAT = "http://admin.myfin.by/outer/authXml/%1$s";
 
 	public enum MyfinCurrency {
 		USD("usd", CurrencyCode.USD), //

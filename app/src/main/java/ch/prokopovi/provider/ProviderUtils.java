@@ -1,12 +1,10 @@
 package ch.prokopovi.provider;
 
-import org.w3c.dom.Node;
-import org.xml.sax.InputSource;
+import org.w3c.dom.*;
+import org.xml.sax.*;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
+import java.io.*;
+import java.net.*;
 
 import javax.xml.xpath.*;
 
@@ -51,14 +49,17 @@ public class ProviderUtils {
 	}
 
 	public static Node readFrom(String location) throws Exception {
-
 		URL url = new URL(location);
-		InputSource src = new InputSource(url.openStream());
+		HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+		conn.setRequestProperty("Authorization", "Basic cHVsczp2YWx1dA==");
 
-		Node root = (Node) newXpath().evaluate("/", src, XPathConstants.NODE);
+		try {
+			InputSource src = new InputSource(conn.getInputStream());
 
-		return root;
-
+			return (Node) newXpath().evaluate("/", src, XPathConstants.NODE);
+		} finally {
+			conn.disconnect();
+		}
 	}
 
 	public static String evaluateXPath(String xpath, Node root) {
