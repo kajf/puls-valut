@@ -126,29 +126,24 @@ public class MyFinCollectorBot extends AbstractCollectorBot {
             String[][] poiskParams = buildPoiskParams(city.getId());
             String postPoisk = post(getPoiskUrl(city), poiskParams);
 
-            String strJsonPoisk = extract(postPoisk, "myPoints = ", "myPoints.forEach(function (point)");
+            String strJsonPoisk = extract(postPoisk, "myPoints = $.parseJSON('", "myPoints.forEach(function (point)");
 
             JSONArray placesPoisk = new JSONArray(strJsonPoisk);
             for (int i = 0; i < placesPoisk.length(); i++) {
                 JSONObject placePoisk = placesPoisk.getJSONObject(i);
 
-//                {       coords: [53.908738,27.576159],
-//                        coords2: '["53.908738","27.576159"]',
-//                        id: '7598',
-//                        icon_b: 'homecredit-bank',
-//                        adr: 'г. Минск, пр-т Независимости, 40',
-//                        header: '<div class="map-descr"><div class="b-logo"><a href="/bank/homecredit-bank"><center><img src="/images/bank_logos/hcb.png" height="35px"/></center></a></div><div class="b-name"><a href="/bank/homecredit-bank/department/7598">ЦБУ №702 ОАО "Хоум Кредит Банк"</a><div class="descr">Филиал</div></div>',
-//                        main: '<div class="b-address">г. Минск, пр-т Независимости, 40</div><div class="b-time">Пн-Пт: 09:00-19:00,<br />Сб: 10:00-17:00,<br />Вс: 10:00-15:00</div><div class="b-time-active text-success"><div class="text-success">До закрытия 4 мин.</div></div><div class="b-tel">+375 (17) 229 89 89</div>',
-//                        finalTime: '<div class="text-success">До закрытия 4 мин.</div>',
-//                        footer: '<a class="link-more" href="/bank/homecredit-bank/department/7598">Подробнее</a></div>',
-//                        url: '/bank/homecredit-bank/department/7598',
-//                        name: 'ЦБУ №702 ОАО "Хоум Кредит Банк"',
-//                        work_time: 'Пн-Пт: 09:00-19:00,<br />Сб: 10:00-17:00,<br />Вс: 10:00-15:00',
-//                        type: 'Филиал',
-//                        phone: '+375 (17) 229 89 89'
-//              },
-
-
+                //{
+                // "adr":"г. Минск, ул. Сурганова, 43",
+                // "phone":"(017) 217 64 64, 200 68 80, факс: (017) 200 17 00",
+                // "type":"Главное отделение",
+                // "icon_b":"alfabank",
+                // "url":"/bank/alfabank/department/15-minsk-ul-surganova-43",
+                // "finalTime":[["09:00","17:00"],["09:00","17:00"],["09:00","17:00"],["09:00","17:00"],["09:00","16:00"],["00:00","00:00"],["00:00","00:00"]],
+                // "header":"<div class=\\\"map-descr\\\"><div class=\\\"b-logo\\\"><a href=\\\"/bank/alfabank\\\"><center><img src=\\\"http://admin.myfin.by/images/bank_logos/alfabank.png\\\" height=\\\"35px\\\"/><\/center><\/a><\/div><div class=\\\"b-name\\\"><a href=\\\"/bank/alfabank/department/15-minsk-ul-surganova-43\\\">Головной офис ЗАО «Альфа-Банк»<\/a><div class=\\\"descr\\\">Главное отделение<\/div><\/div>","main":"<div class=\\\"b-address\\\">г. Минск, ул. Сурганова, 43<\/div><div class=\\\"b-time\\\">Пн-Чт: 09:00-17:00,<br />Пт: 09:00-16:00,<br />Сб-Вс: Выходной<\/div><div class=\\\"b-tel\\\">(017) 217 64 64, 200 68 80, факс: (017) 200 17 00<\/div>","id":"15","footer":"<a href=\\\"/bank/alfabank/department/15-minsk-ul-surganova-43\\\" class=\\\"link-more\\\">Подробнее<\/a><\/div>",
+                // "coords":"[53.926849,27.589382]",
+                // "name":"Головной офис ЗАО «Альфа-Банк»",
+                // "work_time":"Пн-Чт: 09:00-17:00,<br />Пт: 09:00-16:00,<br />Сб-Вс: Выходной"
+                // }
 
                 Place parsedPlace = parse(placePoisk);
                 if (!isFilterPassed(parsedPlace))
@@ -203,10 +198,12 @@ public class MyFinCollectorBot extends AbstractCollectorBot {
     }
 
     private static Place parse(JSONObject place) throws JSONException {
-        JSONArray coords = place.getJSONArray("coords");
+        String coords = place.getString("coords");
+        coords = coords.replace("[", "").replace("]", "");
+        final String[] split = coords.split(",");
 
-        Double cx = coords.getDouble(0);
-        Double cy = coords.getDouble(1);
+        Double cx = Double.valueOf(split[0]);
+        Double cy = Double.valueOf(split[1]);
         String name = place.getString("name");
         String adr = place.getString("adr");
 

@@ -1,7 +1,5 @@
 package ch.prokopovi.auxiliary;
 
-import org.hamcrest.*;
-
 import java.util.*;
 
 import ch.prokopovi.exported.PureConst.Bank;
