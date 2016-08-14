@@ -15,13 +15,21 @@
 		<LinearLayout 
 		    android:layout_width="match_parent"
 			android:layout_height="0dp"
-			android:layout_weight="2"	
+			android:layout_weight="2"
 			android:gravity="center">
-				
-			<TextView android:id="@+id/tvMultiCurrency_1" 
-			    style="@style/CurrencyTextArea"
-			    android:layout_width="0dp"
-				android:layout_weight="@dimen/widget_currency_ratio"/>
+
+			<LinearLayout
+				android:layout_height="wrap_content"
+				android:orientation="vertical"
+				android:layout_width="0dp"
+				android:layout_weight="@dimen/widget_currency_ratio"
+				android:gravity="center">
+
+				<TextView android:id="@+id/tvMultiCurrency_1" style="@style/CurrencyTextArea" />
+
+				<TextView android:id="@+id/tvMultiCurrency_Scale_1" style="@style/CurrencyTextArea"
+					android:textSize="12sp" />
+			</LinearLayout>
 				
 			<LinearLayout 
 				android:layout_height="wrap_content"
@@ -75,12 +83,20 @@
 			android:layout_height="0dp"
 			android:layout_weight="2" 
 			android:gravity="center">
-				
-			<TextView android:id="@+id/tvMultiCurrency_2" 
-			    style="@style/CurrencyTextArea"
-			    android:layout_width="0dp"
-				android:layout_weight="@dimen/widget_currency_ratio"/>
-	
+
+			<LinearLayout
+				android:layout_height="wrap_content"
+				android:orientation="vertical"
+				android:layout_width="0dp"
+				android:layout_weight="@dimen/widget_currency_ratio"
+				android:gravity="center">
+
+				<TextView android:id="@+id/tvMultiCurrency_2" style="@style/CurrencyTextArea"/>
+
+				<TextView android:id="@+id/tvMultiCurrency_Scale_2" style="@style/CurrencyTextArea"
+					android:textSize="12sp"	/>
+			</LinearLayout>
+
 			<LinearLayout 
 				android:layout_height="wrap_content" 
 				android:orientation="vertical"
@@ -133,12 +149,20 @@
 			android:layout_height="0dp"
 			android:layout_weight="2" 
 			android:gravity="center">
-		    			
-			<TextView android:id="@+id/tvMultiCurrency_3" 
-			    style="@style/CurrencyTextArea"
-			    android:layout_width="0dp"
-				android:layout_weight="@dimen/widget_currency_ratio"/>
-	
+
+			<LinearLayout
+				android:layout_height="wrap_content"
+				android:orientation="vertical"
+				android:layout_width="0dp"
+				android:layout_weight="@dimen/widget_currency_ratio"
+				android:gravity="center">
+
+				<TextView android:id="@+id/tvMultiCurrency_3" style="@style/CurrencyTextArea" />
+
+				<TextView android:id="@+id/tvMultiCurrency_Scale_3" style="@style/CurrencyTextArea"
+					android:textSize="12sp" />
+			</LinearLayout>
+
 			<LinearLayout 
 				android:layout_height="wrap_content" 
 				android:orientation="vertical"

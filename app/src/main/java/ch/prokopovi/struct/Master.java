@@ -57,7 +57,7 @@ public final class Master {
 		EUR_USD(8, R.string.lbl_eurusd, 0), //
 		CHF(9, R.string.lbl_chf, 0), //
 		RON(10, R.string.lbl_ron, 0), //
-		BYR(11, R.string.lbl_byr, 0), //
+		BYR(11, R.string.lbl_byn, 0), //
 		LTL(12, R.string.lbl_ltl, 0), ;
 
 		private static HashMap<String, CurrencyCode> map;

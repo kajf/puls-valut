@@ -21,9 +21,11 @@ public class WidgetProvider extends AbstractWidgetProvider {
 		RateValueUiMap sellValueViewIds = new RateValueUiMap(R.id.sell_arrow,
 				R.id.tvSell, R.id.tvSellDynamic);
 
-		RateUiMap rateUiMap = new RateUiMap(R.id.tvCurrency);
-		rateUiMap.setBuy(buyValueViewIds);
-		rateUiMap.setSell(sellValueViewIds);
+		RateUiMap rateUiMap = new RateUiMap(
+				R.id.tvCurrency,
+				R.id.tvCurrency_Scale,
+				buyValueViewIds,
+				sellValueViewIds);
 
 		UI_MAP.getRates().add(rateUiMap);
 	}

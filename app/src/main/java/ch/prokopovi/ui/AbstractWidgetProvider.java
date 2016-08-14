@@ -34,7 +34,7 @@ public abstract class AbstractWidgetProvider extends AppWidgetProvider {
 		private final Integer cfgClickId;
 
 		private final WidgetSize widgetSize;
-		private final List<RateUiMap> rates = new ArrayList<AbstractWidgetProvider.RateUiMap>();
+		private final List<RateUiMap> rates = new ArrayList<>();
 		private final int prividerThumbId;
 		private final int timeUpdatedId;
 		private final int rateTypeId;
@@ -130,31 +130,16 @@ public abstract class AbstractWidgetProvider extends AppWidgetProvider {
 	}
 
 	protected static class RateUiMap {
-		private final Integer currencyTextId;
-		private RateValueUiMap buy;
-		private RateValueUiMap sell;
+		public final Integer currencyTextId;
+		public final Integer currencyScaleTextId;
 
-		public RateUiMap(Integer currencyTextId) {
+		public RateValueUiMap buy;
+		public RateValueUiMap sell;
+
+		public RateUiMap(Integer currencyTextId, Integer currencyScaleTextId, RateValueUiMap buy, RateValueUiMap sell) {
 			this.currencyTextId = currencyTextId;
-		}
-
-		public RateValueUiMap getBuy() {
-			return this.buy;
-		}
-
-		public Integer getCurrencyTextId() {
-			return this.currencyTextId;
-		}
-
-		public RateValueUiMap getSell() {
-			return this.sell;
-		}
-
-		public void setBuy(RateValueUiMap buy) {
+			this.currencyScaleTextId = currencyScaleTextId;
 			this.buy = buy;
-		}
-
-		public void setSell(RateValueUiMap sell) {
 			this.sell = sell;
 		}
 	}

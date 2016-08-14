@@ -25,9 +25,11 @@ public class WideWidgetProvider extends AbstractWidgetProvider {
 				R.id.iv_wide_sell_arrow_1, R.id.tvWideSell_1,
 				R.id.tvWideSellDynamic_1);
 
-		RateUiMap rateViewIds1 = new RateUiMap(R.id.tvWideCurrency_1);
-		rateViewIds1.setBuy(buyValueViewIds1);
-		rateViewIds1.setSell(sellValueViewIds1);
+		RateUiMap rateViewIds1 = new RateUiMap(
+				R.id.tvWideCurrency_1,
+				R.id.tvWideCurrency_Scale_1,
+				buyValueViewIds1,
+				sellValueViewIds1);
 
 		// 2 rate
 		RateValueUiMap buyValueViewIds2 = new RateValueUiMap(
@@ -38,9 +40,11 @@ public class WideWidgetProvider extends AbstractWidgetProvider {
 				R.id.iv_wide_sell_arrow_2, R.id.tvWideSell_2,
 				R.id.tvWideSellDynamic_2);
 
-		RateUiMap rateViewIds2 = new RateUiMap(R.id.tvWideCurrency_2);
-		rateViewIds2.setBuy(buyValueViewIds2);
-		rateViewIds2.setSell(sellValueViewIds2);
+		RateUiMap rateViewIds2 = new RateUiMap(
+				R.id.tvWideCurrency_2,
+				R.id.tvWideCurrency_Scale_2,
+				buyValueViewIds2,
+				sellValueViewIds2);
 
 		// assemble
 		UI_MAP.getRates().add(rateViewIds1);

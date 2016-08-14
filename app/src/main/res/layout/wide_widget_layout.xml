@@ -26,12 +26,18 @@
                 android:layout_weight="1"
                 android:gravity="center" >
 
-                <TextView
-                    android:id="@+id/tvWideCurrency_1"
-                    android:textSize="19sp"
-                    style="@style/CurrencyTextArea"
+                <LinearLayout
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
                     android:layout_width="0dp"
-                    android:layout_weight="@dimen/widget_currency_ratio" />
+                    android:layout_weight="@dimen/widget_currency_ratio"
+                    android:gravity="center">
+
+                    <TextView android:id="@+id/tvWideCurrency_1" style="@style/CurrencyTextArea" />
+
+                    <TextView android:id="@+id/tvWideCurrency_Scale_1" style="@style/CurrencyTextArea"
+                        android:textSize="12sp" />
+                </LinearLayout>
 
                 <LinearLayout
                     android:layout_width="0dp"
@@ -94,12 +100,18 @@
                 android:layout_weight="1"
                 android:gravity="center" >
 
-                <TextView
-                    android:id="@+id/tvWideCurrency_2"
-                    android:textSize="19sp"
-                    style="@style/CurrencyTextArea"
+                <LinearLayout
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
                     android:layout_width="0dp"
-                    android:layout_weight="@dimen/widget_currency_ratio" />
+                    android:layout_weight="@dimen/widget_currency_ratio"
+                    android:gravity="center">
+
+                    <TextView android:id="@+id/tvWideCurrency_2" style="@style/CurrencyTextArea" />
+
+                    <TextView android:id="@+id/tvWideCurrency_Scale_2" style="@style/CurrencyTextArea"
+                        android:textSize="12sp" />
+                </LinearLayout>
 
                 <LinearLayout
                     android:layout_width="0dp"

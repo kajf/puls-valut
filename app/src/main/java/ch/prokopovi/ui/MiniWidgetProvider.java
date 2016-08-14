@@ -21,9 +21,7 @@ public class MiniWidgetProvider extends AbstractWidgetProvider {
 		RateValueUiMap sellValueViewIds = new RateValueUiMap(
 				R.id.iv_mini_sell_arrow, R.id.tv_mini_sell, null);
 
-		RateUiMap rateUiMap = new RateUiMap(null);
-		rateUiMap.setBuy(buyValueViewIds);
-		rateUiMap.setSell(sellValueViewIds);
+		RateUiMap rateUiMap = new RateUiMap(null, null,buyValueViewIds,sellValueViewIds);
 
 		UI_MAP.getRates().add(rateUiMap);
 	}

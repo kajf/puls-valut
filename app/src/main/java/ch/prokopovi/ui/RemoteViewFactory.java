@@ -1,36 +1,22 @@
 package ch.prokopovi.ui;
 
-import java.text.DecimalFormat;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
+import android.app.*;
+import android.appwidget.*;
+import android.content.*;
+import android.text.format.*;
+import android.util.*;
+import android.view.*;
+import android.widget.*;
 
-import android.app.PendingIntent;
-import android.appwidget.AppWidgetManager;
-import android.content.Context;
-import android.content.Intent;
-import android.text.format.DateUtils;
-import android.util.Log;
-import android.view.View;
-import android.widget.RemoteViews;
-import ch.prokopovi.IntentFactory;
-import ch.prokopovi.R;
-import ch.prokopovi.Util;
-import ch.prokopovi.api.struct.ProviderRate;
-import ch.prokopovi.struct.Master.CurrencyCode;
-import ch.prokopovi.struct.Master.OperationType;
-import ch.prokopovi.struct.Master.ProviderCode;
-import ch.prokopovi.struct.Master.RateType;
-import ch.prokopovi.struct.WidgetPreferences;
-import ch.prokopovi.ui.AbstractWidgetProvider.ClickUiMap;
-import ch.prokopovi.ui.AbstractWidgetProvider.MessageUiMap;
-import ch.prokopovi.ui.AbstractWidgetProvider.RateUiMap;
-import ch.prokopovi.ui.AbstractWidgetProvider.RateValueUiMap;
-import ch.prokopovi.ui.AbstractWidgetProvider.WidgetUiMap;
-import ch.prokopovi.ui.main.TabsActivity;
+import java.text.*;
+import java.util.*;
+
+import ch.prokopovi.*;
+import ch.prokopovi.api.struct.*;
+import ch.prokopovi.struct.Master.*;
+import ch.prokopovi.struct.*;
+import ch.prokopovi.ui.AbstractWidgetProvider.*;
+import ch.prokopovi.ui.main.*;
 
 public final class RemoteViewFactory {
 
@@ -149,33 +135,34 @@ public final class RemoteViewFactory {
 	 */
 	private static void resetRate(RemoteViews views, RateUiMap rateUiMap) {
 
-		Integer currencyTextId = rateUiMap.getCurrencyTextId();
+		Integer currencyTextId = rateUiMap.currencyTextId;
 		if (currencyTextId != null)
 			views.setViewVisibility(currencyTextId, View.GONE);
 
-		RateValueUiMap buyUi = rateUiMap.getBuy();
-		RateValueUiMap sellUi = rateUiMap.getSell();
+		Integer currencyScaleTextId = rateUiMap.currencyScaleTextId;
+		if (currencyScaleTextId != null)
+			views.setViewVisibility(currencyScaleTextId, View.GONE);
 
-		views.setTextViewText(buyUi.getCurrentId(), "");
-		views.setTextViewText(sellUi.getCurrentId(), "");
+		views.setTextViewText(rateUiMap.buy.getCurrentId(), "");
+		views.setTextViewText(rateUiMap.sell.getCurrentId(), "");
 
-		Integer buyDirectId = buyUi.getDirectionId();
+		Integer buyDirectId = rateUiMap.buy.getDirectionId();
 		if (buyDirectId != null) {
 			views.setImageViewResource(buyDirectId, R.drawable.arrow_up);
 			views.setViewVisibility(buyDirectId, View.GONE);
 		}
 
-		Integer sellDirectId = sellUi.getDirectionId();
+		Integer sellDirectId = rateUiMap.sell.getDirectionId();
 		if (sellDirectId != null) {
 			views.setImageViewResource(sellDirectId, R.drawable.arrow_up);
 			views.setViewVisibility(sellDirectId, View.GONE);
 		}
 
-		Integer buyDynId = buyUi.getDynamicId();
+		Integer buyDynId = rateUiMap.buy.getDynamicId();
 		if (buyDynId != null)
 			views.setTextViewText(buyDynId, "");
 
-		Integer sellDynId = sellUi.getDynamicId();
+		Integer sellDynId = rateUiMap.sell.getDynamicId();
 		if (sellDynId != null)
 			views.setTextViewText(sellDynId, "");
 
@@ -249,17 +236,25 @@ public final class RemoteViewFactory {
 			return 0;
 		}
 
-		Integer currencyTextId = rateUiMap.getCurrencyTextId();
-
 		CurrencyCode currencyCode = rate.get(0).getCurrencyCode();
+		ProviderCode providerCode = rate.get(0).getProvider();
+		int scale = getScale(providerCode, currencyCode);
 
-		if (currencyTextId != null)
-			views.setViewVisibility(currencyTextId, View.VISIBLE);
+		Integer currencyTextId = rateUiMap.currencyTextId;
 
 		if (currencyTextId != null) {
+			views.setViewVisibility(currencyTextId, View.VISIBLE);
+
 			String txt = ctx.getResources().getString(
 					currencyCode.getTitleRes());
 			views.setTextViewText(currencyTextId, txt);
+		}
+
+		Integer currencyScaleTextId = rateUiMap.currencyScaleTextId;
+		if (currencyScaleTextId != null && scale != 1) {
+			views.setViewVisibility(currencyScaleTextId, View.VISIBLE);
+
+			views.setTextViewText(currencyScaleTextId, "("+scale+")");
 		}
 
 		// sort by exchange type
@@ -279,10 +274,26 @@ public final class RemoteViewFactory {
 		// ---
 
 		int res = 0;
-		res += fillRateValue(views, rateUiMap.getBuy(), buyPair);
-		res += fillRateValue(views, rateUiMap.getSell(), sellPair);
+		res += fillRateValue(views, rateUiMap.buy, buyPair);
+		res += fillRateValue(views, rateUiMap.sell, sellPair);
 
 		return res > 0 ? 1 : 0;
+	}
+
+	private static int getScale(ProviderCode providerCode, CurrencyCode currencyCode) {
+
+		switch (providerCode) {
+			case NBRB:
+				if (CurrencyCode.RUR == currencyCode) return 100;
+				if (CurrencyCode.PLN == currencyCode) return 10;
+				if (CurrencyCode.UAH == currencyCode) return 100;
+				if (CurrencyCode.JPY == currencyCode) return 100;
+
+			case PRIOR:
+				if (CurrencyCode.RUR == currencyCode) return 100;
+		}
+
+		return 1;
 	}
 
 	/**

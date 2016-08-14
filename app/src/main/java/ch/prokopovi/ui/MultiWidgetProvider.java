@@ -1,7 +1,7 @@
 package ch.prokopovi.ui;
 
-import ch.prokopovi.R;
-import ch.prokopovi.struct.Master.WidgetSize;
+import ch.prokopovi.*;
+import ch.prokopovi.struct.Master.*;
 
 public class MultiWidgetProvider extends AbstractWidgetProvider {
 
@@ -25,9 +25,11 @@ public class MultiWidgetProvider extends AbstractWidgetProvider {
 				R.id.iv_multi_sell_arrow_1, R.id.tvMultiSell_1,
 				R.id.tvMultiSellDynamic_1);
 
-		RateUiMap rateViewIds1 = new RateUiMap(R.id.tvMultiCurrency_1);
-		rateViewIds1.setBuy(buyValueViewIds1);
-		rateViewIds1.setSell(sellValueViewIds1);
+		RateUiMap rateViewIds1 = new RateUiMap(
+				R.id.tvMultiCurrency_1,
+				R.id.tvMultiCurrency_Scale_1,
+				buyValueViewIds1,
+				sellValueViewIds1);
 
 		// 2 rate
 		RateValueUiMap buyValueViewIds2 = new RateValueUiMap(
@@ -38,9 +40,11 @@ public class MultiWidgetProvider extends AbstractWidgetProvider {
 				R.id.iv_multi_sell_arrow_2, R.id.tvMultiSell_2,
 				R.id.tvMultiSellDynamic_2);
 
-		RateUiMap rateViewIds2 = new RateUiMap(R.id.tvMultiCurrency_2);
-		rateViewIds2.setBuy(buyValueViewIds2);
-		rateViewIds2.setSell(sellValueViewIds2);
+		RateUiMap rateViewIds2 = new RateUiMap(
+				R.id.tvMultiCurrency_2,
+				R.id.tvMultiCurrency_Scale_2,
+				buyValueViewIds2,
+				sellValueViewIds2);
 
 		// 3 rate
 		RateValueUiMap buyValueViewIds3 = new RateValueUiMap(
@@ -51,9 +55,11 @@ public class MultiWidgetProvider extends AbstractWidgetProvider {
 				R.id.iv_multi_sell_arrow_3, R.id.tvMultiSell_3,
 				R.id.tvMultiSellDynamic_3);
 
-		RateUiMap rateViewIds3 = new RateUiMap(R.id.tvMultiCurrency_3);
-		rateViewIds3.setBuy(buyValueViewIds3);
-		rateViewIds3.setSell(sellValueViewIds3);
+		RateUiMap rateViewIds3 = new RateUiMap(
+				R.id.tvMultiCurrency_3,
+				R.id.tvMultiCurrency_Scale_3,
+				buyValueViewIds3,
+				sellValueViewIds3);
 
 		// assemble
 		UI_MAP.getRates().add(rateViewIds1);
