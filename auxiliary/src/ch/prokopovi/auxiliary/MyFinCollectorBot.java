@@ -14,14 +14,17 @@ import org.xml.sax.InputSource;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import java.net.URL;
+import javax.xml.xpath.*;
+
+import java.io.*;
+import java.net.*;
 import java.util.*;
 
 public class MyFinCollectorBot extends AbstractCollectorBot {
 
     private static final String OUT_FILE = "output.sql";
     private static final String URL_POISK = "http://myfin.by/banki/poisk";
-    private static final String URL_SERVICE_FMT = "http://myfin.by/scripts/xml_new/work/banks_city_%d.xml";
+    private static final String URL_SERVICE_FMT = "http://admin.myfin.by/outer/authXml/%d";
 
     public static void main(String[] args) throws Throwable {
 
@@ -186,12 +189,12 @@ public class MyFinCollectorBot extends AbstractCollectorBot {
     private static String[][] buildPoiskParams(int cityId) {
 
         String[][] params = new String[][]{
-                {"Mapobject[city_id]", String.valueOf(cityId)},
-                {"Mapobject[filial_type_id][]", "1"},
+                //{"Mapobject[city_id]", String.valueOf(cityId)},
+                //{"Mapobject[filial_type_id][]", "1"},
                 {"Mapobject[filial_type_id][]", "3"},
                 //{"Mapobject[filial_type_id][]", "4"},
                 {"Mapobject[filial_type_id][]", "5"},
-                {"all", "on"},
+                //{"all", "on"},
         };
 
         return params;
@@ -248,11 +251,14 @@ public class MyFinCollectorBot extends AbstractCollectorBot {
 
         String location = String.format(URL_SERVICE_FMT, city.getId());
         URL url = new URL(location);
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+        conn.setRequestProperty("Authorization", "Basic cHVsczp2YWx1dA==");
 
         DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-        InputSource is = new InputSource(url.openStream());
-        Document doc = builder.parse(is);
-        NodeList banks = doc.getElementsByTagName("bank");
+
+        Document doc = builder.parse(conn.getInputStream());
+
+        NodeList banks = doc.getDocumentElement().getElementsByTagName("bank");
 
         int cnt = 0;
         for (int i = 0; i < banks.getLength(); i++) {

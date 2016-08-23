@@ -52,7 +52,7 @@ public class ProviderUtils {
 		URL url = new URL(location);
 		HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 		conn.setRequestProperty("Authorization", "Basic cHVsczp2YWx1dA==");
-
+		// FIXME: should only be applied for myfin.by but not for any call
 		try {
 			InputSource src = new InputSource(conn.getInputStream());
 
