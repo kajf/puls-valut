@@ -17,7 +17,7 @@ public class DbHelper extends SQLiteOpenHelper {
 	private static final String DB_NAME = "androidovich.db";
 
 	// update this if assets/<DB_NAME>.db is updated
-    public static final int DB_VERSION = 74;
+    public static final int DB_VERSION = 75;
     private static final String LOG_TAG = "DbHelper";
 
 	private final Context context;
