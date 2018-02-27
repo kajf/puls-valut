@@ -26,7 +26,8 @@
     </style>     
 
     <style name="CurrencyTextArea" parent="@android:style/TextAppearance.Widget.TextView">
-    	<item name="android:textSize">18sp</item>    	
+    	<item name="android:textSize">18sp</item>
+		<item name="android:textColor">#ffffffff</item>
     	<item name="android:textStyle">normal</item>
 		<item name="android:layout_height">wrap_content</item>
 		<item name="android:layout_width">wrap_content</item>
@@ -35,6 +36,7 @@
     
     <style name="RateValueTextArea" parent="@android:style/TextAppearance.Widget.TextView">
     	<item name="android:textSize">14sp</item>
+		<item name="android:textColor">#ffffffff</item>
 		<item name="android:layout_height">wrap_content</item>
 		<item name="android:layout_width">wrap_content</item>
 		<item name="android:gravity">center</item>
@@ -42,6 +44,7 @@
     
     <style name="RateDynTextArea" parent="@android:style/TextAppearance.Widget.TextView">
     	<item name="android:textSize">10sp</item>
+		<item name="android:textColor">#ffffffff</item>
 		<item name="android:layout_height">wrap_content</item>
 		<item name="android:layout_width">wrap_content</item>
 		<item name="android:gravity">center</item>			
@@ -49,13 +52,15 @@
     
     <style name="FooterTextArea" parent="@android:style/TextAppearance.Widget.TextView">
     	<item name="android:textSize">10sp</item>
+		<item name="android:textColor">#ffffffff</item>
 		<item name="android:layout_height">wrap_content</item>
 		<item name="android:layout_width">fill_parent</item>
 		<item name="android:gravity">center</item>					        
     </style>
     
     <style name="FooterTypeArea" parent="@android:style/TextAppearance.Widget.TextView">
-    	<item name="android:textSize">13sp</item> 
+    	<item name="android:textSize">13sp</item>
+		<item name="android:textColor">#ffffffff</item>
 		<item name="android:layout_height">wrap_content</item>
 		<item name="android:layout_width">wrap_content</item>
 		<item name="android:gravity">center</item>

@@ -51,7 +51,7 @@ public class AlfaProvider extends AbstractProvider {
 	}
 
 	private enum AlfaRateType {
-		CASH("cash", RateType.CASH), CARD("non-cash", RateType.CARD);
+		CASH("office", RateType.CASH), CARD("non-cash", RateType.CARD);
 
 		private final String code;
 		private final RateType rateType;
