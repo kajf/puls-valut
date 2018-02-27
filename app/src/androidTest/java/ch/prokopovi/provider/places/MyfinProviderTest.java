@@ -38,7 +38,7 @@ public class MyfinProviderTest extends AndroidTestCase {
 
     public void testUpdate() throws WebUpdatingException {
 
-        List<Entry<Long, BestRatesRecord>> places = this.provider.getPlaces(Region.BREST);
+        List<Entry<Long, BestRatesRecord>> places = this.provider.getPlaces(getContext(), Region.BREST);
 
         for (Entry<Long, BestRatesRecord> entry : places) {
 

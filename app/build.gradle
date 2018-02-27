@@ -4,7 +4,7 @@ buildscript {
     }
     dependencies {
         // replace with the current version of the Android plugin
-        classpath 'com.android.tools.build:gradle:2.1.3'
+        classpath 'com.android.tools.build:gradle:2.2.0'
         // replace with the current version of the android-apt plugin
         classpath 'com.neenbedankt.gradle.plugins:android-apt:1.4'
     }
@@ -18,7 +18,7 @@ repositories {
 apply plugin: 'com.android.application'
 apply plugin: 'android-apt'
 def AAVersion = '3.3.2'
-def PSVersion = '8.4.0'
+def PSVersion = '11.0.4'
 
 apt {
     arguments {
@@ -37,14 +37,14 @@ apt {
 }
 
 android {
-    compileSdkVersion 23
-    buildToolsVersion '23.0.2'
+    compileSdkVersion 25
+    buildToolsVersion '25.0.2'
     defaultConfig {
         applicationId "ch.prokopovi"
-        minSdkVersion 10
-        targetSdkVersion 23
-        versionCode 124
-        versionName "9.61"
+        minSdkVersion 14
+        targetSdkVersion 25
+        versionCode 126
+        versionName "9.71"
     }
     buildTypes {
         release {
@@ -68,7 +68,7 @@ android {
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile 'com.android.support:appcompat-v7:23.1.1'
+    compile 'com.android.support:appcompat-v7:25.3.1'
     // http://developer.android.com/google/play-services/setup.html
     compile "com.google.android.gms:play-services-location:$PSVersion"
     compile "com.google.android.gms:play-services-maps:$PSVersion"

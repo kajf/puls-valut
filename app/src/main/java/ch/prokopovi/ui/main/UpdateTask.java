@@ -42,7 +42,7 @@ public class UpdateTask {
 			}
 
 			List<Entry<Long, BestRatesRecord>> records = provider
-					.getPlaces(region);
+					.getPlaces(activity, region);
 
 			if (records.size() > 0) {
 

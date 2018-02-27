@@ -1,5 +1,6 @@
 package ch.prokopovi.provider.places;
 
+import android.content.Context;
 import android.util.Log;
 
 import org.w3c.dom.Node;
@@ -65,7 +66,7 @@ public class MyfinPlacesProvider extends AbstractPlacesProvider {
 	}
 
 	@Override
-	public List<Entry<Long, BestRatesRecord>> getPlaces(Region region) {
+	public List<Entry<Long, BestRatesRecord>> getPlaces(Context context, Region region) {
 		Log.d(LOG_TAG, " --- loading places --- ");
 
 		long start = new Date().getTime();
@@ -75,7 +76,7 @@ public class MyfinPlacesProvider extends AbstractPlacesProvider {
 		String strUrl = String.format(URL_FORMAT, myfinRegion.getId());
 
 		try {
-			Node root = ProviderUtils.readFrom(strUrl);
+			Node root = ProviderUtils.readFrom(context, strUrl);
 
 			long loadPoint = new Date().getTime();
 			Log.d(LOG_TAG, "load time spent: " + (loadPoint - start));

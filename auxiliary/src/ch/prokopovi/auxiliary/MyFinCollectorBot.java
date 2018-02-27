@@ -1,6 +1,32 @@
 package ch.prokopovi.auxiliary;
 
-import ch.prokopovi.exported.*;
+import java.io.BufferedInputStream;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.security.KeyManagementException;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.Certificate;
+import java.security.cert.CertificateException;
+import java.security.cert.CertificateFactory;
+import java.security.cert.X509Certificate;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManagerFactory;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+
+import ch.prokopovi.exported.PureConst;
 import ch.prokopovi.exported.PureConst.Bank;
 import ch.prokopovi.exported.PureConst.MyfinRegion;
 import org.json.JSONArray;
@@ -10,12 +36,6 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-
-import java.net.*;
-import java.util.*;
 
 public class MyFinCollectorBot extends AbstractCollectorBot {
 
@@ -135,17 +155,18 @@ public class MyFinCollectorBot extends AbstractCollectorBot {
         JSONObject placePoisk = placesPoisk.getJSONObject(i);
 
         //{
-        // "adr":"г. Минск, ул. Сурганова, 43",
-        // "phone":"(017) 217 64 64, 200 68 80, факс: (017) 200 17 00",
-        // "type":"Главное отделение",
-        // "icon_b":"alfabank",
-        // "url":"/bank/alfabank/department/15-minsk-ul-surganova-43",
-        // "finalTime":[["09:00","17:00"],["09:00","17:00"],["09:00","17:00"],["09:00","17:00"],["09:00","16:00"],["00:00","00:00"],["00:00","00:00"]],
-        // "header":"<div class=\\\"map-descr\\\"><div class=\\\"b-logo\\\"><a href=\\\"/bank/alfabank\\\"><center><img src=\\\"http://admin.myfin.by/images/bank_logos/alfabank.png\\\" height=\\\"35px\\\"/><\/center><\/a><\/div><div class=\\\"b-name\\\"><a href=\\\"/bank/alfabank/department/15-minsk-ul-surganova-43\\\">Головной офис ЗАО «Альфа-Банк»<\/a><div class=\\\"descr\\\">Главное отделение<\/div><\/div>","main":"<div class=\\\"b-address\\\">г. Минск, ул. Сурганова, 43<\/div><div class=\\\"b-time\\\">Пн-Чт: 09:00-17:00,<br />Пт: 09:00-16:00,<br />Сб-Вс: Выходной<\/div><div class=\\\"b-tel\\\">(017) 217 64 64, 200 68 80, факс: (017) 200 17 00<\/div>","id":"15","footer":"<a href=\\\"/bank/alfabank/department/15-minsk-ul-surganova-43\\\" class=\\\"link-more\\\">Подробнее<\/a><\/div>",
-        // "coords":"[53.926849,27.589382]",
-        // "name":"Головной офис ЗАО «Альфа-Банк»",
-        // "work_time":"Пн-Чт: 09:00-17:00,<br />Пт: 09:00-16:00,<br />Сб-Вс: Выходной"
-        // }
+//                        "coords":"[53.926849,27.589382]",
+//                        "id":"15",
+//                        "icon_b":"alfabank",
+//                        "finalTime":[["09:00","17:00"],["09:00","17:00"],["09:00","17:00"],["09:00","17:00"],["09:00","16:00"],["00:00","00:00"],["00:00","00:00"]],
+
+//                        "name":"\u0413\u043e\u043b\u043e\u0432\u043d\u043e\u0439 \u043e\u0444\u0438\u0441 \u0417\u0410\u041e \u00ab\u0410\u043b\u044c\u0444\u0430-\u0411\u0430\u043d\u043a\u00bb",
+//
+//                        "header":"<div class=\\\"map-descr\\\"><div class=\\\"b-logo\\\"><a href=\\\"\/bank\/alfabank\\\"><center><img src=\\\"https:\/\/admin.myfin.by\/images\/bank_logos\/alfabank.png\\\" height=\\\"35px\\\"\/><\/center><\/a><\/div><div class=\\\"b-name\\\"><a href=\\\"\/bank\/alfabank\/department\/15-minsk-ul-surganova-43\\\">\u0413\u043e\u043b\u043e\u0432\u043d\u043e\u0439 \u043e\u0444\u0438\u0441 \u0417\u0410\u041e \u00ab\u0410\u043b\u044c\u0444\u0430-\u0411\u0430\u043d\u043a\u00bb<\/a><div class=\\\"descr\\\">\u0413\u043b\u0430\u0432\u043d\u043e\u0435 \u043e\u0442\u0434\u0435\u043b\u0435\u043d\u0438\u0435<\/div><\/div>",
+//
+//                        "footer":"<a href=\\\"\/bank\/alfabank\/department\/15-minsk-ul-surganova-43\\\" class=\\\"link-more\\\">\u041f\u043e\u0434\u0440\u043e\u0431\u043d\u0435\u0435<\/a><\/div>",
+//
+//                        "main":"<div class=\\\"b-address\\\">\u0433. \u041c\u0438\u043d\u0441\u043a, \u0443\u043b. \u0421\u0443\u0440\u0433\u0430\u043d\u043e\u0432\u0430, 43<\/div><div class=\\\"b-time\\\">\u041f\u043d-\u0427\u0442: 09:00-17:00,<br \/>\u041f\u0442: 09:00-16:00,<br \/>\u0421\u0431-\u0412\u0441: \u0412\u044b\u0445\u043e\u0434\u043d\u043e\u0439<\/div><div class=\\\"b-tel\\\">(017) 217 64 64, 200 68 80, \u0444\u0430\u043a\u0441: (017) 200 17 00<\/div>"},
 
         Place parsedPlace = parse(placePoisk);
         if (!isFilterPassed(parsedPlace))
@@ -161,7 +182,7 @@ public class MyFinCollectorBot extends AbstractCollectorBot {
 
         place.setRegionId(city.getMasterId());
 
-        String strPhone = placePoisk.getString("phone");
+        String strPhone = extract(placePoisk.getString("main"), "b-tel\\\">", "</div>");
         place.updatePhoneWith(strPhone);
 
       }
@@ -197,7 +218,7 @@ public class MyFinCollectorBot extends AbstractCollectorBot {
     Double cx = Double.valueOf(split[0]);
     Double cy = Double.valueOf(split[1]);
     String name = place.getString("name");
-    String adr = place.getString("adr");
+    String adr = extract(place.getString("main"), "b-address\\\">", "</div><div class=\\\"b-time");
 
     if (cx == null || cy == null || name == null || adr == null)
       return null;
@@ -206,7 +227,7 @@ public class MyFinCollectorBot extends AbstractCollectorBot {
       return null;
 
     int uid = place.getInt("id");
-    final String wh = place.getString("work_time");
+    final String wh = extract(place.getString("main"), "b-time\\\">", "</div><div class=\\\"b-tel");
 
     name = name.trim();
     adr = adr.trim();
@@ -224,9 +245,10 @@ public class MyFinCollectorBot extends AbstractCollectorBot {
   private static String extract(String src, String from, String to) {
 
     int fromIndex = src.indexOf(from) + from.length();
-    int toIndex = src.indexOf(to);
+    String part = src.substring(fromIndex);
+    int toIndex = part.indexOf(to);
 
-    return src.substring(fromIndex, toIndex).trim();
+    return part.substring(0, toIndex).trim();
   }
 
   private static int updateFromService(Iterable<Place> places, MyfinRegion city) throws Exception {
@@ -237,10 +259,14 @@ public class MyFinCollectorBot extends AbstractCollectorBot {
       map.put(place.getId(), place);
     }
     //
+    SSLContext context = getSslContext();
+
 
     String location = String.format(URL_SERVICE_FMT, city.getId());
     URL url = new URL(location);
-    HttpURLConnection conn = (HttpURLConnection)url.openConnection();
+    HttpsURLConnection conn = (HttpsURLConnection)url.openConnection();
+    conn.setSSLSocketFactory(context.getSocketFactory());
+
     conn.setRequestProperty("Authorization", "Basic cHVsczp2YWx1dA==");
 
     DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
@@ -314,6 +340,39 @@ public class MyFinCollectorBot extends AbstractCollectorBot {
     }
 
     return cnt;
+  }
+
+  private static SSLContext getSslContext() throws CertificateException, IOException, KeyStoreException, NoSuchAlgorithmException, KeyManagementException {
+    // Load CAs from an InputStream
+// (could be from a resource or ByteArrayInputStream or ...)
+    CertificateFactory cf = CertificateFactory.getInstance("X.509");
+// From https://www.washington.edu/itconnect/security/ca/load-der.crt
+    InputStream caInput = new BufferedInputStream(new FileInputStream("myfinby.crt"));
+    Certificate ca;
+    try {
+      ca = cf.generateCertificate(caInput);
+      System.out.println("ca=" + ((X509Certificate) ca).getSubjectDN());
+    } finally {
+      caInput.close();
+    }
+
+// Create a KeyStore containing our trusted CAs
+    String keyStoreType = KeyStore.getDefaultType();
+    KeyStore keyStore = KeyStore.getInstance(keyStoreType);
+    keyStore.load(null, null);
+    keyStore.setCertificateEntry("ca", ca);
+
+// Create a TrustManager that trusts the CAs in our KeyStore
+    String tmfAlgorithm = TrustManagerFactory.getDefaultAlgorithm();
+    TrustManagerFactory tmf = TrustManagerFactory.getInstance(tmfAlgorithm);
+    tmf.init(keyStore);
+
+// Create an SSLContext that uses our TrustManager
+
+    SSLContext context = SSLContext.getInstance("TLS");
+    context.init(null, tmf.getTrustManagers(), null);
+
+    return context;
   }
 
   private static Place find(Place p, Iterable<Place> list) {

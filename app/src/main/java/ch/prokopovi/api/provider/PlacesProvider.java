@@ -1,5 +1,7 @@
 package ch.prokopovi.api.provider;
 
+import android.content.Context;
+
 import java.util.List;
 import java.util.Map.Entry;
 
@@ -13,5 +15,5 @@ public interface PlacesProvider {
 
 	boolean isSupported(CurrencyCode currency);
 
-	List<Entry<Long, BestRatesRecord>> getPlaces(Region region);
+	List<Entry<Long, BestRatesRecord>> getPlaces(Context context, Region region);
 }
