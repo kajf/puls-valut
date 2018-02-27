@@ -240,12 +240,6 @@ public final class Master {
 				R.string.lbl_mm_provider, //
 				R.drawable.mm_thumb,//
 				MmProvider.class), //
-		BY_ALFA(5, CountryCode.BY,//
-				new int[] { }, //
-				R.string.lbl_by_alfa_provider, //
-				R.drawable.alfa_thumb,//
-				ByAlfaProvider.class), //
-
 		CBR(6, CountryCode.RU,//
 				new int[] { Calendar.SUNDAY }, //
 				R.string.lbl_cbr_provider, //
