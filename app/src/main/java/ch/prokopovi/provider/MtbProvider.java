@@ -56,7 +56,7 @@ public class MtbProvider extends AbstractProvider {
 		MtbCurrencyCode[] mtbCurrencyCodes = MtbCurrencyCode.values();
 		for (MtbCurrencyCode mtbCurrencyCode : mtbCurrencyCodes) {
 			String prefix = String.format(
-					"//currency[code/text()='%1$s'][codeTo/text()='BYR']",
+					"//currency[code/text()='%1$s'][codeTo/text()='BYN']",
 					mtbCurrencyCode.name());
 
 			Double purchase = extractDotValue(root, prefix + "/purchase", 0.0);
