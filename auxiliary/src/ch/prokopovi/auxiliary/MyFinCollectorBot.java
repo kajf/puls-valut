@@ -12,7 +12,6 @@ import java.security.NoSuchAlgorithmException;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
-import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -351,7 +350,7 @@ public class MyFinCollectorBot extends AbstractCollectorBot {
     Certificate ca;
     try {
       ca = cf.generateCertificate(caInput);
-      System.out.println("ca=" + ((X509Certificate) ca).getSubjectDN());
+      //System.out.println("ca=" + ((X509Certificate) ca).getSubjectDN());
     } finally {
       caInput.close();
     }
