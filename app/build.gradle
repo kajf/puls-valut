@@ -1,12 +1,11 @@
 buildscript {
     repositories {
         jcenter()
+        google()
     }
     dependencies {
         // replace with the current version of the Android plugin
-        classpath 'com.android.tools.build:gradle:2.2.0'
-        // replace with the current version of the android-apt plugin
-        classpath 'com.neenbedankt.gradle.plugins:android-apt:1.4'
+        classpath 'com.android.tools.build:gradle:3.1.4'
     }
 }
 
@@ -16,33 +15,16 @@ repositories {
 }
 
 apply plugin: 'com.android.application'
-apply plugin: 'android-apt'
-def AAVersion = '3.3.2'
-def PSVersion = '11.0.4'
-
-apt {
-    arguments {
-        androidManifestFile variant.outputs[0].processResources.manifestFile
-        // if you have multiple outputs (when using splits), you may want to have other index than 0
-
-        resourcePackageName 'ch.prokopovi'
-
-        // If you're using Android NBS flavors you should use the following line instead of hard-coded packageName
-        // resourcePackageName android.defaultConfig.packageName
-
-        // You can set optional annotation processing options here, like these commented options:
-        // logLevel 'INFO'
-        // logFile '/var/log/aa.log'
-    }
-}
+def AAVersion = '4.4.0'
+def PSVersion = '15.0.1'
 
 android {
-    compileSdkVersion 25
-    buildToolsVersion '25.0.2'
+    compileSdkVersion 26
+    buildToolsVersion '28.0.0'
     defaultConfig {
         applicationId "ch.prokopovi"
         minSdkVersion 14
-        targetSdkVersion 25
+        targetSdkVersion 26
         versionCode 126
         versionName "9.71"
     }
@@ -67,15 +49,15 @@ android {
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile 'com.android.support:appcompat-v7:25.3.1'
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation 'com.android.support:appcompat-v7:26.1.0'
     // http://developer.android.com/google/play-services/setup.html
-    compile "com.google.android.gms:play-services-location:$PSVersion"
-    compile "com.google.android.gms:play-services-maps:$PSVersion"
-    compile "com.google.android.gms:play-services-base:$PSVersion"
-    compile "com.google.android.gms:play-services-ads:$PSVersion"
-    compile "com.google.maps.android:android-maps-utils:0.4"
+    implementation "com.google.android.gms:play-services-location:$PSVersion"
+    implementation "com.google.android.gms:play-services-maps:$PSVersion"
+    implementation "com.google.android.gms:play-services-base:$PSVersion"
+    implementation "com.google.android.gms:play-services-ads:$PSVersion"
+    implementation "com.google.maps.android:android-maps-utils:0.4"
 
-    apt "org.androidannotations:androidannotations:$AAVersion"
-    compile "org.androidannotations:androidannotations-api:$AAVersion"
+    annotationProcessor"org.androidannotations:androidannotations:$AAVersion"
+    implementation "org.androidannotations:androidannotations-api:$AAVersion"
 }

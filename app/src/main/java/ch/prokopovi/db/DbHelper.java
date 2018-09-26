@@ -1,9 +1,7 @@
 package ch.prokopovi.db;
 
 import android.content.Context;
-import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
 import java.io.File;
@@ -12,8 +10,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-public class DbHelper extends SQLiteOpenHelper {
-	private static String DB_PATH = "";
+import static android.database.sqlite.SQLiteDatabase.openDatabase;
+
+public class DbHelper {
 	private static final String DB_NAME = "androidovich.db";
 
 	// update this if assets/<DB_NAME>.db is updated
@@ -41,20 +40,20 @@ public class DbHelper extends SQLiteOpenHelper {
 	}
 
 	private DbHelper(Context context) {
-		super(context, DB_NAME, null, DB_VERSION);
+		//super(context, DB_NAME, null, DB_VERSION);
 
-		DB_PATH = context.getDatabasePath(DB_NAME).getPath();
+		String dbPath = context.getDatabasePath(DB_NAME).getPath();
 		this.context = context;
 
 		boolean dbExist = checkDataBase(context);
 		if (!dbExist) {
 			Log.d(LOG_TAG, "create new app db version: " + DB_VERSION);
 
-			recreateDataBase();
-			openDataBase();
+			copyDataBase(dbPath);
+			this.db = openDatabase(dbPath, null, SQLiteDatabase.OPEN_READWRITE);
 			this.db.setVersion(DB_VERSION);
 		} else {
-			openDataBase();
+			this.db = openDatabase(dbPath, null, SQLiteDatabase.OPEN_READWRITE);
 
 			int oldVersion = this.db.getVersion();
 
@@ -64,9 +63,8 @@ public class DbHelper extends SQLiteOpenHelper {
 						+ ", newer db version: " + DB_VERSION);
 
 				this.db.close(); // exception from never-close DB policy
-
-				recreateDataBase();
-				openDataBase();
+				copyDataBase(dbPath);
+				this.db = openDatabase(dbPath, null, SQLiteDatabase.OPEN_READWRITE);
 				this.db.setVersion(DB_VERSION);
 			}
 		}
@@ -95,71 +93,75 @@ public class DbHelper extends SQLiteOpenHelper {
 	 * Creates a empty database on the system and rewrites it with your own
 	 * database.
 	 * */
-	private void recreateDataBase() {
+//	private void recreateDataBase() {
+//
+//		// By calling this method and empty database will be created into
+//		// the default system path
+//		// of your application so we are gonna be able to overwrite that
+//		// database with our database.
+//		this.getReadableDatabase();
+//
+//		try {
+//
+//			copyDataBase();
+//
+//		} catch (IOException e) {
+//			throw new Error("Error copying database", e);
+//		}
+//
+//	}
 
-		// By calling this method and empty database will be created into
-		// the default system path
-		// of your application so we are gonna be able to overwrite that
-		// database with our database.
-		this.getReadableDatabase();
+    private void copyDataBase(String dbPath) {
+        Log.d(LOG_TAG, "coping db from assets...");
+
+		OutputStream os = null;
+		InputStream is = null;
 
 		try {
+			// Open the empty db as the output stream
+			os = new FileOutputStream(dbPath);
 
-			copyDataBase();
+			// Open your local db as the input stream
+			is = this.context.getAssets().open(
+                    DB_NAME);
 
+			// transfer bytes from the inputfile to the outputfile
+			byte[] buffer = new byte[1024];
+			int length;
+			while ((length = is.read(buffer)) > 0) {
+                os.write(buffer, 0, length);
+            }
+
+			// Close the streams
+			is.close();
+
+			os.flush();
+			os.close();
 		} catch (IOException e) {
 			throw new Error("Error copying database", e);
+		} finally {
+			try {
+				if (os != null) {
+                    os.flush();
+                    os.close();
+                }
+				if (is != null) {
+                    is.close();
+                }
+			} catch (IOException e1) {
+				throw new Error("Error copying database. Finally", e1);
+			}
 		}
 
 	}
 
-    private void copyDataBase() throws IOException {
-        Log.d(LOG_TAG, "coping db from assets...");
-
-        // Open the empty db as the output stream
-        OutputStream os = new FileOutputStream(DB_PATH);
-
-        // Open your local db as the input stream
-        InputStream is = this.context.getAssets().open(
-                DB_NAME);
-
-        // transfer bytes from the inputfile to the outputfile
-        byte[] buffer = new byte[1024];
-        int length;
-        while ((length = is.read(buffer)) > 0) {
-            os.write(buffer, 0, length);
-        }
-
-        // Close the streams
-        is.close();
-
-        os.flush();
-        os.close();
-
-    }
-
-	private void openDataBase() throws SQLException {
-
-		// Open the database
-		this.db = SQLiteDatabase.openDatabase(DB_PATH, null,
-				SQLiteDatabase.OPEN_READWRITE);
-
-	}
-
-	@Override
-	public synchronized void close() {
-
-		// never close db
-	}
-
-	@Override
-	public void onCreate(SQLiteDatabase database) {
-	}
-
-	@Override
-	public void onUpgrade(SQLiteDatabase database, int oldVersion,
-			int newVersion) {
-	}
+//	private SQLiteDatabase openDataBase(String dbPath) throws SQLException {
+//
+//		// Open the database
+//		return SQLiteDatabase.openDatabase(dbPath, null,
+//				SQLiteDatabase.OPEN_READWRITE);
+//
+//	}
 
 	public SQLiteDatabase getDb() {
 		return this.db;
