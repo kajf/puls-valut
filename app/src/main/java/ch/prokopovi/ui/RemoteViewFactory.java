@@ -452,12 +452,12 @@ public final class RemoteViewFactory {
 		// Intent to launch UpdateService
 		Integer updClickId = uiMap.getUpdClickId();
 		if (updClickId != null) {
-			ProviderCode providerCode = preferences.getProviderCode();
 
-			PendingIntent pendingIntent = IntentFactory
-					.createForceUpdateServiceIntent(context, providerCode,
-							preferences.getRateType(),
-							preferences.getWidgetId());
+			PendingIntent pendingIntent = IntentFactory.createForceUpdateServiceIntent(
+					context,
+					preferences.getProviderCode(),
+					preferences.getRateType(),
+					preferences.getWidgetId());
 
 			views.setOnClickPendingIntent(updClickId, pendingIntent);
 		}

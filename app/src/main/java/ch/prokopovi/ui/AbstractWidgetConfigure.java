@@ -9,12 +9,12 @@ import org.json.JSONException;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.JobIntentService;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,6 +24,7 @@ import android.widget.TextView;
 import ch.prokopovi.IntentFactory;
 import ch.prokopovi.PrefsUtil;
 import ch.prokopovi.R;
+import ch.prokopovi.UpdateService;
 import ch.prokopovi.api.provider.Provider;
 import ch.prokopovi.api.struct.ThumbedTitle;
 import ch.prokopovi.provider.ProviderFactory;
@@ -221,10 +222,10 @@ public abstract class AbstractWidgetConfigure extends Activity {
 		try {
 			PrefsUtil.save(context, this.mAppWidgetId, prefs);
 
-			PendingIntent pendingIntent = IntentFactory
+			Intent pendingIntent = IntentFactory
 					.createWeakUpdateServiceIntent(context, prefs);
 
-			pendingIntent.send();
+			JobIntentService.enqueueWork(context, UpdateService.class, 100, pendingIntent);
 
 			// Make sure we pass back the original appWidgetId
 			Intent resultValue = new Intent();

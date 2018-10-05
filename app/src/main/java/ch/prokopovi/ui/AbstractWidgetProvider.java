@@ -4,14 +4,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
 import android.content.Context;
+import android.content.Intent;
 import android.util.Log;
-import ch.prokopovi.ConnectionBroadcastReceiver;
 import ch.prokopovi.IntentFactory;
 import ch.prokopovi.PrefsUtil;
+import ch.prokopovi.UpdateService;
 import ch.prokopovi.struct.Master.WidgetSize;
 import ch.prokopovi.struct.WidgetPreferences;
 
@@ -210,11 +210,7 @@ public abstract class AbstractWidgetProvider extends AppWidgetProvider {
 
 		Log.d(LOG_TAG, "onUpdate ids " + Arrays.toString(appWidgetIds));
 
-		// if widgets are newly installed or updated (no connection changes were
-		// met), the
-		// alarm scheduler adjustment is needed
-		ConnectionBroadcastReceiver.updateState(context);
-		// ---
+		// TODO only run between 9 - 13 - 16 (18)
 
 		for (int i = 0; i < appWidgetIds.length; i++) {
 
@@ -228,10 +224,10 @@ public abstract class AbstractWidgetProvider extends AppWidgetProvider {
 				if (prefs == null)
 					continue;
 
-				PendingIntent pendingIntent = IntentFactory
+				Intent pendingIntent = IntentFactory
 						.createWeakUpdateServiceIntent(context, prefs);
 
-				pendingIntent.send();
+				UpdateService.enqueueWork(context, UpdateService.class, 100, pendingIntent);
 			} catch (Exception e) {
 				Log.e(LOG_TAG, "error during widget update ", e);
 				continue;

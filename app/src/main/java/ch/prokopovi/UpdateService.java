@@ -3,14 +3,12 @@ package ch.prokopovi;
 import java.util.Arrays;
 import java.util.List;
 
-import org.androidannotations.annotations.EService;
-
-import android.app.IntentService;
 import android.content.ContextWrapper;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.IBinder;
 import android.os.Parcelable;
+import android.support.annotation.NonNull;
+import android.support.v4.app.JobIntentService;
 import android.util.Log;
 import android.util.SparseArray;
 import ch.prokopovi.IntentFactory.ExtrasKey;
@@ -34,18 +32,11 @@ import ch.prokopovi.ui.WidgetBroker.WidgetUpdateType;
  * @author Pavel_Letsiaha
  * 
  */
-@EService
-public class UpdateService extends IntentService {
+public class UpdateService extends JobIntentService {
 
 	private static final String LOG_TAG = "UpdateService";
 
-	public static final String PREFIX = UpdateService.class.getCanonicalName();
-
-	public UpdateService() {
-		super(UpdateService.class.getSimpleName());
-	}
-
-	private void wrapStrategy(final Strategy strategy,
+    private void wrapStrategy(final Strategy strategy,
 			final ProviderRequirements requirements) {
 
 		final ProviderCode reqProvider = requirements.getProviderCode();
@@ -96,12 +87,7 @@ public class UpdateService extends IntentService {
 		}
 	}
 
-	@Override
-	public IBinder onBind(Intent intent) {
-		return null;
-	}
-
-	@Override
+    @Override
 	public void onDestroy() {
 		super.onDestroy();
 
@@ -109,7 +95,7 @@ public class UpdateService extends IntentService {
 	}
 
 	@Override
-	protected void onHandleIntent(Intent intent) {
+	protected void onHandleWork(@NonNull Intent intent) {
 
 		Log.d(LOG_TAG, "started " + intent);
 
@@ -118,110 +104,71 @@ public class UpdateService extends IntentService {
 		// send stats if needed
 		StatsHelper.dailyCollect(context);
 
-		if (intent == null) {
-			Log.d(LOG_TAG,
-					"nulls are not permitted in intent for UpdateService");
+		Bundle extras = intent.getExtras();
 
-		} else {
+		// in some cases null is applicable
+		Integer mapCode = null;
+		if (extras != null) {
+			ProviderCode providerCode = (ProviderCode) extras
+					.get(ExtrasKey.PROVIDER.name());
 
-			Bundle extras = intent.getExtras();
+			RateType rateType = (RateType) extras.get(ExtrasKey.RATE_TYPE
+					.name());
 
-			// in some cases null is applicable
-			Integer mapCode = null;
-			if (extras != null) {
-				ProviderCode providerCode = (ProviderCode) extras
-						.get(ExtrasKey.PROVIDER.name());
+			Log.d(LOG_TAG, "providerCode: " + providerCode + " rateType: "
+					+ rateType);
 
-				RateType rateType = (RateType) extras.get(ExtrasKey.RATE_TYPE
-						.name());
+			mapCode = Master.calcMapCode(providerCode, rateType);
+		}
 
-				Log.d(LOG_TAG, "providerCode: " + providerCode + " rateType: "
-						+ rateType);
+		String action = intent.getAction();
 
-				mapCode = Master.calcMapCode(providerCode, rateType);
+		SparseArray<ProviderRequirements> dataRequirements = PrefsUtil
+				.collectRequirements(context);
+
+		if (IntentFactory.ACTION_FORCE_UPDATE.equals(action)) {
+
+			if (mapCode != null) {
+				ProviderRequirements requirements = dataRequirements
+						.get(mapCode);
+
+				if (requirements == null) // not found
+					return;
+
+				Strategy strategy = UpdateActionStrategyFactory
+						.createForceUpdateActionStrategy(context,
+								requirements);
+
+				wrapStrategy(strategy, requirements);
+
 			}
 
-			String action = intent.getAction();
+		} else if (IntentFactory.ACTION_ROUTINE_UPDATE.equals(action)) {
 
-			SparseArray<ProviderRequirements> dataRequirements = PrefsUtil
-					.collectRequirements(context);
+			Parcelable[] parcelableArray = extras
+					.getParcelableArray(ExtrasKey.CURRENCIES.name());
 
-			if (IntentFactory.ACTION_FORCE_UPDATE.equals(action)) {
+			if (mapCode != null && parcelableArray != null) {
 
-				if (mapCode != null) {
-					ProviderRequirements requirements = dataRequirements
-							.get(mapCode);
+				List<Parcelable> list = Arrays.asList(parcelableArray);
+				CurrencyCode[] currencies = list
+						.toArray(new CurrencyCode[list.size()]);
+				Log.d(LOG_TAG, "currencies: " + Arrays.toString(currencies));
 
-					if (requirements == null) // not found
-						return;
+				ProviderRequirements requirements = dataRequirements
+						.get(mapCode);
 
-					Strategy strategy = UpdateActionStrategyFactory
-							.createForceUpdateActionStrategy(context,
-									requirements);
+				Log.d(LOG_TAG, "requirements: " + requirements);
 
-					wrapStrategy(strategy, requirements);
+				if (requirements == null) // not found
+					return;
 
-				}
+				Strategy strategy = UpdateActionStrategyFactory
+						.createRoutineUpdateActionStrategy(context,
+								requirements, currencies);
 
-			} else if (IntentFactory.ACTION_SCHEDULED_UPDATE.equals(action)) {
-
-				for (int i = 0; i < dataRequirements.size(); i++) {
-					ProviderRequirements requirements = dataRequirements
-							.valueAt(i);
-
-					if (requirements == null) // not found
-						continue;
-
-					Strategy strategy = UpdateActionStrategyFactory
-							.createScheduledUpdateActionStrategy(context,
-									requirements);
-
-					wrapStrategy(strategy, requirements);
-
-				}
-
-			} else if (IntentFactory.ACTION_ROUTINE_UPDATE.equals(action)) {
-
-				Parcelable[] parcelableArray = extras
-						.getParcelableArray(ExtrasKey.CURRENCIES.name());
-
-				if (mapCode != null && parcelableArray != null) {
-
-					List<Parcelable> list = Arrays.asList(parcelableArray);
-					CurrencyCode[] currencies = list
-							.toArray(new CurrencyCode[list.size()]);
-					Log.d(LOG_TAG, "currencies: " + Arrays.toString(currencies));
-
-					ProviderRequirements requirements = dataRequirements
-							.get(mapCode);
-
-					Log.d(LOG_TAG, "requirements: " + requirements);
-
-					if (requirements == null) // not found
-						return;
-
-					Strategy strategy = UpdateActionStrategyFactory
-							.createRoutineUpdateActionStrategy(context,
-									requirements, currencies);
-
-					wrapStrategy(strategy, requirements);
-				} // if no parameters - skip call
-			} else if (IntentFactory.ACTION_EXPIRED_UPDATE.equals(action)) {
-
-				for (int i = 0; i < dataRequirements.size(); i++) {
-					ProviderRequirements requirements = dataRequirements
-							.valueAt(i);
-
-					if (requirements == null) // not found
-						continue;
-
-					Strategy strategy = UpdateActionStrategyFactory
-							.createExpiredUpdateActionStrategy(context,
-									requirements);
-
-					wrapStrategy(strategy, requirements);
-				}
-			}
+				wrapStrategy(strategy, requirements);
+			} // if no parameters - skip call
 		}
 	}
 }

@@ -5,7 +5,7 @@ buildscript {
     }
     dependencies {
         // replace with the current version of the Android plugin
-        classpath 'com.android.tools.build:gradle:3.1.4'
+        classpath 'com.android.tools.build:gradle:3.2.0'
     }
 }
 
@@ -20,13 +20,20 @@ def PSVersion = '15.0.1'
 
 android {
     compileSdkVersion 26
-    buildToolsVersion '28.0.0'
+    buildToolsVersion '28.0.2'
     defaultConfig {
         applicationId "ch.prokopovi"
         minSdkVersion 14
         targetSdkVersion 26
-        versionCode 126
-        versionName "9.71"
+        versionCode 128
+        versionName "9.76"
+        javaCompileOptions {
+            annotationProcessorOptions {
+                arguments = [
+                        'androidManifestFile': 'app\\build\\intermediates\\merged_manifests\\debug\\processDebugManifest\\merged\\AndroidManifest.xml'
+                ]
+            }
+        }
     }
     buildTypes {
         release {

@@ -7,11 +7,6 @@ import ch.prokopovi.struct.ProviderRequirements;
 
 public final class UpdateActionStrategyFactory {
 
-	public static Strategy createExpiredUpdateActionStrategy(Context context,
-			ProviderRequirements requirements) {
-		return new ExpiredUpdateActionStrategy(context, requirements);
-	}
-
 	public static Strategy createForceUpdateActionStrategy(Context context,
 			ProviderRequirements requirements) {
 
@@ -23,10 +18,5 @@ public final class UpdateActionStrategyFactory {
 			CurrencyCode[] requestedCurrencies) {
 		return new RoutineUpdateActionStrategy(context, requirements,
 				requestedCurrencies);
-	}
-
-	public static Strategy createScheduledUpdateActionStrategy(Context context,
-			ProviderRequirements requirements) {
-		return new ScheduledUpdateActionStrategy(context, requirements);
 	}
 }

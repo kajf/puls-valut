@@ -9,8 +9,9 @@ import java.util.Set;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.util.Log;
-import ch.prokopovi.ConnectionBroadcastReceiver;
 import ch.prokopovi.TimingConstants;
 import ch.prokopovi.api.provider.Provider;
 import ch.prokopovi.api.provider.Strategy;
@@ -222,7 +223,7 @@ public abstract class AbstractUpdateActionStrategy implements Strategy {
 			OfflineException {
 		Log.d(LOG_TAG, "attempt to update data by " + this.requirements);
 
-		boolean online = ConnectionBroadcastReceiver.isOnline(this.context);
+		boolean online = isOnline(this.context);
 		if (!online) {
 			throw new OfflineException();
 		}
@@ -243,5 +244,24 @@ public abstract class AbstractUpdateActionStrategy implements Strategy {
 			}
 		}
 		// ---
+	}
+
+	/**
+	 * check whether web connection alive or not
+	 *
+	 * @return true - online, false - otherwise
+	 */
+	public static boolean isOnline(Context context) {
+		boolean res = false;
+
+		ConnectivityManager cm = (ConnectivityManager) context
+				.getSystemService(Context.CONNECTIVITY_SERVICE);
+		NetworkInfo netInfo = cm.getActiveNetworkInfo();
+		if (netInfo != null && netInfo.isConnected() && !netInfo.isRoaming()) {
+			res = true;
+		}
+
+		Log.d(LOG_TAG, "isOnline [" + res + "]");
+		return res;
 	}
 }
