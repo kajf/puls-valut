@@ -1,6 +1,6 @@
 package ch.prokopovi.provider;
 
-import android.support.annotation.*;
+import androidx.annotation.*;
 import android.util.*;
 
 import org.w3c.dom.*;

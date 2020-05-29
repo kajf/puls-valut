@@ -15,7 +15,7 @@ import ch.prokopovi.struct.ProviderRequirements;
 public class NbrbProvider extends AbstractProvider {
 	private static final String LOG_TAG = "NbrbProvider";
 
-	private static final String DATA_URL_FORMAT = "http://www.nbrb.by/Services/XmlExRatesDyn.aspx?curId=%1$s&fromDate=%2$tm/%2$td/%2$tY&toDate=%3$tm/%3$td/%3$tY";
+	private static final String DATA_URL_FORMAT = "https://www.nbrb.by/Services/XmlExRatesDyn.aspx?curId=%1$s&fromDate=%2$tm/%2$td/%2$tY&toDate=%3$tm/%3$td/%3$tY";
 	private static final String DATE_XPATH_FORMAT = "//Record[@Date='%1$tm/%1$td/%1$tY']/Rate/text()";
 
 	private enum NbrbCurrencyCode implements CurrencyCodable {

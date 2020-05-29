@@ -2,7 +2,7 @@ package ch.prokopovi.ui.main;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.support.v4.widget.CursorAdapter;
+import androidx.cursoradapter.widget.CursorAdapter;
 import android.util.Log;
 import android.view.*;
 import android.view.animation.Animation;

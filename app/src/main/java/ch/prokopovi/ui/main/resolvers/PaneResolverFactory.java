@@ -2,8 +2,9 @@ package ch.prokopovi.ui.main.resolvers;
 
 import android.content.*;
 import android.content.res.*;
-import android.support.v4.app.*;
 import android.util.*;
+
+import androidx.fragment.app.FragmentActivity;
 
 import com.google.android.gms.common.*;
 

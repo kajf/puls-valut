@@ -14,7 +14,7 @@ import ch.prokopovi.struct.*;
 
 public abstract class AbstractSravnibankUaProvider extends AbstractProvider {
 
-	private static final String DATA_URL_FORMAT = "http://www.sravnibank.com.ua/kursy-valut/cash_xml/?id=chprokopovipl-023711&currency=%1$s&bank=%2$s&date=%3$tY-%3$tm-%3$td";
+	private static final String DATA_URL_FORMAT = "https://www.sravnibank.com.ua/kursy-valut/cash_xml/?id=chprokopovipl-023711&currency=%1$s&bank=%2$s&date=%3$tY-%3$tm-%3$td";
 
 	private static final String BUY_RATE_XPATH = "//Bank/Buy/text()";
 	private static final String SALE_RATE_XPATH = "//Bank/Sale/text()";

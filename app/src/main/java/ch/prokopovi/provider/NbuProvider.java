@@ -14,7 +14,7 @@ public class NbuProvider extends AbstractProvider {
 
 	private static final String LOG_TAG = "NbuProvider";
 
-	private static final String DATA_URL_FORMAT = "http://www.sravnibank.com.ua/kursy-valut/nbu_xml/?id=chprokopovipl-023711&date=%1$tY-%1$tm-%1$td";
+	private static final String DATA_URL_FORMAT = "https://www.sravnibank.com.ua/kursy-valut/nbu_xml/?id=chprokopovipl-023711&date=%1$tY-%1$tm-%1$td";
 
 	private static final String RATE_XPATH_FORMAT = "//Currency[Code/text()='%1$s']/Rate/text()";
 	private static final String CHANGE_XPATH_FORMAT = "//Currency[Code/text()='%1$s']/ChangeAbs/text()";

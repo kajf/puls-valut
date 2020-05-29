@@ -240,11 +240,6 @@ public final class Master {
 				R.string.lbl_cbr_provider, //
 				R.drawable.cbr_thumb,//
 				CbrProvider.class), //
-		SBR(7, CountryCode.RU,//
-				new int[] { Calendar.SUNDAY }, //
-				R.string.lbl_sbr_provider, //
-				R.drawable.sbr_thumb,//
-				SbrProvider.class), //
 		ALFA(11, CountryCode.RU, //
 				new int[] { }, //
 				R.string.lbl_alfa_provider, //
@@ -266,11 +261,6 @@ public final class Master {
 				R.string.lbl_sb_ua_oschad_provider, //
 				R.drawable.oschad_thumb,//
 				OschadSravnibankUaProvider.class), //
-		UNICREDIT_SB_UA(12, CountryCode.UA, //
-				new int[] { Calendar.SATURDAY, Calendar.SUNDAY }, //
-				R.string.lbl_sb_ua_unicredit_provider, //
-				R.drawable.unicredit_thumb,//
-				UnicreditSravnibankUaProvider.class), //
 		DELTA_SB_UA(13, CountryCode.UA, //
 				new int[] { Calendar.SATURDAY, Calendar.SUNDAY }, //
 				R.string.lbl_sb_ua_delta_provider, //

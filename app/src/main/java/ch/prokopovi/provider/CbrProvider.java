@@ -18,7 +18,7 @@ public class CbrProvider extends AbstractProvider {
 
 	private static final String LOG_TAG = "CbrProvider";
 
-	private static final String DATA_URL_FORMAT = "http://www.cbr.ru/scripts/XML_dynamic.asp?date_req1=%1$td/%1$tm/%1$tY&date_req2=%2$td/%2$tm/%2$tY&VAL_NM_RQ=%3$s";
+	private static final String DATA_URL_FORMAT = "https://www.cbr.ru/scripts/XML_dynamic.asp?date_req1=%1$td/%1$tm/%1$tY&date_req2=%2$td/%2$tm/%2$tY&VAL_NM_RQ=%3$s";
 	private static final String DATE_XPATH_FORMAT = "//Record[@Date='%1$td.%1$tm.%1$tY']/Value/text()";
 
 	private enum CbrCurrencyCode implements CurrencyCodable {

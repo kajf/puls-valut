@@ -14,13 +14,6 @@
         android:text="@string/msg_about_widget">
     </TextView>
 
-    <Button
-        android:id="@+id/bAboutNotice"
-        android:text="@string/btn_about_notice"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal" />
-
     <TextView
         android:id="@+id/tvAboutLinks"
         style="@style/HelpTextMessage"

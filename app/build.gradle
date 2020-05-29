@@ -5,7 +5,7 @@ buildscript {
     }
     dependencies {
         // replace with the current version of the Android plugin
-        classpath 'com.android.tools.build:gradle:3.2.0'
+        classpath 'com.android.tools.build:gradle:3.6.3'
     }
 }
 
@@ -15,22 +15,21 @@ repositories {
 }
 
 apply plugin: 'com.android.application'
-def AAVersion = '4.4.0'
-def PSVersion = '15.0.1'
+def AAVersion = '4.6.0'
 
 android {
-    compileSdkVersion 26
-    buildToolsVersion '28.0.2'
+    compileSdkVersion 29
+    buildToolsVersion '29.0.3'
     defaultConfig {
         applicationId "ch.prokopovi"
-        minSdkVersion 14
-        targetSdkVersion 26
+        minSdkVersion 16
+        targetSdkVersion 29
         versionCode 128
         versionName "9.76"
         javaCompileOptions {
             annotationProcessorOptions {
                 arguments = [
-                        'androidManifestFile': 'app\\build\\intermediates\\merged_manifests\\debug\\processDebugManifest\\merged\\AndroidManifest.xml'
+                        'androidManifestFile': 'app/src/main/AndroidManifest.xml'
                 ]
             }
         }
@@ -57,12 +56,12 @@ android {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation 'com.android.support:appcompat-v7:26.1.0'
+    implementation 'androidx.appcompat:appcompat:1.0.0'
     // http://developer.android.com/google/play-services/setup.html
-    implementation "com.google.android.gms:play-services-location:$PSVersion"
-    implementation "com.google.android.gms:play-services-maps:$PSVersion"
-    implementation "com.google.android.gms:play-services-base:$PSVersion"
-    implementation "com.google.android.gms:play-services-ads:$PSVersion"
+    implementation "com.google.android.gms:play-services-location:17.0.0"
+    implementation "com.google.android.gms:play-services-maps:17.0.0"
+    implementation "com.google.android.gms:play-services-base:17.2.1"
+    implementation "com.google.android.gms:play-services-ads:19.1.0"
     implementation "com.google.maps.android:android-maps-utils:0.4"
 
     annotationProcessor"org.androidannotations:androidannotations:$AAVersion"

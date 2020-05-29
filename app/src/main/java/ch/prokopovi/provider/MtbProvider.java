@@ -16,7 +16,7 @@ public class MtbProvider extends AbstractProvider {
 
 	private static final String LOG_TAG = "MtbProvider";
 
-	private static final String URL_FORMAT = "http://www.mtbank.by/currxml.php?d=%1$td.%1$tm.%1$tY";
+	private static final String URL_FORMAT = "https://www.mtbank.by/currxml.php?d=%1$td.%1$tm.%1$tY";
 
 	private enum MtbCurrencyCode implements CurrencyCodable {
 		USD(CurrencyCode.USD), EUR(CurrencyCode.EUR), RUB(CurrencyCode.RUR);

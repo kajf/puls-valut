@@ -6,7 +6,7 @@
         android:id="@+id/menu_search"
         android:icon="@android:drawable/ic_menu_search"
         android:title="@string/btn_search"
-        puls:actionViewClass="android.support.v7.widget.SearchView"
+        puls:actionViewClass="androidx.appcompat.widget.SearchView"
         puls:showAsAction="collapseActionView|always" />
     <item
         android:id="@+id/menu_exchange_type"
