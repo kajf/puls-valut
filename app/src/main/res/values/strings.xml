@@ -61,17 +61,11 @@
     <string name="lbl_volkovysk">Волковыск</string>
     
     <string name="lbl_nbrb_provider">НБРБ</string>
-    <string name="lbl_prior_provider">Приорбанк</string>
     <string name="lbl_mtb_provider">МТБанк</string>
-    <string name="lbl_mm_provider">Банк Москва-Минск</string>
-    <string name="lbl_by_alfa_provider">Альфа-Банк</string>
     <string name="lbl_cbr_provider">ЦБРФ</string>
-    <string name="lbl_sbr_provider">Сбербанк (МСК)</string>
-    <string name="lbl_alfa_provider">Альфа-Банк</string>    
     <string name="lbl_nbu_provider">НБУ</string>
     <string name="lbl_sb_ua_privat_provider">ПриватБанк</string>
     <string name="lbl_sb_ua_oschad_provider">Ощадбанк</string>
-    <string name="lbl_sb_ua_unicredit_provider">UniCredit Bank</string>
     <string name="lbl_sb_ua_delta_provider">Дельта Банк</string>
     
     <string name="lbl_cash_type">Наличные</string>
