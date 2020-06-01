@@ -95,7 +95,7 @@ public class NearFragment extends SupportMapFragment implements
         if (getActivity() == null)
             return;
 
-        this.updater.getTracker().trackPageView("/near");
+        this.updater.getTracker().logEvent("near", null);
 
         getMapAsync(new OnMapReadyCallback() {
             @Override
@@ -297,7 +297,7 @@ public class NearFragment extends SupportMapFragment implements
 
     @Override
     public boolean onClusterClick(Cluster<NearPlace> сluster) {
-        NearFragment.this.updater.getTracker().trackPageView("/clusterClick");
+        NearFragment.this.updater.getTracker().logEvent("cluster_click", null);
 
         goToBounds(сluster.getItems());
 

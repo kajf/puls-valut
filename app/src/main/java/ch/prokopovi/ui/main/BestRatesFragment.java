@@ -25,7 +25,7 @@ import android.widget.AbsListView.OnScrollListener;
 import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
 
-import com.google.android.apps.analytics.GoogleAnalyticsTracker;
+import com.google.firebase.analytics.FirebaseAnalytics;
 
 import org.androidannotations.annotations.*;
 
@@ -66,7 +66,7 @@ public class BestRatesFragment extends ListFragment implements
     private CurrencyCode selectedCurrencyCode;
     private OperationType selectedExchangeType;
 
-    private GoogleAnalyticsTracker tracker;
+    private FirebaseAnalytics tracker;
 
     private Updater updater;
     private OpenListener openListener;
@@ -324,7 +324,7 @@ public class BestRatesFragment extends ListFragment implements
         Log.d(LOG_TAG, "init");
 
         this.tracker = this.updater.getTracker();
-        this.tracker.trackPageView("/bestRates");
+        this.tracker.logEvent("best_rates", null);
 
         // restore previously selected values
         restoreSelections();
@@ -373,7 +373,7 @@ public class BestRatesFragment extends ListFragment implements
 
     @OptionsItem
     void menuExchangeType() {
-        this.tracker.trackPageView("/bestExchangeType");
+        this.tracker.logEvent("best_exchange_type", null);
 
         final BestRatesFragment parent = BestRatesFragment.this;
 
@@ -390,7 +390,7 @@ public class BestRatesFragment extends ListFragment implements
 
     @OptionsItem
     void menuCurrency() {
-        this.tracker.trackPageView("/bestCurrency");
+        this.tracker.logEvent("best_currency", null);
 
         final Context context = getActivity();
         final BestRatesFragment parent = BestRatesFragment.this;
@@ -430,7 +430,7 @@ public class BestRatesFragment extends ListFragment implements
     public void onRefresh() {
         Log.d(LOG_TAG, "updating...");
 
-        this.tracker.trackPageView("/menuUpdate");
+        this.tracker.logEvent("menu_update", null);
 
         this.updater.read(this.selectedRegion, true);
     }
@@ -598,7 +598,7 @@ public class BestRatesFragment extends ListFragment implements
         return distanceMap;
     }
 
-    public GoogleAnalyticsTracker getTracker() {
+    public FirebaseAnalytics getTracker() {
         return tracker;
     }
 

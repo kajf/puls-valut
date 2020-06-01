@@ -19,17 +19,16 @@ import ch.prokopovi.struct.Master.WidgetSize;
 import ch.prokopovi.struct.WidgetPreferences;
 import ch.prokopovi.ui.WidgetBroker;
 
-import com.google.android.apps.analytics.GoogleAnalyticsTracker;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
+import com.google.firebase.analytics.FirebaseAnalytics;
 
 public class StatsHelper {
 
-	public static final String PROPERTY_ID = "UA-32733169-1";
 	private static final String LOG_TAG = "StatsHelper";
 
 	interface Collector {
-		void collect(GoogleAnalyticsTracker tracker);
+		void collect(FirebaseAnalytics tracker);
 	}
 
 	private static synchronized void periodicCollect(ContextWrapper ctx,
@@ -47,16 +46,9 @@ public class StatsHelper {
 		if (collectExpired) {
 			Log.d(LOG_TAG, "collecting widget stats");
 
-			GoogleAnalyticsTracker tracker = GoogleAnalyticsTracker
-					.getInstance();
-			tracker.setAnonymizeIp(true);
-
-			tracker.startNewSession(PROPERTY_ID, ctx);
+			FirebaseAnalytics tracker = FirebaseAnalytics.getInstance(ctx);
 
 			collector.collect(tracker);
-
-			tracker.dispatch();
-			tracker.stopSession();
 
 			prefs.edit().putLong(key, now).commit();
 		}
@@ -69,17 +61,17 @@ public class StatsHelper {
 				DateUtils.DAY_IN_MILLIS, new Collector() {
 
 					@Override
-					public void collect(GoogleAnalyticsTracker tracker) {
+					public void collect(FirebaseAnalytics tracker) {
 
 						// just stats
-						tracker.trackPageView("/online");
+						tracker.logEvent("online", null);
 
 						// maps availability
 						int statusCode = GooglePlayServicesUtil
 								.isGooglePlayServicesAvailable(ctx);
 						boolean mapsAvailable = (statusCode == ConnectionResult.SUCCESS);
 						if (!mapsAvailable) {
-							tracker.trackPageView("/noMaps");
+							tracker.logEvent("no_maps", null);
 						}
 
 						// large screen
@@ -90,7 +82,7 @@ public class StatsHelper {
 						boolean isLarge = masked == Configuration.SCREENLAYOUT_SIZE_LARGE
 								|| VersionHelper.isXlarge(cfg);
 						if (isLarge) {
-							tracker.trackPageView("/largeScreen");
+							tracker.logEvent("large_screen", null);
 						}
 
 						// theme
@@ -101,9 +93,9 @@ public class StatsHelper {
 								.getString(prefAppSkinKey, null);
 						if (ctx.getString(R.string.pref_app_skin_value_dark)
 								.equals(skin)) {
-							tracker.trackPageView("/themeDark");
+							tracker.logEvent("theme_dark", null);
 						} else {
-							tracker.trackPageView("/themeLight");
+							tracker.logEvent("theme_light", null);
 						}
 
 						Set<WidgetSize> widgetSizes = new HashSet<WidgetSize>();
@@ -146,37 +138,37 @@ public class StatsHelper {
 						// get stats info
 						Log.d(LOG_TAG, "widgetSizes: " + widgetSizes);
 						for (WidgetSize widgetSize : widgetSizes) {
-							tracker.trackPageView(asUrl(widgetSize));
+							tracker.logEvent(formatAsEvent(widgetSize), null);
 						}
 
 						Log.d(LOG_TAG, "providerCodes: " + providerCodes);
 						for (ProviderCode providerCode : providerCodes) {
-							tracker.trackPageView(asUrl(providerCode));
+							tracker.logEvent(formatAsEvent(providerCode), null);
 						}
 
 						Log.d(LOG_TAG, "rateTypes: " + rateTypes);
 						for (RateType rateType : rateTypes) {
-							tracker.trackPageView(asUrl(rateType));
+							tracker.logEvent(formatAsEvent(rateType), null);
 						}
 
 						Log.d(LOG_TAG, "currencyCodes: " + currencyCodes);
 						for (CurrencyCode currencyCode : currencyCodes) {
-							tracker.trackPageView(asUrl(currencyCode));
+							tracker.logEvent(formatAsEvent(currencyCode), null);
 						}
 
 						Log.d(LOG_TAG, "widgetCount: " + widgetCount);
 						switch (widgetCount) {
 						case 0:
-							// tracker.trackPageView("/widgets_0");
+							// tracker.trackPageView("widgets_0");
 							break;
 						case 1:
-							tracker.trackPageView("/widgets_1");
+							tracker.logEvent("widgets_1",null);
 							break;
 						case 2:
-							tracker.trackPageView("/widgets_2");
+							tracker.logEvent("widgets_2",null);
 							break;
 						default:
-							tracker.trackPageView("/widgets_more");
+							tracker.logEvent("widgets_more",null);
 							break;
 						}
 					}
@@ -189,7 +181,7 @@ public class StatsHelper {
 	 * @param in
 	 * @return
 	 */
-	private static String asUrl(Enum<?> in) {
-		return "/" + in.name().toLowerCase();
+	private static String formatAsEvent(Enum<?> in) {
+		return in.name().toLowerCase();
 	}
 }

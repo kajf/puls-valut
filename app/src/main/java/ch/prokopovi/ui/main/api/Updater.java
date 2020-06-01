@@ -4,7 +4,7 @@ import android.database.Cursor;
 import android.location.Location;
 import android.util.SparseArray;
 
-import com.google.android.apps.analytics.GoogleAnalyticsTracker;
+import com.google.firebase.analytics.FirebaseAnalytics;
 
 import java.util.List;
 import java.util.Map;
@@ -33,5 +33,5 @@ public interface Updater {
 
     List<RateItem> getRates(int pointId);
 
-    GoogleAnalyticsTracker getTracker();
+    FirebaseAnalytics getTracker();
 }

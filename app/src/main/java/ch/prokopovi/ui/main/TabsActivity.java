@@ -26,8 +26,8 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
-import com.google.android.apps.analytics.*;
 import com.google.android.gms.maps.model.*;
+import com.google.firebase.analytics.FirebaseAnalytics;
 
 import org.androidannotations.annotations.*;
 import org.androidannotations.annotations.res.StringRes;
@@ -108,7 +108,7 @@ public class TabsActivity extends AppCompatActivity implements
 
     private BestRatesDbAdapter dbAdapter;
 
-    private GoogleAnalyticsTracker tracker;
+    private FirebaseAnalytics tracker;
 
     private Location myLastLocation;
 
@@ -345,7 +345,7 @@ public class TabsActivity extends AppCompatActivity implements
         SharedPreferences prefs = getSharedPreferences(PrefsUtil.PREFS_NAME, Context.MODE_PRIVATE);
         boolean adsOn = prefs.getBoolean(this.prefAdsOn, true);
         if (!adsOn) {
-            this.tracker.trackPageView("/adsOff");
+            this.tracker.logEvent("ads_off", null);
         }
 
         boolean rateMeNeeded = isRateMeNeeded(savedInstanceState, prefs);
@@ -368,10 +368,7 @@ public class TabsActivity extends AppCompatActivity implements
     }
 
     private void prepareTracker() {
-        this.tracker = GoogleAnalyticsTracker.getInstance();
-        this.tracker.setAnonymizeIp(true);
-
-        this.tracker.startNewSession(StatsHelper.PROPERTY_ID, this);
+        this.tracker = FirebaseAnalytics.getInstance(this);
     }
 
     private void prepareActionBar(boolean isDisplayShowTitleEnabled) {
@@ -499,7 +496,7 @@ public class TabsActivity extends AppCompatActivity implements
             String selected = (String) parent.getItemAtPosition(position);
 
             if (mTitleSettings.equals(selected)) {
-                ctx.tracker.trackPageView("/settings");
+                ctx.tracker.logEvent("settings", null);
 
                 PrefsActivity_.intent(ctx).start();
 
@@ -515,12 +512,12 @@ public class TabsActivity extends AppCompatActivity implements
                 startActivity(Intent.createChooser(intentShare,
                         getResources().getString(R.string.btn_share_app)));
             } else if (mTitleAbout.equals(selected)) {
-                ctx.tracker.trackPageView("/info");
+                ctx.tracker.logEvent("info", null);
 
                 paneResolver.showAbout();
 
             } else if (mTitleRateApp.equals(selected)) {
-                ctx.tracker.trackPageView("/menuRateApp");
+                ctx.tracker.logEvent("menu_rate_app", null);
 
                 rateApp(ctx);
 
@@ -537,7 +534,7 @@ public class TabsActivity extends AppCompatActivity implements
                 paneResolver.showNear();
             } else if (selected.contains(mTitleRegion)) {
 
-                getTracker().trackPageView("/bestRegion");
+                getTracker().logEvent("best_region", null);
 
                 ListAdapter adapter = AbstractWidgetConfigure.buildAdapter(ctx,
                         REGIONS);
@@ -898,9 +895,6 @@ public class TabsActivity extends AppCompatActivity implements
 	public void onDestroy() {
 		super.onDestroy();
 
-		this.tracker.dispatch();
-		this.tracker.stopSession();
-
 		Log.d(LOG_TAG, "closed");
 	}
 
@@ -986,7 +980,7 @@ public class TabsActivity extends AppCompatActivity implements
 	}
 
 	@Override
-	public GoogleAnalyticsTracker getTracker() {
+	public FirebaseAnalytics getTracker() {
 		return this.tracker;
 	}
 
@@ -1109,7 +1103,7 @@ public class TabsActivity extends AppCompatActivity implements
 
 		switch (buttonId) {
 		case R.id.b_rate:
-			this.tracker.trackPageView("/rated");
+			this.tracker.logEvent("rated", null);
 
 			rateApp(this);
 
@@ -1117,14 +1111,14 @@ public class TabsActivity extends AppCompatActivity implements
 
 			break;
 		case R.id.b_not_now:
-			this.tracker.trackPageView("/rateNotNow");
+			this.tracker.logEvent("rate_not_now", null);
 
 			Log.d(LOG_TAG, "rate app action is postponed");
 
 			launches = 3; // wait for 3 more launches
 			break;
 		case R.id.b_do_not_ask:
-			this.tracker.trackPageView("/rateNever");
+			this.tracker.logEvent("rate_never", null);
 
 			Log.d(LOG_TAG, "rate app action is declined");
 

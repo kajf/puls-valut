@@ -115,7 +115,7 @@ class BestListAdapter extends CursorAdapter {
                     @Override
                     public void onClick(View v) {
 
-                        fragment.getTracker().trackPageView("/openMap");
+                        fragment.getTracker().logEvent("open_map", null);
 
                         Log.d(LOG_TAG, "open click " + openPoint);
 
@@ -160,7 +160,7 @@ class BestListAdapter extends CursorAdapter {
 
                     @Override
                     public void onClick(View v) {
-                        fragment.getTracker().trackPageView("/openConverter");
+                        fragment.getTracker().logEvent("open_converter", null);
 
                         Master.OperationType operationType = Master.OperationType
                                 .get(exTypeId);

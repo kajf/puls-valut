@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "98223469979",
+    "firebase_url": "https://androidovich-7dc01.firebaseio.com",
+    "project_id": "androidovich-7dc01",
+    "storage_bucket": "androidovich-7dc01.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:98223469979:android:1b8bec61c0985dce561d3e",
+        "android_client_info": {
+          "package_name": "ch.prokopovi"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "98223469979-f4k7o5bl0vbupkjfgb9554tbj6v9e36k.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDrQ5MA5gWHlsuOjmpYm0inLv0jrc5qftE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "98223469979-f4k7o5bl0vbupkjfgb9554tbj6v9e36k.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
