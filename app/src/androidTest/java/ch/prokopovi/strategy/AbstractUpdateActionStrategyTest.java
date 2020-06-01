@@ -1,11 +1,12 @@
 package ch.prokopovi.strategy;
 
+import org.junit.Test;
+
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-import android.test.AndroidTestCase;
 import ch.prokopovi.api.struct.ProviderRate;
 import ch.prokopovi.struct.Master.CurrencyCode;
 import ch.prokopovi.struct.Master.OperationType;
@@ -13,7 +14,10 @@ import ch.prokopovi.struct.Master.ProviderCode;
 import ch.prokopovi.struct.Master.RateType;
 import ch.prokopovi.struct.SimpleProviderRate;
 
-public class AbstractUpdateActionStrategyTest extends AndroidTestCase {
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
+public class AbstractUpdateActionStrategyTest {
 	private static final String LOG_TAG = "AbstractUpdateActionStrategyTest";
 
 	/** build mock rates with random timeUpdated field but before specified max date. at least one rate should have timeUpdated equal to max date.
@@ -23,7 +27,7 @@ public class AbstractUpdateActionStrategyTest extends AndroidTestCase {
 	 * @return
 	 */
 	private static List<ProviderRate> prepareMockRates(int size, Date maxDate){
-		ArrayList<ProviderRate> rates = new ArrayList<ProviderRate>();
+		ArrayList<ProviderRate> rates = new ArrayList<>();
 
 		if (size < 1) return rates;
 
@@ -38,7 +42,7 @@ public class AbstractUpdateActionStrategyTest extends AndroidTestCase {
 			long time = calendar.getTime().getTime();
 
 			SimpleProviderRate rate = new SimpleProviderRate(
-					ProviderCode.PRIOR, //
+					ProviderCode.MTB, //
 					RateType.CASH, //
 					(i % 2 == 0) ? OperationType.BUY : OperationType.SELL, //
 							CurrencyCode.USD, 2.5, time, time);
@@ -47,7 +51,7 @@ public class AbstractUpdateActionStrategyTest extends AndroidTestCase {
 
 		long maxTime = maxDate.getTime();
 		SimpleProviderRate rateMaxDate = new SimpleProviderRate(
-				ProviderCode.PRIOR, //
+				ProviderCode.MTB, //
 				RateType.CASH, //
 				OperationType.BUY, //
 				CurrencyCode.USD, 3.5, maxTime, maxTime);
@@ -59,7 +63,8 @@ public class AbstractUpdateActionStrategyTest extends AndroidTestCase {
 		return rates;
 	}
 
-	public void testIsExpired() {
+	@Test
+	public void isExpired() {
 
 		Date now = new Date();
 

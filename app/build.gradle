@@ -24,8 +24,8 @@ android {
         applicationId "ch.prokopovi"
         minSdkVersion 16
         targetSdkVersion 29
-        versionCode 128
-        versionName "9.76"
+        versionCode 130
+        versionName "9.78"
         javaCompileOptions {
             annotationProcessorOptions {
                 arguments = [
@@ -33,6 +33,14 @@ android {
                 ]
             }
         }
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        
+        // The following argument makes the Android Test Orchestrator run its
+        // "pm clear" command after each test invocation. This command ensures
+        // that the app's state is completely cleared between tests.
+        testInstrumentationRunnerArguments clearPackageData: 'true'
+
     }
     buildTypes {
         release {
@@ -52,11 +60,16 @@ android {
             // assets.srcDirs = ['src/main/assets']
         }
     }
+
+    useLibrary 'android.test.runner'
+
+    useLibrary 'android.test.base'
+    useLibrary 'android.test.mock'
 }
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation 'androidx.appcompat:appcompat:1.0.0'
+    implementation 'androidx.appcompat:appcompat:1.1.0'
     // http://developer.android.com/google/play-services/setup.html
     implementation "com.google.android.gms:play-services-location:17.0.0"
     implementation "com.google.android.gms:play-services-maps:17.0.0"
@@ -66,4 +79,9 @@ dependencies {
 
     annotationProcessor"org.androidannotations:androidannotations:$AAVersion"
     implementation "org.androidannotations:androidannotations-api:$AAVersion"
+
+    testImplementation 'junit:junit:4.13'
+    androidTestImplementation 'androidx.test:core:1.2.0'
+    androidTestImplementation 'androidx.test:runner:1.2.0'
+    androidTestImplementation 'androidx.test:rules:1.2.0'
 }

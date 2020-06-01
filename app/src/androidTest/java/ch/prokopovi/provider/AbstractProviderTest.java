@@ -3,20 +3,21 @@ package ch.prokopovi.provider;
 import java.util.Calendar;
 import java.util.Date;
 
-import android.test.AndroidTestCase;
-import android.util.Log;
+import org.junit.Test;
+
 import ch.prokopovi.Util;
 import ch.prokopovi.struct.Master.ProviderCode;
 
-public class AbstractProviderTest extends AndroidTestCase {
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
-	private static final String LOG_TAG = "AbstractProviderTest";
 
-	public void testGetLastValidDay() {
+public class AbstractProviderTest {
+
+	@Test
+	public void getLastValidDay() {
 		Calendar cal = Calendar.getInstance();
 		Date currentDay = cal.getTime();
-
-		Log.d(LOG_TAG, "current day: "+currentDay);
 
 		int currentDayOfWeek = cal.get(Calendar.DAY_OF_WEEK);
 		int[] daysOff = ProviderCode.NBU.getDaysOff();
@@ -32,7 +33,6 @@ public class AbstractProviderTest extends AndroidTestCase {
 		Date lastValidDay = ProviderCode.NBU.getLastValidDay();
 
 
-		Log.d(LOG_TAG, "lastValidDay: "+lastValidDay);
 		assertNotNull("lastValidDay is null", lastValidDay);
 
 		long currentTime = currentDay.getTime();
@@ -40,7 +40,6 @@ public class AbstractProviderTest extends AndroidTestCase {
 
 		boolean inSameDay = Util.isInSameDay(currentTime, lastTime);
 
-		assertTrue(expectedInSameDay == inSameDay);
-
+		assertEquals(expectedInSameDay, inSameDay);
 	}
 }

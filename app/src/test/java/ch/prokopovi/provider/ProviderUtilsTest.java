@@ -1,8 +1,6 @@
 package ch.prokopovi.provider;
 
-import junit.framework.Assert;
-import junit.framework.TestCase;
-
+import org.junit.Test;
 import org.w3c.dom.Node;
 import org.xml.sax.InputSource;
 
@@ -10,7 +8,9 @@ import java.io.StringReader;
 
 import javax.xml.xpath.XPathConstants;
 
-public class ProviderUtilsTest extends TestCase {
+import static org.junit.Assert.assertEquals;
+
+public class ProviderUtilsTest {
 
     public static final String FIRST_SELLING = "51";
     public static final String SECOND_SELLING = "56";
@@ -27,7 +27,8 @@ public class ProviderUtilsTest extends TestCase {
                     "</rates>" +
                     "</currency>";
 
-    public void testXpath() throws Exception {
+    @Test
+    public void xpath() throws Exception {
         // given
 
         String xpath = "//rates[@type='non-cash']//item[@currency-id='840']/@value-selling";
@@ -39,10 +40,11 @@ public class ProviderUtilsTest extends TestCase {
         String parsed = ProviderUtils.evaluateXPath(xpath, root);
 
         // then
-        Assert.assertEquals(FIRST_SELLING, parsed);
+        assertEquals(FIRST_SELLING, parsed);
     }
 
-    public void testXpathArray() throws Exception {
+    @Test
+    public void xpathArray() throws Exception {
         // given
         String xpath = "//rates[@type='non-cash']//item[2]/@value-selling";
 
@@ -53,6 +55,6 @@ public class ProviderUtilsTest extends TestCase {
         String parsed = ProviderUtils.evaluateXPath(xpath, root);
 
         // then
-        Assert.assertEquals(SECOND_SELLING, parsed);
+        assertEquals(SECOND_SELLING, parsed);
     }
 }

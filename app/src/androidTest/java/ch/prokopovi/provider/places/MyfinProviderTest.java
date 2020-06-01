@@ -1,8 +1,11 @@
 package ch.prokopovi.provider.places;
 
-import android.test.AndroidTestCase;
 import android.util.Log;
 
+import androidx.test.core.app.ApplicationProvider;
+
+import org.junit.Before;
+import org.junit.Test;
 import org.w3c.dom.*;
 
 import java.io.ByteArrayInputStream;
@@ -13,10 +16,12 @@ import javax.xml.parsers.DocumentBuilderFactory;
 
 import ch.prokopovi.api.provider.PlacesProvider;
 import ch.prokopovi.api.struct.BestRatesRecord;
-import ch.prokopovi.err.WebUpdatingException;
 import ch.prokopovi.struct.Master.*;
 
-public class MyfinProviderTest extends AndroidTestCase {
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
+public class MyfinProviderTest {
 
     private static final String LOG_TAG = "MyfinProviderTest";
 
@@ -24,21 +29,15 @@ public class MyfinProviderTest extends AndroidTestCase {
 
     private PlacesProvider provider;
 
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
+    @Before
+    public void setUp() {
         this.provider = new MyfinPlacesProvider();
     }
 
+    @Test
+    public void update() {
 
-    @Override
-    protected void tearDown() throws Exception {
-        super.tearDown();
-    }
-
-    public void testUpdate() throws WebUpdatingException {
-
-        List<Entry<Long, BestRatesRecord>> places = this.provider.getPlaces(getContext(), Region.BREST);
+        List<Entry<Long, BestRatesRecord>> places = this.provider.getPlaces(ApplicationProvider.getApplicationContext(), Region.BREST);
 
         for (Entry<Long, BestRatesRecord> entry : places) {
 
@@ -49,7 +48,8 @@ public class MyfinProviderTest extends AndroidTestCase {
         assertTrue("result is empty", places.size() > 0);
     }
 
-    public void testParsing() throws Exception {
+    @Test
+    public void parsing() throws Exception {
 
         String testStr = "<?xml version=\"1.0\" encoding=\"utf-8\"?>" +
                 "<root>" +

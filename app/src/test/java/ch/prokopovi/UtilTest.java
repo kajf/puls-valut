@@ -1,33 +1,35 @@
 package ch.prokopovi;
 
-import android.test.AndroidTestCase;
-import android.util.Log;
+import org.junit.Test;
 
 import java.text.ParseException;
 import java.util.Calendar;
 import java.util.Date;
 
-public class UtilTest extends AndroidTestCase {
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
+public class UtilTest {
 
 	private static final String LOG_TAG = "UtilTest";
 
-	public void testParseDotDouble() throws ParseException {
+	@Test
+	public void parseDotDouble() throws ParseException {
 		double res = Util.parseDotDouble("3020.70");
-		Log.d(LOG_TAG, "res: "+res);
 
 		assertEquals("dot double parsing is wrong", 3020.70, res, 0.00001);
-
 	}
 
-	public void testParseCommaDouble() throws ParseException {
+	@Test
+	public void parseCommaDouble() throws ParseException {
 		double res = Util.parseCommaDouble("3110,8270");
-		Log.d(LOG_TAG, "res: "+res);
 
 		assertEquals("comma double parsing is wrong", 3110.8270, res, 0.00001);
-
 	}
 
-	public void testIsSameDay()  {
+	@Test
+	public void isSameDay()  {
 
 		long now = new Date().getTime();
 		boolean sameDay = Util.isInSameDay(now, now);
@@ -43,7 +45,8 @@ public class UtilTest extends AndroidTestCase {
 
 	}
 
-	public void testIsBlankNull() {
+	@Test
+	public void isBlankNull() {
 		// given
 		String str = null;
 
@@ -54,7 +57,8 @@ public class UtilTest extends AndroidTestCase {
 		assertTrue(isBlank);
 	}
 
-	public void testIsBlankEmpty() {
+	@Test
+	public void isBlankEmpty() {
 		// given
 		String str = "";
 
@@ -65,7 +69,8 @@ public class UtilTest extends AndroidTestCase {
 		assertTrue(isBlank);
 	}
 
-	public void testIsBlankNo() {
+	@Test
+	public void isBlankNo() {
 		// given
 		String str = "test";
 
@@ -76,7 +81,8 @@ public class UtilTest extends AndroidTestCase {
 		assertFalse(isBlank);
 	}
 
-	public void testIsBlankSpaces() {
+	@Test
+	public void isBlankSpaces() {
 		// given
 		String str = "  ";
 

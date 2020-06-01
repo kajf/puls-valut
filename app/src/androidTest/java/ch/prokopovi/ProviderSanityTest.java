@@ -1,6 +1,6 @@
 package ch.prokopovi;
 
-import android.test.AndroidTestCase;
+import org.junit.Test;
 
 import java.util.*;
 
@@ -9,9 +9,14 @@ import ch.prokopovi.api.struct.ProviderRate;
 import ch.prokopovi.struct.Master.*;
 import ch.prokopovi.struct.ProviderRequirements;
 
-public class ProviderSanityTest extends AndroidTestCase {
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
-    public void testNoRequirements() throws Exception {
+public class ProviderSanityTest {
+
+    @Test
+    public void noRequirements() throws Exception {
 
         ProviderCode[] providerCodes = ProviderCode.values();
         for (ProviderCode code : providerCodes) {
@@ -27,7 +32,8 @@ public class ProviderSanityTest extends AndroidTestCase {
         }
     }
 
-    public void testNoCurrencies() throws Exception {
+    @Test
+    public void noCurrencies() throws Exception {
 
         ProviderCode[] providerCodes = ProviderCode.values();
         for (ProviderCode code : providerCodes) {
@@ -47,7 +53,8 @@ public class ProviderSanityTest extends AndroidTestCase {
         }
     }
 
-    public void testNoRateType() throws Exception {
+    @Test
+    public void noRateType() throws Exception {
 
         ProviderCode[] providerCodes = ProviderCode.values();
         for (ProviderCode code : providerCodes) {
@@ -71,7 +78,8 @@ public class ProviderSanityTest extends AndroidTestCase {
         }
     }
 
-    public void testUpdate() throws Exception {
+    @Test
+    public void update() throws Exception {
 
         ProviderCode[] providerCodes = ProviderCode.values();
         for (ProviderCode code : providerCodes) {

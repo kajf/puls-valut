@@ -225,11 +225,6 @@ public final class Master {
 				R.string.lbl_nbrb_provider, //
 				R.drawable.nbrb_thumb, //
 				NbrbProvider.class), //
-		PRIOR(2, CountryCode.BY, //
-				new int[] { }, //
-				R.string.lbl_prior_provider, //
-				R.drawable.prior_thumb,//
-				PriorProvider.class), //
 		MTB(3, CountryCode.BY,//
 				new int[] { Calendar.SUNDAY }, //
 				R.string.lbl_mtb_provider, //
