@@ -17,8 +17,6 @@ repositories {
 apply plugin: 'com.android.application'
 apply plugin: 'com.google.gms.google-services'  // Google Services plugin
 
-def AAVersion = '4.6.0'
-
 android {
     compileSdkVersion 29
     buildToolsVersion '29.0.3'
@@ -45,7 +43,13 @@ android {
 
     }
     buildTypes {
+        debug {
+            resValue "string", "google_maps_api_key", "AIzaSyAI6zCEpYCAQix_nwBpf_eQIb7DJ1u4pKo"
+            resValue "string", "banner_ad_unit_id", "ca-app-pub-3940256099942544/6300978111"
+        }
         release {
+            resValue "string", "google_maps_api_key", "AIzaSyAODM_MEtEayFWTzqjfNqizw4u9fu4_w6Q"
+            resValue "string", "banner_ad_unit_id", "ca-app-pub-7782909295061759/6150499226"
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'),'proguard-rules.pro'
         }
@@ -80,8 +84,8 @@ dependencies {
     implementation "com.google.android.gms:play-services-ads:19.1.0"
     implementation "com.google.maps.android:android-maps-utils:0.4"
 
-    annotationProcessor"org.androidannotations:androidannotations:$AAVersion"
-    implementation "org.androidannotations:androidannotations-api:$AAVersion"
+    annotationProcessor"org.androidannotations:androidannotations:4.7.0"
+    implementation "org.androidannotations:androidannotations-api:4.7.0"
 
     testImplementation 'junit:junit:4.13'
     androidTestImplementation 'androidx.test:core:1.2.0'

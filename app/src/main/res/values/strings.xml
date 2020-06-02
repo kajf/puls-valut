@@ -121,11 +121,6 @@
     
     <string name="msg_updating">Обновляю …</string>
 
-    <!-- prod admob -->
-    <!--<string name="banner_ad_unit_id">ca-app-pub-7782909295061759/6150499226</string>-->
-    <!-- test admob -->
-    <string name="banner_ad_unit_id">ca-app-pub-3940256099942544/6300978111</string>
-
     <string name="btn_about_notice">Лицензия Google Play Services</string>
     <string name="msg_about_widget">
         С помощью приложения можно не только находить самые выгодные курсы обмена валют поблизости, но и отображать курсы выбранного банка прямо на рабочем столе (виджет).\n\n
