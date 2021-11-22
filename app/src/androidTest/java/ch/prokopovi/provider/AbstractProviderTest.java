@@ -20,7 +20,7 @@ public class AbstractProviderTest {
 		Date currentDay = cal.getTime();
 
 		int currentDayOfWeek = cal.get(Calendar.DAY_OF_WEEK);
-		int[] daysOff = ProviderCode.NBU.getDaysOff();
+		int[] daysOff = ProviderCode.NBRB.getDaysOff();
 
 		boolean expectedInSameDay = true;
 		for (int i : daysOff) {
@@ -30,7 +30,7 @@ public class AbstractProviderTest {
 			}
 		}
 
-		Date lastValidDay = ProviderCode.NBU.getLastValidDay();
+		Date lastValidDay = ProviderCode.NBRB.getLastValidDay();
 
 
 		assertNotNull("lastValidDay is null", lastValidDay);

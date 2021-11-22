@@ -42,7 +42,7 @@ public class AbstractUpdateActionStrategyTest {
 			long time = calendar.getTime().getTime();
 
 			SimpleProviderRate rate = new SimpleProviderRate(
-					ProviderCode.MTB, //
+					ProviderCode.NBRB, //
 					RateType.CASH, //
 					(i % 2 == 0) ? OperationType.BUY : OperationType.SELL, //
 							CurrencyCode.USD, 2.5, time, time);
@@ -51,7 +51,7 @@ public class AbstractUpdateActionStrategyTest {
 
 		long maxTime = maxDate.getTime();
 		SimpleProviderRate rateMaxDate = new SimpleProviderRate(
-				ProviderCode.MTB, //
+				ProviderCode.NBRB, //
 				RateType.CASH, //
 				OperationType.BUY, //
 				CurrencyCode.USD, 3.5, maxTime, maxTime);

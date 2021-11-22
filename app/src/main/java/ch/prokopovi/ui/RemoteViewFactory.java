@@ -288,9 +288,6 @@ public final class RemoteViewFactory {
 				if (CurrencyCode.PLN == currencyCode) return 10;
 				if (CurrencyCode.UAH == currencyCode) return 100;
 				if (CurrencyCode.JPY == currencyCode) return 100;
-
-			case MTB:
-				if (CurrencyCode.RUR == currencyCode) return 100;
 		}
 
 		return 1;

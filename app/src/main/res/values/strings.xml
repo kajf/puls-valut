@@ -61,7 +61,6 @@
     <string name="lbl_volkovysk">Волковыск</string>
     
     <string name="lbl_nbrb_provider">НБРБ</string>
-    <string name="lbl_mtb_provider">МТБанк</string>
     <string name="lbl_cbr_provider">ЦБРФ</string>
     <string name="lbl_nbu_provider">НБУ</string>
     <string name="lbl_sb_ua_privat_provider">ПриватБанк</string>

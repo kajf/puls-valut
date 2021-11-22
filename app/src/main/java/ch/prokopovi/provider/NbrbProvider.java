@@ -7,7 +7,6 @@ import org.w3c.dom.Node;
 import java.util.*;
 
 import ch.prokopovi.api.struct.ProviderRate;
-import ch.prokopovi.err.WebUpdatingException;
 import ch.prokopovi.struct.Master.*;
 import ch.prokopovi.struct.ProviderRateBuilder;
 import ch.prokopovi.struct.ProviderRequirements;
@@ -15,18 +14,18 @@ import ch.prokopovi.struct.ProviderRequirements;
 public class NbrbProvider extends AbstractProvider {
 	private static final String LOG_TAG = "NbrbProvider";
 
-	private static final String DATA_URL_FORMAT = "https://www.nbrb.by/Services/XmlExRatesDyn.aspx?curId=%1$s&fromDate=%2$tm/%2$td/%2$tY&toDate=%3$tm/%3$td/%3$tY";
-	private static final String DATE_XPATH_FORMAT = "//Record[@Date='%1$tm/%1$td/%1$tY']/Rate/text()";
+	private static final String DATA_URL_FORMAT = "https://www.nbrb.by/Services/XmlExRates.aspx?onDate=%1$tm/%1$td/%1$tY";
+	private static final String CURR_XPATH_FORMAT = "//Currency[CharCode='%s']/Rate/text()";
 
 	private enum NbrbCurrencyCode implements CurrencyCodable {
-		USD("145", CurrencyCode.USD), //
-		EUR("292", CurrencyCode.EUR), //
-		RUR("298", CurrencyCode.RUR), //
+		USD(CurrencyCode.USD), //
+		EUR(CurrencyCode.EUR), //
+		RUR("RUB", CurrencyCode.RUR), //
 
-		PLN("293", CurrencyCode.PLN), //
-		UAH("290", CurrencyCode.UAH), //
-		GBP("143", CurrencyCode.GBP), //
-		JPY("295", CurrencyCode.JPY), //
+		PLN(CurrencyCode.PLN), //
+		UAH(CurrencyCode.UAH), //
+		GBP(CurrencyCode.GBP), //
+		JPY(CurrencyCode.JPY), //
 		;
 
 		private final String code;
@@ -34,6 +33,11 @@ public class NbrbProvider extends AbstractProvider {
 
 		NbrbCurrencyCode(String code, CurrencyCode currencyCode) {
 			this.code = code;
+			this.currencyCode = currencyCode;
+		}
+
+		NbrbCurrencyCode(CurrencyCode currencyCode) {
+			this.code = currencyCode.name();
 			this.currencyCode = currencyCode;
 		}
 
@@ -57,32 +61,13 @@ public class NbrbProvider extends AbstractProvider {
 		}
 	}
 
-	/**
-	 * create service request line (period starting two days before today and
-	 * ending tomorrow)
-	 * 
-	 * @return service request line
-	 */
-	private static String buildUrlString(CurrencyCode code, Date begin, Date end) {
-		return String.format(DATA_URL_FORMAT, NbrbCurrencyCode.get(code)
-				.getCode(), begin, end);
-	}
-
-	/**
-	 * make xpath like //Record[@Date='07/28/2012']/Rate/text() with
-	 * customizable date
-	 * 
-	 * @param date
-	 * @return
-	 */
-	private static String buildDateXpath(Date date) {
-		return String.format(DATE_XPATH_FORMAT, date);
-	}
-
-	private static Double extractValue(Date date, Node node)
+	private static Double extractValue(CurrencyCode currencyCode, Node node)
 			throws Exception {
 
-		String xpath = buildDateXpath(date);
+		String code = NbrbCurrencyCode.get(currencyCode).getCode();
+
+		// make xpath like //Currency[CharCode='USD']/Rate/text()
+		String xpath = String.format(CURR_XPATH_FORMAT, code);
 
 		return extractDotValue(node, xpath);
 	}
@@ -90,7 +75,7 @@ public class NbrbProvider extends AbstractProvider {
 	@Override
 	protected List<ProviderRate> requestRates(
 			ProviderRequirements requirements, Date now,
-			ProviderRateBuilder builder) throws WebUpdatingException {
+			ProviderRateBuilder builder) {
 
 		Calendar cal = Calendar.getInstance();
 		cal.setTime(now);
@@ -101,27 +86,50 @@ public class NbrbProvider extends AbstractProvider {
 		List<ProviderRate> res = new ArrayList<>();
 
 		Set<CurrencyCode> currencyCodes = requirements.getCurrencyCodes();
+		String locationToday = String.format(DATA_URL_FORMAT, now);
+		String locationTomorrow = String.format(DATA_URL_FORMAT, tomorrow);
+
+		try {
+
+			List<ProviderRate> todayRates = requestRates(locationToday, currencyCodes, OperationType.SELL, builder);
+			res.addAll(todayRates);
+
+			List<ProviderRate> tomorrowRates = requestRates(locationTomorrow, currencyCodes, OperationType.BUY, builder);
+			res.addAll(tomorrowRates);
+
+
+		} catch (Exception e) {
+			Log.e(LOG_TAG, "error loading/parsing: "
+					+ locationToday + ", "
+					+ locationTomorrow + ", "
+					+ currencyCodes, e);
+			return res;
+		}
+
+		return res;
+	}
+
+	private List<ProviderRate> requestRates(
+			String location,
+			Set<CurrencyCode> currencyCodes,
+			OperationType opType,
+			ProviderRateBuilder builder) throws Exception {
+
+		List<ProviderRate> res = new ArrayList<>();
+
+		Node root = ProviderUtils.readFrom(location);
+
 		for (CurrencyCode currencyCode : currencyCodes) {
-			String location = buildUrlString(currencyCode, now, tomorrow);
 
-			try {
+			Double rateValue = extractValue(currencyCode, root);
 
-				Node root = ProviderUtils.readFrom(location);
+			res.add(builder.build(opType, currencyCode,
+					rateValue));
 
-				Double tomorrowValue = extractValue(tomorrow, root);
-				Double nowValue = extractValue(now, root);
-
-				res.add(builder.build(OperationType.BUY, currencyCode,
-						tomorrowValue));
-
-				if (nowValue != null) {
-					res.add(builder.build(OperationType.SELL, currencyCode,
-							nowValue));
-				}// now value should not be null
-			} catch (Exception e) {
-				Log.e(LOG_TAG, "error loading/parsing: " + currencyCode, e);
-				continue;
-			}
+			if (rateValue != null) {
+				res.add(builder.build(opType, currencyCode,
+						rateValue));
+			}// now value should not be null
 		}
 
 		return res;

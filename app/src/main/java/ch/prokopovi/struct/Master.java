@@ -198,7 +198,7 @@ public final class Master {
 
 	public enum CountryCode implements Thumbed {
 		BY(R.drawable.by_flag, CurrencyCode.BYR), RU(R.drawable.ru_flag,
-				CurrencyCode.RUR), UA(R.drawable.ua_flag, CurrencyCode.UAH);
+				CurrencyCode.RUR);
 
 		private final int thumbRes;
 
@@ -225,36 +225,11 @@ public final class Master {
 				R.string.lbl_nbrb_provider, //
 				R.drawable.nbrb_thumb, //
 				NbrbProvider.class), //
-		MTB(3, CountryCode.BY,//
-				new int[] { Calendar.SUNDAY }, //
-				R.string.lbl_mtb_provider, //
-				R.drawable.mtb_thumb,//
-				MtbProvider.class), //
 		CBR(6, CountryCode.RU,//
 				new int[] { Calendar.SUNDAY }, //
 				R.string.lbl_cbr_provider, //
 				R.drawable.cbr_thumb,//
-				CbrProvider.class), //
-		NBU(8, CountryCode.UA, //
-				new int[] { Calendar.SATURDAY, Calendar.SUNDAY }, //
-				R.string.lbl_nbu_provider, //
-				R.drawable.nbu_thumb,//
-				NbuProvider.class), //
-		PRIVAT_SB_UA(9, CountryCode.UA, //
-				new int[] { Calendar.SATURDAY, Calendar.SUNDAY }, //
-				R.string.lbl_sb_ua_privat_provider, //
-				R.drawable.privat_thumb,//
-				PrivatSravnibankUaProvider.class), //
-		OSCHAD_SB_UA(10, CountryCode.UA, //
-				new int[] { Calendar.SATURDAY, Calendar.SUNDAY }, //
-				R.string.lbl_sb_ua_oschad_provider, //
-				R.drawable.oschad_thumb,//
-				OschadSravnibankUaProvider.class), //
-		DELTA_SB_UA(13, CountryCode.UA, //
-				new int[] { Calendar.SATURDAY, Calendar.SUNDAY }, //
-				R.string.lbl_sb_ua_delta_provider, //
-				R.drawable.delta_thumb,//
-				DeltaSravnibankUaProvider.class), //
+				CbrProvider.class) //
 		;
 
 		private final int id;
