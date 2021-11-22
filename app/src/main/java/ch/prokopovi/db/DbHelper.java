@@ -16,7 +16,7 @@ public class DbHelper {
 	private static final String DB_NAME = "androidovich.db";
 
 	// update this if assets/<DB_NAME>.db is updated
-    public static final int DB_VERSION = 79;
+    public static final int DB_VERSION = 80;
     private static final String LOG_TAG = "DbHelper";
 
 	private final Context context;

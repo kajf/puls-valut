@@ -12,5 +12,3 @@ sqlite3 -bail -echo $APP_HOME/auxiliary/$DB_NAME < $APP_HOME/sql/meta.sql
 echo "Updating places BY..."
 sqlite3 -bail -echo $APP_HOME/auxiliary/$DB_NAME < $APP_HOME/sql/places.sql
 
-#echo "Updating places UA..."
-#sqlite3 -bail -echo $APP_HOME/auxiliary/$DB_NAME < $APP_HOME/sql/places_ua.sql
