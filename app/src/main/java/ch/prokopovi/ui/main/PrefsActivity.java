@@ -37,20 +37,11 @@ public class PrefsActivity extends PreferenceActivity implements
 		// full screen
 		PrefsUtil.initFullscreen(this);
 
-		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
-			getPreferenceManager().setSharedPreferencesName(
-					PrefsUtil.PREFS_NAME);
-			addPreferencesFromResource(R.xml.prefs);
+		// Display the fragment as the main content.
+		getFragmentManager().beginTransaction()
+				.replace(android.R.id.content, new PrefsFragment())
+				.commit();
 
-			getPreferenceManager().getSharedPreferences()
-					.registerOnSharedPreferenceChangeListener(this);
-		} else {
-
-			// Display the fragment as the main content.
-			getFragmentManager().beginTransaction()
-					.replace(android.R.id.content, new PrefsFragment())
-					.commit();
-		}
 	}
 
 	@Override
@@ -107,28 +98,6 @@ public class PrefsActivity extends PreferenceActivity implements
 		Log.d(LOG_TAG, "restarting ...");
 
 		ctx.startActivity(TabsActivity.getLauncherIntent(ctx));
-	}
-
-	@SuppressWarnings("deprecation")
-	@Override
-	protected void onResume() {
-		super.onResume();
-
-		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
-			getPreferenceManager().getSharedPreferences()
-					.registerOnSharedPreferenceChangeListener(this);
-		}
-	}
-
-	@SuppressWarnings("deprecation")
-	@Override
-	protected void onPause() {
-		super.onPause();
-
-		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
-			getPreferenceManager().getSharedPreferences()
-					.unregisterOnSharedPreferenceChangeListener(this);
-		}
 	}
 
 	@TargetApi(Build.VERSION_CODES.HONEYCOMB)

@@ -62,10 +62,6 @@
     
     <string name="lbl_nbrb_provider">НБРБ</string>
     <string name="lbl_cbr_provider">ЦБРФ</string>
-    <string name="lbl_nbu_provider">НБУ</string>
-    <string name="lbl_sb_ua_privat_provider">ПриватБанк</string>
-    <string name="lbl_sb_ua_oschad_provider">Ощадбанк</string>
-    <string name="lbl_sb_ua_delta_provider">Дельта Банк</string>
     
     <string name="lbl_cash_type">Наличные</string>
     <string name="lbl_card_type">Карточка</string>
@@ -122,13 +118,12 @@
 
     <string name="btn_about_notice">Лицензия Google Play Services</string>
     <string name="msg_about_widget">
-        С помощью приложения можно не только находить самые выгодные курсы обмена валют поблизости, но и отображать курсы выбранного банка прямо на рабочем столе (виджет).\n\n
-        Значение отображаемых виджетом курсов зависит от источника информации (Обычные банки: покупка/продажа; Нац. банки: сегодня/завтра).
+        Приложение находит самые выгодные курсы обмена валют поблизости и показывает курсы валют национального банка прямо на рабочем столе.\n\n
+        Виджет: нижниее значение - курс на сегодня, верхнее - на завтра, если уже установлено.
     </string>
     <string name="msg_about_links">
         Курсы валют предоставлены:\n\n
         <a href="http://myfin.by">myfin.by</a>\n\n
-        <a href="http://sravnibank.com.ua">sravnibank.com.ua</a>\n\n
         <a href="mailto:sergei.rumas@gmail.com">sergei.rumas@gmail.com</a>       
     </string>
 

@@ -455,11 +455,7 @@ public class TabsActivity extends AppCompatActivity implements
             public void onDrawerSlide(View drawerView, float slideOffset) {
                 float moveFactor = (mDrawerList.getWidth() * slideOffset);
 
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-                    frame.setTranslationX(moveFactor); // push content right
-                } else {
-                    super.onDrawerSlide(drawerView, slideOffset);
-                }
+                frame.setTranslationX(moveFactor); // push content right
             }
         };
         mDrawerToggle.syncState();
