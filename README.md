@@ -1,5 +1,11 @@
 puls-valut
 ==========
+---
+This repository is archived and no longer maintained.
+
+Kept for historical reference. No updates, bug fixes, or PR reviews. Fork it if you need to keep using it.
+
+---
 
 #### Лучшие курсы валют в банках Беларуси, России.
 
